@@ -663,6 +663,124 @@ impl ScoringCalculation {
         Ok(result)
     }
 
+    /// `recompute_first_blood_flags` — drop all first-blood markings and
+    /// recompute from scratch (per service). Restart other scoring
+    /// calculators afterwards (to clear their cache).
+    pub async fn recompute_first_blood_flags(&self, db: &PgPool) -> Result<(), String> {
+        sqlx::query("UPDATE submitted_flags SET is_firstblood=0 WHERE is_firstblood>0")
+            .execute(db)
+            .await
+            .map_err(|e| e.to_string())?;
+        match &self.first_blood {
+            FirstBlood::Default { .. } => {
+                // after the reset, the earliest submission per (service, payload)
+                // — or per service when num_payloads == 0 — is the first blood
+                for service in &self.services {
+                    println!("recompute firstbloods for {}...", service.name);
+                    if service.num_payloads == 0 {
+                        sqlx::query(
+                            "UPDATE submitted_flags SET is_firstblood=1 WHERE id = (\
+                             SELECT id FROM submitted_flags WHERE service_id=$1 ORDER BY ts, id LIMIT 1)",
+                        )
+                        .bind(service.id)
+                        .execute(db)
+                        .await
+                        .map_err(|e| e.to_string())?;
+                    } else {
+                        sqlx::query(
+                            "UPDATE submitted_flags SET is_firstblood=1 WHERE id IN (\
+                             SELECT id FROM (SELECT id, ROW_NUMBER() OVER (PARTITION BY payload, service_id \
+                             ORDER BY ts, tick_submitted, id) AS rk FROM submitted_flags \
+                             WHERE service_id=$1) s WHERE rk=1)",
+                        )
+                        .bind(service.id)
+                        .execute(db)
+                        .await
+                        .map_err(|e| e.to_string())?;
+                    }
+                }
+            }
+            FirstBlood::Multi { limit, .. } => {
+                // get_firstbloods per (service, tick) with fresh caches
+                let mut cache_max: HashMap<(i16, i32), i16> = HashMap::new();
+                let mut cache_victims: HashMap<(i16, i32, i16), HashSet<i16>> = HashMap::new();
+                for service in &self.services {
+                    println!("recompute firstbloods for {}...", service.name);
+                    let (min_tick, max_tick): (Option<i16>, Option<i16>) = sqlx::query_as(
+                        "SELECT MIN(tick_submitted), MAX(tick_submitted) FROM submitted_flags WHERE service_id=$1",
+                    )
+                    .bind(service.id)
+                    .fetch_one(db)
+                    .await
+                    .map_err(|e| e.to_string())?;
+                    let (Some(min_tick), Some(max_tick)) = (min_tick, max_tick) else {
+                        continue;
+                    };
+                    for tick in min_tick..=max_tick {
+                        let flags: Vec<SubmittedFlag> = sqlx::query_as(
+                            "SELECT * FROM submitted_flags WHERE tick_submitted=$1 AND service_id=$2 ORDER BY ts, id",
+                        )
+                        .bind(tick)
+                        .bind(service.id)
+                        .fetch_all(db)
+                        .await
+                        .map_err(|e| e.to_string())?;
+                        let mut new_firstbloods: Vec<(SubmittedFlag, i16)> = Vec::new();
+                        for flag in &flags {
+                            let use_payload = service.num_payloads > 0;
+                            let key1 = if use_payload { (service.id as i16, flag.payload) } else { (service.id as i16, 0) };
+                            let key2 = if use_payload {
+                                (service.id as i16, flag.payload, flag.submitted_by)
+                            } else {
+                                (service.id as i16, 0, flag.submitted_by)
+                            };
+                            if cache_max.get(&key1).copied().unwrap_or(0) >= *limit {
+                                continue;
+                            }
+                            if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                                continue;
+                            }
+                            let current = cache_max
+                                .get(&key1)
+                                .copied()
+                                .unwrap_or(0)
+                                .max(max_firstblood_level(db, service, flag).await.map_err(|e| e.to_string())?);
+                            cache_max.insert(key1, current);
+                            if current >= *limit {
+                                continue;
+                            }
+                            let previous = previous_victims(db, service, flag).await.map_err(|e| e.to_string())?;
+                            cache_victims.entry(key2).or_default().extend(previous);
+                            if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                                continue;
+                            }
+                            cache_victims.entry(key2).or_default().insert(flag.team_id);
+                            let level = cache_victims.get(&key2).map(|v| v.len() as i16).unwrap_or(1);
+                            if level > current {
+                                new_firstbloods.push((flag.clone(), level));
+                                cache_max.insert(key1, level);
+                            }
+                        }
+                        let done = !new_firstbloods.is_empty()
+                            && (0..std::cmp::max(1, service.num_payloads)).all(|pl| {
+                                cache_max.get(&(service.id as i16, pl)).copied().unwrap_or(0) >= *limit
+                            });
+                        for (flag, level) in new_firstbloods {
+                            let svc = self.services.iter().find(|s| s.id as i16 == flag.service_id);
+                            self.record_first_blood(db, &flag, svc, level, false)
+                                .await
+                                .map_err(|e| e.to_string())?;
+                        }
+                        if done {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// `_record_first_blood`.
     async fn record_first_blood(
         &self,

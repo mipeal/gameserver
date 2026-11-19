@@ -407,7 +407,7 @@ async fn scripts_recreate_scoreboard(
 }
 
 /// `recreate_scoreboard_inner` — rebuild every tick's scoreboard from scratch.
-async fn recreate_scoreboard_inner(
+pub async fn recreate_scoreboard_inner(
     cfg: &Config,
     db: PgPool,
     timer: SharedTimer,
