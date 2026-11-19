@@ -1,0 +1,25 @@
+[package]
+name = "wireguard-sync-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "signal", "process", "io-util", "sync"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
+base64 = "0.22"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "chrono"] }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+
+[lib]
+name = "wireguard_sync_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "wireguard-sync"
+path = "src/bin/wireguard_sync.rs"
