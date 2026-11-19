@@ -27,8 +27,12 @@ pub struct FlagSet(HashSet<(i16, i16, i16, i32)>);
 
 impl FlagSet {
     pub fn is_new(&mut self, flag: &SubmittedFlag) -> bool {
-        self.0
-            .insert((flag.service_id, flag.team_id, flag.tick_issued, flag.payload))
+        self.0.insert((
+            flag.service_id,
+            flag.team_id,
+            flag.tick_issued,
+            flag.payload,
+        ))
     }
 }
 
@@ -64,7 +68,9 @@ impl FirstBloodAlgo {
         match name {
             "firstblood:DefaultFirstBloodAlgorithm" => Ok(FirstBloodAlgo::Default),
             "firstblood:MultiFirstBloodAlgorithm" => Ok(FirstBloodAlgo::Multi),
-            other => Err(format!("ValueError: unknown firstblood algorithm {other:?}")),
+            other => Err(format!(
+                "ValueError: unknown firstblood algorithm {other:?}"
+            )),
         }
     }
 }
@@ -94,7 +100,9 @@ fn off_points(
     let base = match algo {
         Algo::Saarctf | Algo::SaarctfHappyHour => {
             // OFF = 1 + sqrt(1 / num_submissions) + sqrt(1 / victim_rank)
-            1.0 + ((flag.num_previous_submissions + flag.num_submissions) as f64).recip().sqrt()
+            1.0 + ((flag.num_previous_submissions + flag.num_submissions) as f64)
+                .recip()
+                .sqrt()
                 + (victim_rank as f64).recip().sqrt()
         }
         Algo::Playground | Algo::PlaygroundHappyHour => {
@@ -123,10 +131,12 @@ fn off_points_previous(
 ) -> Option<f64> {
     match algo {
         Algo::Saarctf => Some(
-            1.0 + (flag.num_previous_submissions as f64).recip().sqrt() + (victim_rank as f64).recip().sqrt(),
+            1.0 + (flag.num_previous_submissions as f64).recip().sqrt()
+                + (victim_rank as f64).recip().sqrt(),
         ),
         Algo::SaarctfHappyHour => Some(
-            (1.0 + (flag.num_previous_submissions as f64).recip().sqrt() + (victim_rank as f64).recip().sqrt())
+            (1.0 + (flag.num_previous_submissions as f64).recip().sqrt()
+                + (victim_rank as f64).recip().sqrt())
                 * flag_points_happy_hour(cfg, i32::from(flag.flag.tick_issued)),
         ),
         Algo::Playground | Algo::PlaygroundHappyHour => None,
@@ -157,7 +167,7 @@ pub enum FirstBlood {
     Multi {
         limit: i16,
         scoreboard_limit: i16,
-        cache_max: HashMap<(i16, i32), i16>,          // (service, payload or 0) => level
+        cache_max: HashMap<(i16, i32), i16>, // (service, payload or 0) => level
         cache_victims: HashMap<(i16, i32, i16), HashSet<i16>>, // (service, payload or 0, attacker)
     },
 }
@@ -166,7 +176,11 @@ impl FirstBlood {
     pub fn new(cfg: &ScoringConfig) -> FirstBlood {
         match FirstBloodAlgo::from_config(&cfg.firstblood_algorithm) {
             Ok(FirstBloodAlgo::Multi) => {
-                let limit = cfg.data.get("firstblood_limit").and_then(|v| v.as_i64()).unwrap_or(3) as i16;
+                let limit = cfg
+                    .data
+                    .get("firstblood_limit")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(3) as i16;
                 let scoreboard_limit = cfg
                     .data
                     .get("firstblood_limit_scoreboard")
@@ -179,7 +193,9 @@ impl FirstBlood {
                     cache_victims: HashMap::new(),
                 }
             }
-            _ => FirstBlood::Default { cache: HashMap::new() },
+            _ => FirstBlood::Default {
+                cache: HashMap::new(),
+            },
         }
     }
 
@@ -187,7 +203,9 @@ impl FirstBlood {
     pub fn get_required_level(&self) -> i16 {
         match self {
             FirstBlood::Default { .. } => 1,
-            FirstBlood::Multi { scoreboard_limit, .. } => *scoreboard_limit,
+            FirstBlood::Multi {
+                scoreboard_limit, ..
+            } => *scoreboard_limit,
         }
     }
 }
@@ -202,8 +220,10 @@ pub struct ScoringCalculation {
 
 impl ScoringCalculation {
     pub async fn new(db: &PgPool, cfg: &ScoringConfig) -> Result<ScoringCalculation, String> {
-        let services: Vec<crate::models::Service> =
-            sqlx::query_as("SELECT * FROM services").fetch_all(db).await.map_err(|e| e.to_string())?;
+        let services: Vec<crate::models::Service> = sqlx::query_as("SELECT * FROM services")
+            .fetch_all(db)
+            .await
+            .map_err(|e| e.to_string())?;
         Ok(ScoringCalculation {
             cfg: cfg.clone(),
             algo: Algo::from_config(&cfg.algorithm)?,
@@ -271,8 +291,7 @@ impl ScoringCalculation {
         .bind(tick as i32)
         .fetch_all(db)
         .await?;
-        let expected = teams.len()
-            * services.as_deref().unwrap_or(&self.services).len();
+        let expected = teams.len() * services.as_deref().unwrap_or(&self.services).len();
         if team_points.len() < expected {
             Box::pin(self.calculate_scoring_for_tick(db, tick))
                 .await
@@ -293,13 +312,16 @@ impl ScoringCalculation {
 
     /// `_get_submitted_flags` — this tick's submissions plus per-flag counts of
     /// previous submissions (within `flags_rounds_valid + 2` ticks).
-    async fn get_submitted_flags(&self, db: &PgPool, tick: i64) -> Result<Vec<StolenFlag>, sqlx::Error> {
-        let flags: Vec<SubmittedFlag> = sqlx::query_as(
-            "SELECT * FROM submitted_flags WHERE tick_submitted=$1 ORDER BY ts, id",
-        )
-        .bind(tick as i16)
-        .fetch_all(db)
-        .await?;
+    async fn get_submitted_flags(
+        &self,
+        db: &PgPool,
+        tick: i64,
+    ) -> Result<Vec<StolenFlag>, sqlx::Error> {
+        let flags: Vec<SubmittedFlag> =
+            sqlx::query_as("SELECT * FROM submitted_flags WHERE tick_submitted=$1 ORDER BY ts, id")
+                .bind(tick as i16)
+                .fetch_all(db)
+                .await?;
         if flags.is_empty() {
             return Ok(vec![]);
         }
@@ -357,7 +379,11 @@ impl ScoringCalculation {
     }
 
     /// `_ranking_for_last_ticks`.
-    async fn ranking_for_last_ticks(&self, db: &PgPool, tick: i64) -> Result<HashMap<(i32, i16), i32>, sqlx::Error> {
+    async fn ranking_for_last_ticks(
+        &self,
+        db: &PgPool,
+        tick: i64,
+    ) -> Result<HashMap<(i32, i16), i32>, sqlx::Error> {
         let rows: Vec<(i32, i16, i32)> = sqlx::query_as(
             "SELECT tick, team_id, rank FROM team_rankings WHERE tick >= $1 AND tick < $2",
         )
@@ -365,11 +391,19 @@ impl ScoringCalculation {
         .bind(tick as i32)
         .fetch_all(db)
         .await?;
-        Ok(rows.into_iter().map(|(t, team, r)| ((t, team), r)).collect())
+        Ok(rows
+            .into_iter()
+            .map(|(t, team, r)| ((t, team), r))
+            .collect())
     }
 
     /// `_sla_delta_for`.
-    async fn sla_delta_for(&self, db: &PgPool, service_id: i16, tick: i64) -> Result<HashMap<i16, f64>, sqlx::Error> {
+    async fn sla_delta_for(
+        &self,
+        db: &PgPool,
+        service_id: i16,
+        tick: i64,
+    ) -> Result<HashMap<i16, f64>, sqlx::Error> {
         let rows: Vec<(i16, f64)> = sqlx::query_as(
             "SELECT team_id, sla_delta FROM team_points WHERE service_id=$1 AND tick=$2",
         )
@@ -400,9 +434,18 @@ impl ScoringCalculation {
             .get_results_for_tick_lite(db, tick - 1, Some(&teams), Some(&services))
             .await
             .map_err(|e| e.to_string())?;
-        let team_rank_in_tick = self.ranking_for_last_ticks(db, tick).await.map_err(|e| e.to_string())?;
-        let checker_results = self.get_checker_results_lite(db, tick).await.map_err(|e| e.to_string())?;
-        let mut flags = self.get_submitted_flags(db, tick).await.map_err(|e| e.to_string())?;
+        let team_rank_in_tick = self
+            .ranking_for_last_ticks(db, tick)
+            .await
+            .map_err(|e| e.to_string())?;
+        let checker_results = self
+            .get_checker_results_lite(db, tick)
+            .await
+            .map_err(|e| e.to_string())?;
+        let mut flags = self
+            .get_submitted_flags(db, tick)
+            .await
+            .map_err(|e| e.to_string())?;
         let mut sla_delta_cache: HashMap<(i16, i64), HashMap<i16, f64>> = HashMap::new();
         for flag in &flags {
             let key = (flag.flag.service_id, i64::from(flag.flag.tick_issued));
@@ -416,7 +459,9 @@ impl ScoringCalculation {
         }
 
         // first blood marking (writes DB + logs)
-        self.compute_firstblood_incremental(db, &mut flags).await.map_err(|e| e.to_string())?;
+        self.compute_firstblood_incremental(db, &mut flags)
+            .await
+            .map_err(|e| e.to_string())?;
 
         // per (service,payload): distinct submitters this tick (playground)
         let mut attacking_teams: HashMap<(i16, i32), HashSet<i16>> = HashMap::new();
@@ -439,12 +484,14 @@ impl ScoringCalculation {
         let mut new_tick_points: HashMap<(i16, i16), TeamPointsLite> = HashMap::new();
         for team_id in &teams {
             for service in &services {
-                new_tick_points.entry((*team_id, service.id as i16)).or_insert_with(|| TeamPointsLite {
-                    team_id: *team_id,
-                    service_id: service.id as i16,
-                    tick: tick as i32,
-                    ..Default::default()
-                });
+                new_tick_points
+                    .entry((*team_id, service.id as i16))
+                    .or_insert_with(|| TeamPointsLite {
+                        team_id: *team_id,
+                        service_id: service.id as i16,
+                        tick: tick as i32,
+                        ..Default::default()
+                    });
             }
         }
 
@@ -481,7 +528,14 @@ impl ScoringCalculation {
                     flag.flag.id, flag.flag.team_id, flag.flag.service_id
                 );
                 tracing::warn!("{msg}");
-                let _ = logger::log(db, "scoring", "Flag submitted for invalid team/service", &msg, crate::models::LOG_WARNING).await;
+                let _ = logger::log(
+                    db,
+                    "scoring",
+                    "Flag submitted for invalid team/service",
+                    &msg,
+                    crate::models::LOG_WARNING,
+                )
+                .await;
                 continue;
             };
             let service_flags_per_tick = service.flags_per_tick;
@@ -494,10 +548,14 @@ impl ScoringCalculation {
             let attacker_key = (flag.flag.submitted_by, flag.flag.service_id);
             if let Some(attacker) = new_tick_points.get_mut(&attacker_key) {
                 attacker.flag_captured_count += 1;
-                attacker.off_points +=
-                    off_points(self.algo, &self.cfg, &attacking_teams_count, flag, victim_rank)
-                        / service_flags_per_tick
-                        * off_factor;
+                attacker.off_points += off_points(
+                    self.algo,
+                    &self.cfg,
+                    &attacking_teams_count,
+                    flag,
+                    victim_rank,
+                ) / service_flags_per_tick
+                    * off_factor;
             }
             if stolen_flags.is_new(&flag.flag) {
                 // victim deduction, once per stolen flag
@@ -507,14 +565,19 @@ impl ScoringCalculation {
                     .and_then(|m| m.get(&flag.flag.team_id))
                     .copied()
                     .unwrap_or(0.0);
-                let prev_damage = def_points(flag.num_previous_submissions, num_active_teams, victim_sla_when_issued);
+                let prev_damage = def_points(
+                    flag.num_previous_submissions,
+                    num_active_teams,
+                    victim_sla_when_issued,
+                );
                 let new_damage = def_points(
                     flag.num_previous_submissions + flag.num_submissions,
                     num_active_teams,
                     victim_sla_when_issued,
                 );
                 if let Some(victim) = new_tick_points.get_mut(&victim_key) {
-                    victim.def_points -= (new_damage - prev_damage) / service_flags_per_tick * def_factor;
+                    victim.def_points -=
+                        (new_damage - prev_damage) / service_flags_per_tick * def_factor;
                     if flag.num_previous_submissions == 0 {
                         victim.flag_stolen_count += 1;
                     }
@@ -524,10 +587,17 @@ impl ScoringCalculation {
                     if let Some(previous_flagpoints) =
                         off_points_previous(self.algo, &self.cfg, flag, victim_rank)
                     {
-                        let new_flagpoints =
-                            off_points(self.algo, &self.cfg, &attacking_teams_count, flag, victim_rank);
+                        let new_flagpoints = off_points(
+                            self.algo,
+                            &self.cfg,
+                            &attacking_teams_count,
+                            flag,
+                            victim_rank,
+                        );
                         for ps in &flag.previous_submitter_ids {
-                            if let Some(prev_attacker) = new_tick_points.get_mut(&(*ps, flag.flag.service_id)) {
+                            if let Some(prev_attacker) =
+                                new_tick_points.get_mut(&(*ps, flag.flag.service_id))
+                            {
                                 prev_attacker.off_points += (new_flagpoints - previous_flagpoints)
                                     / service_flags_per_tick
                                     * off_factor;
@@ -557,7 +627,9 @@ impl ScoringCalculation {
             .await
             .map_err(|e| e.to_string())?;
         let items: Vec<&TeamPointsLite> = new_tick_points.values().collect();
-        save_teampoints(&mut tx, tick as i32, &items).await.map_err(|e| e.to_string())?;
+        save_teampoints(&mut tx, tick as i32, &items)
+            .await
+            .map_err(|e| e.to_string())?;
         tx.commit().await.map_err(|e| e.to_string())?;
         Ok(())
     }
@@ -577,7 +649,10 @@ impl ScoringCalculation {
         .bind(tick as i32)
         .fetch_all(db)
         .await?;
-        Ok(rows.into_iter().map(|(t, s, st, m)| ((t, s), (st, m))).collect())
+        Ok(rows
+            .into_iter()
+            .map(|(t, s, st, m)| ((t, s), (st, m)))
+            .collect())
     }
 
     /// `compute_firstblood_incremental`.
@@ -588,14 +663,22 @@ impl ScoringCalculation {
     ) -> Result<(), sqlx::Error> {
         let firstbloods = self.get_firstbloods(db, flags).await?;
         for (flag, level) in firstbloods {
-            let service = self.services.iter().find(|s| s.id as i16 == flag.service_id);
-            self.record_first_blood(db, &flag, service, level, true).await?;
+            let service = self
+                .services
+                .iter()
+                .find(|s| s.id as i16 == flag.service_id);
+            self.record_first_blood(db, &flag, service, level, true)
+                .await?;
         }
         Ok(())
     }
 
     /// FirstBloodAlgorithm.get_firstbloods.
-    async fn get_firstbloods(&self, db: &PgPool, flags: &[StolenFlag]) -> Result<Vec<(SubmittedFlag, i16)>, sqlx::Error> {
+    async fn get_firstbloods(
+        &self,
+        db: &PgPool,
+        flags: &[StolenFlag],
+    ) -> Result<Vec<(SubmittedFlag, i16)>, sqlx::Error> {
         let mut result = Vec::new();
         let mut candidates = FlagSet::default();
         match &self.first_blood {
@@ -609,23 +692,43 @@ impl ScoringCalculation {
                     if !candidates.is_new(flag) {
                         continue;
                     }
-                    let service = self.services.iter().find(|s| s.id as i16 == flag.service_id).unwrap();
+                    let service = self
+                        .services
+                        .iter()
+                        .find(|s| s.id as i16 == flag.service_id)
+                        .unwrap();
                     if is_first_blood(db, &mut cache, service, flag).await? {
                         result.push((flag.clone(), 1));
-                        cache.entry(flag.service_id).or_default().insert(flag.payload);
+                        cache
+                            .entry(flag.service_id)
+                            .or_default()
+                            .insert(flag.payload);
                     }
                 }
             }
-            FirstBlood::Multi { limit, cache_max, cache_victims, .. } => {
+            FirstBlood::Multi {
+                limit,
+                cache_max,
+                cache_victims,
+                ..
+            } => {
                 let mut cache_max = cache_max.clone();
                 let mut cache_victims = cache_victims.clone();
                 for sf in flags {
                     let flag = &sf.flag;
-                    let Some(service) = self.services.iter().find(|s| s.id as i16 == flag.service_id) else {
+                    let Some(service) = self
+                        .services
+                        .iter()
+                        .find(|s| s.id as i16 == flag.service_id)
+                    else {
                         continue;
                     };
                     let use_payload = service.num_payloads > 0;
-                    let key1 = if use_payload { (flag.service_id, flag.payload) } else { (flag.service_id, 0) };
+                    let key1 = if use_payload {
+                        (flag.service_id, flag.payload)
+                    } else {
+                        (flag.service_id, 0)
+                    };
                     let key2 = if use_payload {
                         (flag.service_id, flag.payload, flag.submitted_by)
                     } else {
@@ -634,7 +737,10 @@ impl ScoringCalculation {
                     if cache_max.get(&key1).copied().unwrap_or(0) >= *limit {
                         continue;
                     }
-                    if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                    if cache_victims
+                        .get(&key2)
+                        .is_some_and(|v| v.contains(&flag.team_id))
+                    {
                         continue;
                     }
                     let current = cache_max
@@ -648,11 +754,17 @@ impl ScoringCalculation {
                     }
                     let previous = previous_victims(db, service, flag).await?;
                     cache_victims.entry(key2).or_default().extend(previous);
-                    if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                    if cache_victims
+                        .get(&key2)
+                        .is_some_and(|v| v.contains(&flag.team_id))
+                    {
                         continue;
                     }
                     cache_victims.entry(key2).or_default().insert(flag.team_id);
-                    let level = cache_victims.get(&key2).map(|v| v.len() as i16).unwrap_or(1);
+                    let level = cache_victims
+                        .get(&key2)
+                        .map(|v| v.len() as i16)
+                        .unwrap_or(1);
                     if level > current {
                         result.push((flag.clone(), level));
                         cache_max.insert(key1, level);
@@ -728,7 +840,11 @@ impl ScoringCalculation {
                         let mut new_firstbloods: Vec<(SubmittedFlag, i16)> = Vec::new();
                         for flag in &flags {
                             let use_payload = service.num_payloads > 0;
-                            let key1 = if use_payload { (service.id as i16, flag.payload) } else { (service.id as i16, 0) };
+                            let key1 = if use_payload {
+                                (service.id as i16, flag.payload)
+                            } else {
+                                (service.id as i16, 0)
+                            };
                             let key2 = if use_payload {
                                 (service.id as i16, flag.payload, flag.submitted_by)
                             } else {
@@ -737,25 +853,36 @@ impl ScoringCalculation {
                             if cache_max.get(&key1).copied().unwrap_or(0) >= *limit {
                                 continue;
                             }
-                            if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                            if cache_victims
+                                .get(&key2)
+                                .is_some_and(|v| v.contains(&flag.team_id))
+                            {
                                 continue;
                             }
-                            let current = cache_max
-                                .get(&key1)
-                                .copied()
-                                .unwrap_or(0)
-                                .max(max_firstblood_level(db, service, flag).await.map_err(|e| e.to_string())?);
+                            let current = cache_max.get(&key1).copied().unwrap_or(0).max(
+                                max_firstblood_level(db, service, flag)
+                                    .await
+                                    .map_err(|e| e.to_string())?,
+                            );
                             cache_max.insert(key1, current);
                             if current >= *limit {
                                 continue;
                             }
-                            let previous = previous_victims(db, service, flag).await.map_err(|e| e.to_string())?;
+                            let previous = previous_victims(db, service, flag)
+                                .await
+                                .map_err(|e| e.to_string())?;
                             cache_victims.entry(key2).or_default().extend(previous);
-                            if cache_victims.get(&key2).is_some_and(|v| v.contains(&flag.team_id)) {
+                            if cache_victims
+                                .get(&key2)
+                                .is_some_and(|v| v.contains(&flag.team_id))
+                            {
                                 continue;
                             }
                             cache_victims.entry(key2).or_default().insert(flag.team_id);
-                            let level = cache_victims.get(&key2).map(|v| v.len() as i16).unwrap_or(1);
+                            let level = cache_victims
+                                .get(&key2)
+                                .map(|v| v.len() as i16)
+                                .unwrap_or(1);
                             if level > current {
                                 new_firstbloods.push((flag.clone(), level));
                                 cache_max.insert(key1, level);
@@ -763,10 +890,17 @@ impl ScoringCalculation {
                         }
                         let done = !new_firstbloods.is_empty()
                             && (0..std::cmp::max(1, service.num_payloads)).all(|pl| {
-                                cache_max.get(&(service.id as i16, pl)).copied().unwrap_or(0) >= *limit
+                                cache_max
+                                    .get(&(service.id as i16, pl))
+                                    .copied()
+                                    .unwrap_or(0)
+                                    >= *limit
                             });
                         for (flag, level) in new_firstbloods {
-                            let svc = self.services.iter().find(|s| s.id as i16 == flag.service_id);
+                            let svc = self
+                                .services
+                                .iter()
+                                .find(|s| s.id as i16 == flag.service_id);
                             self.record_first_blood(db, &flag, svc, level, false)
                                 .await
                                 .map_err(|e| e.to_string())?;
@@ -792,9 +926,14 @@ impl ScoringCalculation {
     ) -> Result<(), sqlx::Error> {
         if write_log {
             let submitted_by: Option<(String,)> =
-                sqlx::query_as("SELECT name FROM teams WHERE id=$1").bind(i32::from(flag.submitted_by)).fetch_optional(db).await?;
-            let victim: Option<(String,)> =
-                sqlx::query_as("SELECT name FROM teams WHERE id=$1").bind(i32::from(flag.team_id)).fetch_optional(db).await?;
+                sqlx::query_as("SELECT name FROM teams WHERE id=$1")
+                    .bind(i32::from(flag.submitted_by))
+                    .fetch_optional(db)
+                    .await?;
+            let victim: Option<(String,)> = sqlx::query_as("SELECT name FROM teams WHERE id=$1")
+                .bind(i32::from(flag.team_id))
+                .fetch_optional(db)
+                .await?;
             let service_name = service.map(|s| s.name.as_str()).unwrap_or("?");
             let submitter_name = submitted_by
                 .map(|n| n.0)
@@ -811,7 +950,10 @@ impl ScoringCalculation {
             let _ = logger::log(
                 db,
                 "scoring",
-                &format!("First Blood: \"{submitter_name}\" on \"{service_name}\" (flag {})", flag.payload),
+                &format!(
+                    "First Blood: \"{submitter_name}\" on \"{service_name}\" (flag {})",
+                    flag.payload
+                ),
                 &text,
                 crate::models::LOG_NOTIFICATION,
             )
@@ -851,7 +993,8 @@ impl ScoringCalculation {
         let mut ranking: Vec<(i16, f64)> = teams.iter().map(|id| (*id, 0.0)).collect();
         let mut by_team: HashMap<i16, f64> = HashMap::new();
         for tp in results.values() {
-            *by_team.entry(tp.team_id).or_default() += tp.off_points + tp.def_points + tp.sla_points;
+            *by_team.entry(tp.team_id).or_default() +=
+                tp.off_points + tp.def_points + tp.sla_points;
         }
         for (team_id, points) in ranking.iter_mut() {
             *points = by_team.get(team_id).copied().unwrap_or(0.0);
@@ -876,24 +1019,46 @@ impl ScoringCalculation {
     }
 
     /// `get_considered_teams`.
-    pub async fn get_considered_teams(&self, db: &PgPool) -> Result<Vec<crate::models::Team>, sqlx::Error> {
-        sqlx::query_as("SELECT * FROM teams ORDER BY id").fetch_all(db).await
+    pub async fn get_considered_teams(
+        &self,
+        db: &PgPool,
+    ) -> Result<Vec<crate::models::Team>, sqlx::Error> {
+        sqlx::query_as("SELECT * FROM teams ORDER BY id")
+            .fetch_all(db)
+            .await
     }
 
     /// `get_considered_services`.
-    pub async fn get_considered_services(&self, db: &PgPool) -> Result<Vec<crate::models::Service>, sqlx::Error> {
-        sqlx::query_as("SELECT * FROM services ORDER BY id").fetch_all(db).await
+    pub async fn get_considered_services(
+        &self,
+        db: &PgPool,
+    ) -> Result<Vec<crate::models::Service>, sqlx::Error> {
+        sqlx::query_as("SELECT * FROM services ORDER BY id")
+            .fetch_all(db)
+            .await
     }
 
     /// `get_ranking_for_tick`: the ordered ranking rows of a tick
     /// (tick <= 0: all teams with rank 1 and no points).
-    pub async fn get_ranking_for_tick(&self, db: &PgPool, tick: i64) -> Result<Vec<RankingEntry>, sqlx::Error> {
+    pub async fn get_ranking_for_tick(
+        &self,
+        db: &PgPool,
+        tick: i64,
+    ) -> Result<Vec<RankingEntry>, sqlx::Error> {
         if tick <= 0 {
             let teams: Vec<(i32, String)> =
-                sqlx::query_as("SELECT id, name FROM teams ORDER BY id").fetch_all(db).await?;
+                sqlx::query_as("SELECT id, name FROM teams ORDER BY id")
+                    .fetch_all(db)
+                    .await?;
             return Ok(teams
                 .into_iter()
-                .map(|(id, name)| RankingEntry { team_id: id as i16, team_name: name, tick: 0, rank: 1, points: 0.0 })
+                .map(|(id, name)| RankingEntry {
+                    team_id: id as i16,
+                    team_name: name,
+                    tick: 0,
+                    rank: 1,
+                    points: 0.0,
+                })
                 .collect());
         }
         let rows: Vec<(i16, i32, i32, f64)> = sqlx::query_as(
@@ -1000,7 +1165,11 @@ async fn is_first_blood(
     service: &crate::models::Service,
     flag: &SubmittedFlag,
 ) -> Result<bool, sqlx::Error> {
-    if service.num_payloads > 0 && cache.get(&(service.id as i16)).is_some_and(|s| s.contains(&flag.payload)) {
+    if service.num_payloads > 0
+        && cache
+            .get(&(service.id as i16))
+            .is_some_and(|s| s.contains(&flag.payload))
+    {
         return Ok(false);
     }
     if service.num_payloads == 0 && cache.contains_key(&(service.id as i16)) {
@@ -1097,7 +1266,14 @@ mod tests {
         let out = order_by_points(ranking);
         assert_eq!(
             out,
-            vec![(1, 1, 10.0), (2, 2, 5.0), (3, 2, 5.0), (6, 4, 1.0), (4, 5, 0.0), (5, 5, 0.0)]
+            vec![
+                (1, 1, 10.0),
+                (2, 2, 5.0),
+                (3, 2, 5.0),
+                (6, 4, 1.0),
+                (4, 5, 0.0),
+                (5, 5, 0.0)
+            ]
         );
         // all zero: everyone keeps rank 1
         let out = order_by_points(vec![(7, 0.0), (8, 0.0)]);
@@ -1106,14 +1282,23 @@ mod tests {
 
     #[test]
     fn algorithm_config_strings_map() {
-        assert_eq!(Algo::from_config("saarctf:SaarctfScoreAlgorithm"), Ok(Algo::Saarctf));
+        assert_eq!(
+            Algo::from_config("saarctf:SaarctfScoreAlgorithm"),
+            Ok(Algo::Saarctf)
+        );
         assert_eq!(
             Algo::from_config("saarctf:SaarctfScoreAlgorithmWithHappyHour"),
             Ok(Algo::SaarctfHappyHour)
         );
-        assert_eq!(Algo::from_config("playground:PlaygroundScoreAlgorithm"), Ok(Algo::Playground));
+        assert_eq!(
+            Algo::from_config("playground:PlaygroundScoreAlgorithm"),
+            Ok(Algo::Playground)
+        );
         assert!(Algo::from_config("nope:Nope").is_err());
-        assert_eq!(FirstBloodAlgo::from_config("firstblood:MultiFirstBloodAlgorithm"), Ok(FirstBloodAlgo::Multi));
+        assert_eq!(
+            FirstBloodAlgo::from_config("firstblood:MultiFirstBloodAlgorithm"),
+            Ok(FirstBloodAlgo::Multi)
+        );
     }
 
     #[test]

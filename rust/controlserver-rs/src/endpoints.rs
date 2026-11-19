@@ -10,8 +10,8 @@
 
 use crate::logger;
 use crate::models::{self, LOG_WARNING};
-use crate::scoring::ScoringCalculation;
 use crate::scoreboard;
+use crate::scoring::ScoringCalculation;
 use crate::timer::{CtfState, SharedTimer};
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
@@ -57,8 +57,15 @@ fn router(state: AppState) -> Router {
         .route("/overview/logs", get(overview_logs))
         .route("/overview/logs/{min_id}", get(overview_logs))
         .route("/checker_results/view/{id}", get(checker_results_view))
-        .route("/services/checker_status", post(services_set_checker_status))
-        .route("/scripts/recreate_scoreboard", post(scripts_recreate_scoreboard))
+        .route(
+            "/services/checker_status",
+            post(services_set_checker_status),
+        )
+        .route("/services/eno_config_valid", get(services_eno_config_valid))
+        .route(
+            "/scripts/recreate_scoreboard",
+            post(scripts_recreate_scoreboard),
+        )
         .route("/packages/update", post(packages_update))
         .route("/packages/push", post(packages_push))
         .route("/packages/run", post(packages_run))
@@ -70,16 +77,22 @@ fn router(state: AppState) -> Router {
 
 // ---- /api/teams, /api/services -----------------------------------------------
 
-type TeamRow = (i32, String, Option<String>, Option<String>, Option<String>, Option<String>);
+type TeamRow = (
+    i32,
+    String,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+);
 
 async fn api_teams(State(state): State<Arc<AppState>>) -> Json<Value> {
-    let rows: Vec<TeamRow> =
-        sqlx::query_as(
-            "SELECT id, name, website, affiliation, vulnbox_ip, logo FROM teams ORDER BY id",
-        )
-        .fetch_all(&state.db)
-        .await
-        .unwrap_or_default();
+    let rows: Vec<TeamRow> = sqlx::query_as(
+        "SELECT id, name, website, affiliation, vulnbox_ip, logo FROM teams ORDER BY id",
+    )
+    .fetch_all(&state.db)
+    .await
+    .unwrap_or_default();
     Json(Value::Array(
         rows.iter()
             .map(|(id, name, website, affiliation, ip, logo)| {
@@ -152,11 +165,7 @@ async fn api_grafana_warning(
         }
     } else {
         let title = data["title"].as_str().unwrap_or("");
-        let text = format!(
-            "{}\n{}",
-            title,
-            data["message"].as_str().unwrap_or("")
-        );
+        let text = format!("{}\n{}", title, data["message"].as_str().unwrap_or(""));
         log_grafana(&state, title, &text).await;
     }
     Ok("OK")
@@ -221,7 +230,11 @@ async fn overview_set_timing(
 ) -> Result<&'static str, (StatusCode, String)> {
     let Json(body) = body.ok_or_else(|| internal("no body"))?;
     let mut t = state.timer.lock().await;
-    if let Some(v) = body.get("state").and_then(Value::as_i64).and_then(ctf_state_from_int) {
+    if let Some(v) = body
+        .get("state")
+        .and_then(Value::as_i64)
+        .and_then(ctf_state_from_int)
+    {
         match v {
             CtfState::Running => t.start_ctf().await.map_err(internal)?,
             CtfState::Suspended => t.suspend_ctf_after_tick().await.map_err(internal)?,
@@ -237,8 +250,12 @@ async fn overview_set_timing(
         let lastround = opt_i64(v);
         match lastround {
             None => t.set_stop_after_tick(None).await.map_err(internal)?,
-            Some(lr) if lr > t.t.current_tick => t.set_stop_after_tick(Some(lr)).await.map_err(internal)?,
-            Some(lr) if lr == t.t.current_tick => t.stop_ctf_after_tick().await.map_err(internal)?,
+            Some(lr) if lr > t.t.current_tick => {
+                t.set_stop_after_tick(Some(lr)).await.map_err(internal)?
+            }
+            Some(lr) if lr == t.t.current_tick => {
+                t.stop_ctf_after_tick().await.map_err(internal)?
+            }
             _ => {}
         }
     }
@@ -252,7 +269,9 @@ async fn overview_set_timing(
     if let Some(v) = body.get("openVulnboxAccessAt") {
         let open_at = opt_i64(v);
         if open_at.is_none() || open_at >= Some(now) {
-            t.set_open_vulnbox_access_at(open_at).await.map_err(internal)?;
+            t.set_open_vulnbox_access_at(open_at)
+                .await
+                .map_err(internal)?;
         }
     }
     Ok("OK")
@@ -266,29 +285,25 @@ async fn overview_logs(
 ) -> Json<Value> {
     let limit: i64 = if min_id.is_some() { 100 } else { 30 };
     let logs = match min_id {
-        Some(min_id) => {
-            sqlx::query_as::<_, models::LogMessage>(
-                "SELECT id, created, component, level, title, text FROM logmessages \
+        Some(min_id) => sqlx::query_as::<_, models::LogMessage>(
+            "SELECT id, created, component, level, title, text FROM logmessages \
                  WHERE level >= $1 AND id > $2 ORDER BY id DESC LIMIT $3",
-            )
-            .bind(models::LOG_INFO)
-            .bind(min_id)
-            .bind(limit)
-            .fetch_all(&state.db)
-            .await
-            .unwrap_or_default()
-        }
-        None => {
-            sqlx::query_as::<_, models::LogMessage>(
-                "SELECT id, created, component, level, title, text FROM logmessages \
+        )
+        .bind(models::LOG_INFO)
+        .bind(min_id)
+        .bind(limit)
+        .fetch_all(&state.db)
+        .await
+        .unwrap_or_default(),
+        None => sqlx::query_as::<_, models::LogMessage>(
+            "SELECT id, created, component, level, title, text FROM logmessages \
                  WHERE level >= $1 ORDER BY id DESC LIMIT $2",
-            )
-            .bind(models::LOG_INFO)
-            .bind(limit)
-            .fetch_all(&state.db)
-            .await
-            .unwrap_or_default()
-        }
+        )
+        .bind(models::LOG_INFO)
+        .bind(limit)
+        .fetch_all(&state.db)
+        .await
+        .unwrap_or_default(),
     };
     Json(Value::Array(
         logs.iter()
@@ -326,23 +341,32 @@ async fn checker_results_view(
         ));
     }
     type CheckerResultRow = (
-        i32, i32, i16, i16, String, Option<String>, Option<f64>, Option<String>, Option<chrono::DateTime<chrono::Utc>>,
+        i32,
+        i32,
+        i16,
+        i16,
+        String,
+        Option<String>,
+        Option<f64>,
+        Option<String>,
+        Option<chrono::DateTime<chrono::Utc>>,
     );
-    let result: Option<CheckerResultRow> =
-        sqlx::query_as(
-            "SELECT id, tick, team_id, service_id, status, message, time, output, finished \
+    let result: Option<CheckerResultRow> = sqlx::query_as(
+        "SELECT id, tick, team_id, service_id, status, message, time, output, finished \
              FROM checker_results WHERE id = $1",
-        )
-        .bind(id)
-        .fetch_optional(&state.db)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    )
+    .bind(id)
+    .fetch_optional(&state.db)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
     match result {
-        Some((id, tick, team_id, service_id, status, message, time, output, finished)) => Ok(Json(json!({
-            "id": id, "tick": tick, "team_id": team_id, "service_id": service_id,
-            "status": status, "message": message, "time": time, "output": output,
-            "finished": finished,
-        }))),
+        Some((id, tick, team_id, service_id, status, message, time, output, finished)) => {
+            Ok(Json(json!({
+                "id": id, "tick": tick, "team_id": team_id, "service_id": service_id,
+                "status": status, "message": message, "time": time, "output": output,
+                "finished": finished,
+            })))
+        }
         None => Err((StatusCode::NOT_FOUND, "Not found".to_string())),
     }
 }
@@ -376,11 +400,113 @@ async fn services_set_checker_status(
     Ok("OK")
 }
 
+// ---- /services/eno_config_valid ---------------------------------------------------
+
+/// `services_eno_config_valid` — check every eno service against its remote
+/// `/service` endpoint. 200 when all valid, 500 with the error map otherwise.
+async fn services_eno_config_valid(
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<Value>) {
+    #[derive(sqlx::FromRow)]
+    struct EnoService {
+        name: String,
+        num_payloads: i32,
+        flags_per_tick: f64,
+        flag_ids: Option<String>,
+        runner_config: Option<Value>,
+    }
+    let services: Vec<EnoService> = sqlx::query_as(
+        "SELECT name, num_payloads, flags_per_tick, flag_ids, runner_config FROM services \
+         WHERE checker_runner = 'eno:EnoCheckerRunner' ORDER BY id",
+    )
+    .fetch_all(&state.db)
+    .await
+    .unwrap_or_default();
+
+    let http = reqwest::Client::new();
+    let mut config_valid = true;
+    let mut errors = serde_json::Map::new();
+    for service in services {
+        let err: Option<String> = async {
+            let Some(rc) = &service.runner_config else {
+                return Some("No checker url set!".into());
+            };
+            let Some(url) = rc.get("url").and_then(Value::as_str) else {
+                return Some("No checker url set!".into());
+            };
+            let resp = match http
+                .get(format!("{url}/service"))
+                .timeout(std::time::Duration::from_secs_f64(1.0))
+                .send()
+                .await
+            {
+                Ok(resp) => resp,
+                Err(_) => {
+                    return Some(format!("Failed to reach checker {} at {url}", service.name))
+                }
+            };
+            let info: Value = match resp.json().await {
+                Ok(info) => info,
+                Err(_) => return Some("Failed to decode /service".into()),
+            };
+            let flag_variants = info.get("flagVariants").and_then(Value::as_i64);
+            let remote_name = info.get("serviceName").and_then(Value::as_str);
+            let (Some(flag_variants), Some(remote_name)) = (flag_variants, remote_name) else {
+                return Some("Failed to decode /service".into());
+            };
+            if service.name.to_lowercase() != remote_name.to_lowercase() {
+                return Some(format!("Url points to wrong service {remote_name}"));
+            }
+            if service.num_payloads != flag_variants as i32 {
+                return Some(format!("Num Payloads should be {flag_variants}"));
+            }
+            if service.flags_per_tick != flag_variants as f64 {
+                return Some(format!("Flags per tick should be {flag_variants}"));
+            }
+            if service.flag_ids.as_deref().unwrap_or("") != "custom".repeat(flag_variants as usize)
+            {
+                return Some(format!("Flags per tick should be {flag_variants}"));
+            }
+            None
+        }
+        .await;
+        match err {
+            None => {
+                errors.insert(service.name.clone(), Value::String("OK!".into()));
+            }
+            Some(err) => {
+                config_valid = false;
+                errors.insert(service.name.clone(), Value::String(err));
+            }
+        }
+    }
+
+    if !config_valid {
+        let errors_formatted: String = errors
+            .iter()
+            .map(|(name, err)| format!("    {name}: {}\n", err.as_str().unwrap_or_default()))
+            .collect();
+        let _ = crate::logger::log(
+            &state.db,
+            "Services",
+            "EnoConfig invalid",
+            &errors_formatted,
+            crate::models::LOG_ERROR,
+        )
+        .await;
+    }
+
+    let code = if config_valid {
+        StatusCode::OK
+    } else {
+        StatusCode::INTERNAL_SERVER_ERROR
+    };
+    (code, Json(Value::Object(errors)))
+}
+
 // ---- /scripts/recreate_scoreboard ------------------------------------------------
 
-async fn scripts_recreate_scoreboard(
-    State(state): State<Arc<AppState>>,
-) -> Json<Value> {
+async fn scripts_recreate_scoreboard(State(state): State<Arc<AppState>>) -> Json<Value> {
     let db = state.db.clone();
     let cfg = state.cfg.clone();
     let timer = state.timer.clone();
@@ -392,14 +518,24 @@ async fn scripts_recreate_scoreboard(
                 let _ = logger::log(
                     &db,
                     "scoring",
-                    &format!("Scoreboard generated manually, took {:.1} sec", t0.elapsed().as_secs_f64()),
+                    &format!(
+                        "Scoreboard generated manually, took {:.1} sec",
+                        t0.elapsed().as_secs_f64()
+                    ),
                     "",
                     models::LOG_INFO,
                 )
                 .await;
             }
             Err((msg, trace)) => {
-                let _ = logger::log(&db, "scoring", &format!("Scoreboard failed (manually): {msg}"), &trace, models::LOG_ERROR).await;
+                let _ = logger::log(
+                    &db,
+                    "scoring",
+                    &format!("Scoreboard failed (manually): {msg}"),
+                    &trace,
+                    models::LOG_ERROR,
+                )
+                .await;
             }
         }
     });
@@ -478,9 +614,7 @@ fn metric_pairs(map: &std::collections::HashMap<String, Value>) -> Vec<(String, 
         .collect()
 }
 
-async fn metrics_write(
-    Json(records): Json<Vec<MetricRecord>>,
-) -> impl IntoResponse {
+async fn metrics_write(Json(records): Json<Vec<MetricRecord>>) -> impl IntoResponse {
     for record in records {
         metrics_record_many(
             &record.metric,
@@ -508,9 +642,18 @@ mod tests {
     #[test]
     fn metric_value_json_rules() {
         assert!(matches!(metric_value(&json!(5)), Some(MetricValue::Int(5))));
-        assert!(matches!(metric_value(&json!(5.5)), Some(MetricValue::Float(_))));
-        assert!(matches!(metric_value(&json!(true)), Some(MetricValue::Bool(true))));
-        assert!(matches!(metric_value(&json!("x")), Some(MetricValue::Str(_))));
+        assert!(matches!(
+            metric_value(&json!(5.5)),
+            Some(MetricValue::Float(_))
+        ));
+        assert!(matches!(
+            metric_value(&json!(true)),
+            Some(MetricValue::Bool(true))
+        ));
+        assert!(matches!(
+            metric_value(&json!("x")),
+            Some(MetricValue::Str(_))
+        ));
         assert!(metric_value(&json!([1])).is_none());
     }
 
@@ -554,32 +697,38 @@ async fn packages_update(
 ) -> Result<Json<Value>, (StatusCode, String)> {
     let Json(body) = body.unwrap_or(Json(Value::Null));
     let body: PackagesUpdateBody = serde_json::from_value(body).unwrap_or_default();
-    let services: Vec<models::Service> = if let Some(id) = body.service.as_ref().and_then(Value::as_i64) {
-        sqlx::query_as("SELECT * FROM services WHERE id = $1")
-            .bind(id as i32)
-            .fetch_all(&state.db)
-            .await
-            .map_err(internal)?
-    } else if let Some(file) = &body.service_file {
-        sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
-            .bind(file)
-            .fetch_all(&state.db)
-            .await
-            .map_err(internal)?
-    } else {
-        sqlx::query_as("SELECT * FROM services")
-            .fetch_all(&state.db)
-            .await
-            .map_err(internal)?
-    };
+    let services: Vec<models::Service> =
+        if let Some(id) = body.service.as_ref().and_then(Value::as_i64) {
+            sqlx::query_as("SELECT * FROM services WHERE id = $1")
+                .bind(id as i32)
+                .fetch_all(&state.db)
+                .await
+                .map_err(internal)?
+        } else if let Some(file) = &body.service_file {
+            sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
+                .bind(file)
+                .fetch_all(&state.db)
+                .await
+                .map_err(internal)?
+        } else {
+            sqlx::query_as("SELECT * FROM services")
+                .fetch_all(&state.db)
+                .await
+                .map_err(internal)?
+        };
 
     let mut messages: Vec<String> = Vec::new();
     let mut changed_packages: Vec<String> = Vec::new();
     let mut mgr = ServiceRepoManager::new();
     for service in &services {
-        let Some(dir) = service.checker_script_dir.clone() else { continue };
+        let Some(dir) = service.checker_script_dir.clone() else {
+            continue;
+        };
         if !std::path::Path::new(&dir).exists() {
-            messages.push(format!("[{}] Folder does not exist: \"{}\"", service.name, dir));
+            messages.push(format!(
+                "[{}] Folder does not exist: \"{}\"",
+                service.name, dir
+            ));
             continue;
         }
         let (package, setup_package, is_new) = mgr
@@ -588,9 +737,15 @@ async fn packages_update(
             .map_err(internal)?;
         if package != service.package.clone().unwrap_or_default() {
             if is_new {
-                messages.push(format!("[{}] Created new package: {}", service.name, package));
+                messages.push(format!(
+                    "[{}] Created new package: {}",
+                    service.name, package
+                ));
             } else {
-                messages.push(format!("[{}] Switching to package: {}", service.name, package));
+                messages.push(format!(
+                    "[{}] Switching to package: {}",
+                    service.name, package
+                ));
             }
             sqlx::query("UPDATE services SET package = $1 WHERE id = $2")
                 .bind(&package)
@@ -624,22 +779,30 @@ async fn packages_update(
         }
     }
     if !changed_packages.is_empty() {
-        broadcast_preload(&state, changed_packages).await.map_err(internal)?;
+        broadcast_preload(&state, changed_packages)
+            .await
+            .map_err(internal)?;
     }
     messages.push("OK".to_string());
     Ok(Json(json!(messages)))
 }
 
 /// `packages_push` — notify workers about every known package.
-async fn packages_push(State(state): State<Arc<AppState>>) -> Result<Json<Value>, (StatusCode, String)> {
-    let rows: Vec<(Option<String>,)> =
-        sqlx::query_as("SELECT package FROM services")
-            .fetch_all(&state.db)
-            .await
-            .map_err(internal)?;
-    let packages: Vec<String> = rows.into_iter().filter_map(|(p,)| p.filter(|p| !p.is_empty())).collect();
+async fn packages_push(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let rows: Vec<(Option<String>,)> = sqlx::query_as("SELECT package FROM services")
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?;
+    let packages: Vec<String> = rows
+        .into_iter()
+        .filter_map(|(p,)| p.filter(|p| !p.is_empty()))
+        .collect();
     let n = packages.len();
-    broadcast_preload(&state, packages).await.map_err(internal)?;
+    broadcast_preload(&state, packages)
+        .await
+        .map_err(internal)?;
     Ok(Json(json!(format!("Workers notified about {n} packages"))))
 }
 
@@ -680,30 +843,30 @@ async fn packages_test(
         .get("team_id")
         .and_then(Value::as_i64)
         .unwrap_or_else(|| state.cfg.scoring.nop_team_id.as_i64().unwrap_or(1));
-    let team: Option<(i32, String)> =
-        sqlx::query_as("SELECT id, name FROM teams WHERE id = $1")
-            .bind(team_id as i32)
-            .fetch_optional(&state.db)
-            .await
-            .map_err(internal)?;
+    let team: Option<(i32, String)> = sqlx::query_as("SELECT id, name FROM teams WHERE id = $1")
+        .bind(team_id as i32)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(internal)?;
     let Some((_, team_name)) = team else {
         return Err((StatusCode::NOT_FOUND, "team not found".to_string()));
     };
-    let service: Option<models::Service> = if let Some(service_id) = body.get("service_id").and_then(Value::as_i64) {
-        sqlx::query_as("SELECT * FROM services WHERE id = $1")
-            .bind(service_id as i32)
-            .fetch_optional(&state.db)
-            .await
-            .map_err(internal)?
-    } else if let Some(file) = body.get("service_file").and_then(Value::as_str) {
-        sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
-            .bind(file)
-            .fetch_optional(&state.db)
-            .await
-            .map_err(internal)?
-    } else {
-        None
-    };
+    let service: Option<models::Service> =
+        if let Some(service_id) = body.get("service_id").and_then(Value::as_i64) {
+            sqlx::query_as("SELECT * FROM services WHERE id = $1")
+                .bind(service_id as i32)
+                .fetch_optional(&state.db)
+                .await
+                .map_err(internal)?
+        } else if let Some(file) = body.get("service_file").and_then(Value::as_str) {
+            sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
+                .bind(file)
+                .fetch_optional(&state.db)
+                .await
+                .map_err(internal)?
+        } else {
+            None
+        };
     let Some(service) = service else {
         let file = body
             .get("service_file")
@@ -744,9 +907,15 @@ async fn packages_test(
             if Some(&pkg) == service.package.as_ref() {
                 ("CURRENT script".to_string(), Some(pkg))
             } else if is_new {
-                (format!("NEW script \"{}\"", &pkg[..12.min(pkg.len())]), Some(pkg))
+                (
+                    format!("NEW script \"{}\"", &pkg[..12.min(pkg.len())]),
+                    Some(pkg),
+                )
             } else {
-                (format!("OLD script \"{}\"", &pkg[..12.min(pkg.len())]), Some(pkg))
+                (
+                    format!("OLD script \"{}\"", &pkg[..12.min(pkg.len())]),
+                    Some(pkg),
+                )
             }
         }
         None => ("not managed by package".to_string(), None),
@@ -776,9 +945,7 @@ async fn packages_test(
 }
 
 /// `service_update` — git pull every service remote and sync the DB.
-async fn scripts_service_update(
-    State(state): State<Arc<AppState>>,
-) -> (StatusCode, Json<Value>) {
+async fn scripts_service_update(State(state): State<Arc<AppState>>) -> (StatusCode, Json<Value>) {
     let mut mgr = ServiceRepoManager::new();
     match mgr.update_all_services(&state.cfg, &state.db).await {
         Ok(()) => {

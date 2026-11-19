@@ -6,6 +6,11 @@ edition = "2021"
 [dependencies]
 axum = "0.8"
 md-5 = "0.10"
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+base64 = "0.22"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
 saarctf-commons-rs = { path = "../saarctf-commons-rs" }
 gamelib-rs = { path = "../gamelib-rs" }
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "migrate"] }

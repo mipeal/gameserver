@@ -1,7 +1,7 @@
 //! `controlserver/app.py` (wave 1): timer + events + dispatcher wiring.
 //! The HTTP endpoints are the next wave-1 piece (pages, teams, flags, ...).
-use controlserver_rs::{connect_db, endpoints, events, load_config};
 use controlserver_rs::timer;
+use controlserver_rs::{connect_db, endpoints, events, load_config};
 
 #[tokio::main]
 async fn main() {

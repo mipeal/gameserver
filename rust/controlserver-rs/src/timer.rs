@@ -580,7 +580,9 @@ pub fn now_secs() -> i64 {
 
 /// Read the timing state straight from redis (slave-style snapshot, for
 /// processes that do not own the timer).
-pub async fn read_timing_state(cfg: &saarctf_commons_rs::config::Config) -> Result<TimingState, redis::RedisError> {
+pub async fn read_timing_state(
+    cfg: &saarctf_commons_rs::config::Config,
+) -> Result<TimingState, redis::RedisError> {
     let mut redis = saarctf_commons_rs::redis::get_redis_connection(&cfg.redis)
         .await
         .map_err(|_e| redis::RedisError::from((redis::ErrorKind::IoError, "redis connect")))?;
@@ -604,7 +606,8 @@ pub async fn read_timing_state(cfg: &saarctf_commons_rs::config::Config) -> Resu
     }
     Ok(TimingState {
         state: CtfState::from_name(keys[0].as_deref().unwrap_or("")).unwrap_or(CtfState::Stopped),
-        desired_state: CtfState::from_name(keys[1].as_deref().unwrap_or("")).unwrap_or(CtfState::Stopped),
+        desired_state: CtfState::from_name(keys[1].as_deref().unwrap_or(""))
+            .unwrap_or(CtfState::Stopped),
         current_tick: to_int(keys[2].as_deref()).unwrap_or(0),
         tick_start: to_int(keys[3].as_deref()),
         tick_end: to_int(keys[4].as_deref()),

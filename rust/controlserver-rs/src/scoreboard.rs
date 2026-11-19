@@ -15,7 +15,11 @@ use std::sync::Arc;
 
 pub fn is_frozen(cfg: &Config, tick: i64, public: bool) -> bool {
     public
-        && cfg.scoreboard_freeze.as_ref().and_then(|v| v.as_i64()).is_some_and(|freeze| tick > freeze)
+        && cfg
+            .scoreboard_freeze
+            .as_ref()
+            .and_then(|v| v.as_i64())
+            .is_some_and(|freeze| tick > freeze)
 }
 
 /// The python tree root (scoreboard/dist + controlserver/static live there).
@@ -45,7 +49,9 @@ impl TickInformation {
         let mut attacker_count: HashMap<i16, i64> = HashMap::new();
         let mut victim_count: HashMap<i16, i64> = HashMap::new();
         for (key, pts) in &self.team_points {
-            let Some(prev_pts) = previous_info.team_points.get(key) else { continue };
+            let Some(prev_pts) = previous_info.team_points.get(key) else {
+                continue;
+            };
             if pts.flag_captured_count > prev_pts.flag_captured_count {
                 *attacker_count.entry(key.1).or_default() += 1;
             }
@@ -93,7 +99,12 @@ impl Drop for ScoreboardLock {
         #[cfg(unix)]
         {
             // SAFETY: same descriptor we locked in acquire.
-            unsafe { libc::flock(std::os::unix::io::AsRawFd::as_raw_fd(&self.0), libc::LOCK_UN) };
+            unsafe {
+                libc::flock(
+                    std::os::unix::io::AsRawFd::as_raw_fd(&self.0),
+                    libc::LOCK_UN,
+                )
+            };
         }
     }
 }
@@ -127,7 +138,10 @@ impl Scoreboard {
             db,
             firstblood_level: calculation.first_blood.get_required_level(),
             calculation,
-            angular_build_path: python_dir().join("scoreboard").join("dist").join("scoreboard"),
+            angular_build_path: python_dir()
+                .join("scoreboard")
+                .join("dist")
+                .join("scoreboard"),
             prepared_static_files: std::sync::atomic::AtomicBool::new(false),
             teams: vec![],
             services: vec![],
@@ -138,8 +152,11 @@ impl Scoreboard {
     }
 
     async fn publish(&self, scoreboard_tick: i64) {
-        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await {
-            let _: Result<(), _> = conn.set("timing:scoreboard_tick", scoreboard_tick.to_string()).await;
+        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
+        {
+            let _: Result<(), _> = conn
+                .set("timing:scoreboard_tick", scoreboard_tick.to_string())
+                .await;
             let _: Result<(), _> = conn
                 .publish::<_, _, ()>("timing:scoreboard_tick", scoreboard_tick.to_string())
                 .await;
@@ -147,8 +164,15 @@ impl Scoreboard {
     }
 
     pub fn exists(&self, ticknumber: i64, has_started: bool) -> bool {
-        let ticknumber = if ticknumber == 0 && !has_started { -1 } else { ticknumber };
-        self.output.join("api").join(format!("scoreboard_round_{ticknumber}.json")).exists()
+        let ticknumber = if ticknumber == 0 && !has_started {
+            -1
+        } else {
+            ticknumber
+        };
+        self.output
+            .join("api")
+            .join(format!("scoreboard_round_{ticknumber}.json"))
+            .exists()
     }
 
     async fn update_team_service_list(&mut self) -> Result<(), String> {
@@ -173,7 +197,11 @@ impl Scoreboard {
         is_live: bool,
     ) -> Result<(), String> {
         self.update_team_service_list().await?;
-        let ticknumber = if ticknumber == 0 && !has_started { -1 } else { ticknumber };
+        let ticknumber = if ticknumber == 0 && !has_started {
+            -1
+        } else {
+            ticknumber
+        };
         if self.should_publish {
             self.publish(ticknumber).await;
         }
@@ -205,10 +233,17 @@ impl Scoreboard {
         self.create_logos().await?;
         self.create_team_json()?;
         let prev_info = frozen_previous_info.as_ref().unwrap_or(&previous_info);
-        self.create_json_for_tick(&info, prev_info, &last_checker_results, scoreboard_is_frozen)
+        self.create_json_for_tick(
+            &info,
+            prev_info,
+            &last_checker_results,
+            scoreboard_is_frozen,
+        )
+        .await?;
+        self.create_json_for_teams(&info, prev_info, scoreboard_is_frozen)
             .await?;
-        self.create_json_for_teams(&info, prev_info, scoreboard_is_frozen).await?;
-        self.create_service_stat_json(&info, prev_info, scoreboard_is_frozen).await?;
+        self.create_service_stat_json(&info, prev_info, scoreboard_is_frozen)
+            .await?;
 
         if is_live {
             self.update_tick_info(Some(info.ticknumber)).await?;
@@ -227,7 +262,9 @@ impl Scoreboard {
                     &self.output.join("api").join("scoreboard_current.json"),
                     json!({"scoreboard_tick": -1}),
                 );
-                old.get("scoreboard_tick").and_then(|v| v.as_i64()).unwrap_or(-1)
+                old.get("scoreboard_tick")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(-1)
             }
         };
         let mut data = json!({
@@ -241,14 +278,18 @@ impl Scoreboard {
             data["current_tick_start"] = json!(state.tick_start);
             data["current_tick_until"] = json!(state.tick_end);
         }
-        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await {
+        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
+        {
             let banned: Vec<String> = conn.smembers("network:banned").await.unwrap_or_default();
             data["banned_teams"] = json!(banned);
         }
         if is_frozen(&self.cfg, scoreboard_tick, self.public) {
             data["frozen"] = json!(true);
         }
-        write_json(&self.output.join("api").join("scoreboard_current.json"), &data)?;
+        write_json(
+            &self.output.join("api").join("scoreboard_current.json"),
+            &data,
+        )?;
         if self.should_publish {
             self.publish(scoreboard_tick).await;
         }
@@ -286,7 +327,12 @@ impl Scoreboard {
             .get_ranking_for_tick(&self.db, ticknumber)
             .await
             .map_err(|e| e.to_string())?;
-        Ok(TickInformation { ticknumber, ranking, team_points, checker_results })
+        Ok(TickInformation {
+            ticknumber,
+            ranking,
+            team_points,
+            checker_results,
+        })
     }
 
     /// `__create_json_for_tick`.
@@ -355,7 +401,10 @@ impl Scoreboard {
             }
             // frozen: rank/points from the previous tick's ranking
             let entry = if frozen {
-                let prev_rank = previous_info.ranking.iter().find(|r| r.team_id == ranking.team_id);
+                let prev_rank = previous_info
+                    .ranking
+                    .iter()
+                    .find(|r| r.team_id == ranking.team_id);
                 json!({
                     "team_id": ranking.team_id,
                     "rank": prev_rank.map(|r| r.rank).unwrap_or(ranking.rank),
@@ -388,7 +437,11 @@ impl Scoreboard {
                     .unwrap_or(std::cmp::Ordering::Equal)
             });
         }
-        let fb_tick = if frozen { previous_info.ticknumber } else { info.ticknumber };
+        let fb_tick = if frozen {
+            previous_info.ticknumber
+        } else {
+            info.ticknumber
+        };
         let first_blood_info = self.get_first_blood_info(fb_tick).await?;
         let counts = if frozen {
             (HashMap::new(), HashMap::new())
@@ -404,12 +457,19 @@ impl Scoreboard {
                     ("?".to_string(), json!("?"), json!("?"))
                 } else {
                     (
-                        if info.ticknumber >= 0 { service.name.clone() } else { "???".to_string() },
+                        if info.ticknumber >= 0 {
+                            service.name.clone()
+                        } else {
+                            "???".to_string()
+                        },
                         json!(counts.0.get(&sid).copied().unwrap_or(0)),
                         json!(counts.1.get(&sid).copied().unwrap_or(0)),
                     )
                 };
-                let fb = first_blood_info.get(&sid).cloned().unwrap_or((vec![], HashSet::new()));
+                let fb = first_blood_info
+                    .get(&sid)
+                    .cloned()
+                    .unwrap_or((vec![], HashSet::new()));
                 json!({
                     "name": name,
                     "attackers": attackers,
@@ -426,9 +486,13 @@ impl Scoreboard {
                 })
             })
             .collect();
-        let data = json!({"tick": info.ticknumber, "scoreboard": scoreboard, "services": services_json});
+        let data =
+            json!({"tick": info.ticknumber, "scoreboard": scoreboard, "services": services_json});
         write_json(
-            &self.output.join("api").join(format!("scoreboard_round_{}.json", info.ticknumber)),
+            &self
+                .output
+                .join("api")
+                .join(format!("scoreboard_round_{}.json", info.ticknumber)),
             &data,
         )
     }
@@ -442,7 +506,9 @@ impl Scoreboard {
     ) -> Result<(), String> {
         let _lock = ScoreboardLock::acquire(&self.output.join(".lock"));
         for team in &self.teams {
-            let filename = self.output.join(format!("api/scoreboard_team_{}.json", team.id));
+            let filename = self
+                .output
+                .join(format!("api/scoreboard_team_{}.json", team.id));
             team_stat_data(
                 &self.db,
                 &filename,
@@ -468,7 +534,10 @@ impl Scoreboard {
         let _lock = ScoreboardLock::acquire(&self.output.join(".lock"));
         service_stat_data(
             &self.db,
-            &self.output.join("api").join("scoreboard_service_stats.json"),
+            &self
+                .output
+                .join("api")
+                .join("scoreboard_service_stats.json"),
             &self.services,
             info,
             previous_info,
@@ -494,7 +563,10 @@ impl Scoreboard {
                 }),
             );
         }
-        write_json(&self.output.join("api").join("scoreboard_teams.json"), &Value::Object(data))
+        write_json(
+            &self.output.join("api").join("scoreboard_teams.json"),
+            &Value::Object(data),
+        )
     }
 
     /// `__create_logos`: write missing team logos from the database.
@@ -512,13 +584,16 @@ impl Scoreboard {
             if existing.contains(&fname) {
                 continue;
             }
-            let img: Option<(Vec<u8>,)> = sqlx::query_as("SELECT content FROM team_logos WHERE hash=$1")
-                .bind(logo)
-                .fetch_optional(&self.db)
-                .await
-                .map_err(|e| e.to_string())?;
+            let img: Option<(Vec<u8>,)> =
+                sqlx::query_as("SELECT content FROM team_logos WHERE hash=$1")
+                    .bind(logo)
+                    .fetch_optional(&self.db)
+                    .await
+                    .map_err(|e| e.to_string())?;
             match img {
-                Some((content,)) => std::fs::write(path.join(&fname), &content).map_err(|e| e.to_string())?,
+                Some((content,)) => {
+                    std::fs::write(path.join(&fname), &content).map_err(|e| e.to_string())?
+                }
                 None => return Err(format!("Exception: Image missing: {logo}")),
             }
         }
@@ -542,7 +617,10 @@ impl Scoreboard {
     }
 
     /// `__get_first_blood_info`: service id → (first-blood entries, payloads).
-    async fn get_first_blood_info(&self, ticknumber: i64) -> Result<HashMap<i16, (Vec<Value>, HashSet<i32>)>, String> {
+    async fn get_first_blood_info(
+        &self,
+        ticknumber: i64,
+    ) -> Result<HashMap<i16, (Vec<Value>, HashSet<i32>)>, String> {
         #[derive(sqlx::FromRow)]
         struct Fb {
             service_id: i16,
@@ -581,7 +659,9 @@ impl Scoreboard {
                 let same = last.get("name").and_then(Value::as_str) == Some(flag.name.as_str())
                     && last.get("confirmed").and_then(Value::as_bool)
                         == Some(flag.is_firstblood == self.firstblood_level)
-                    && (last.get("ts").and_then(Value::as_i64).unwrap_or(0) - flag.ts.timestamp()).abs() < 300;
+                    && (last.get("ts").and_then(Value::as_i64).unwrap_or(0) - flag.ts.timestamp())
+                        .abs()
+                        < 300;
                 if same {
                     continue;
                 }
@@ -593,7 +673,9 @@ impl Scoreboard {
 
     /// `check_scoreboard_prepared`: copy the static files + angular build.
     pub fn check_scoreboard_prepared(&self, force_recreate: bool) -> Result<(), String> {
-        if self.prepared_static_files.load(std::sync::atomic::Ordering::Relaxed)
+        if self
+            .prepared_static_files
+            .load(std::sync::atomic::Ordering::Relaxed)
             && self.output.join("api").exists()
             && !force_recreate
         {
@@ -604,17 +686,24 @@ impl Scoreboard {
         let base = python_dir();
         let static_dir = base.join("controlserver").join("static");
         if static_dir.exists() {
-            std::fs::copy(static_dir.join("css").join("index.css"), self.output.join("index.css"))
-                .map_err(|e| e.to_string())?;
+            std::fs::copy(
+                static_dir.join("css").join("index.css"),
+                self.output.join("index.css"),
+            )
+            .map_err(|e| e.to_string())?;
         }
         copy_tree(&self.angular_build_path, &self.output)?;
         if !self.public {
             let index = self.output.join("index.html");
             if let Ok(html) = std::fs::read_to_string(&index) {
-                let _ = std::fs::write(&index, html.replace("<html lang", "<html class=\"unredacted\" lang"));
+                let _ = std::fs::write(
+                    &index,
+                    html.replace("<html lang", "<html class=\"unredacted\" lang"),
+                );
             }
         }
-        self.prepared_static_files.store(true, std::sync::atomic::Ordering::Relaxed);
+        self.prepared_static_files
+            .store(true, std::sync::atomic::Ordering::Relaxed);
         Ok(())
     }
 
@@ -630,8 +719,10 @@ impl Scoreboard {
         let info = self.fetch_data(tick).await?;
         let previous_info = self.fetch_data(tick - 1).await?;
         let frozen = is_frozen(&self.cfg, tick, self.public);
-        self.create_json_for_teams(&info, &previous_info, frozen).await?;
-        self.create_service_stat_json(&info, &previous_info, frozen).await?;
+        self.create_json_for_teams(&info, &previous_info, frozen)
+            .await?;
+        self.create_service_stat_json(&info, &previous_info, frozen)
+            .await?;
         self.update_tick_info(Some(tick)).await?;
         Ok(())
     }
@@ -674,7 +765,13 @@ async fn team_stat_data(
 ) -> Result<(), String> {
     let servicenames: Vec<String> = services
         .iter()
-        .map(|s| if info.ticknumber >= 0 { s.name.clone() } else { "???".to_string() })
+        .map(|s| {
+            if info.ticknumber >= 0 {
+                s.name.clone()
+            } else {
+                "???".to_string()
+            }
+        })
         .collect();
     let mut data = read_json(
         path,
@@ -685,12 +782,13 @@ async fn team_stat_data(
     }
     if info.ticknumber >= 0 {
         let rows_ok = data["services"] == json!(servicenames)
-            && data["points"].as_array().is_some_and(|r| r.len() == services.len())
             && data["points"]
                 .as_array()
-                .unwrap()
-                .iter()
-                .all(|row| row.as_array().is_some_and(|r| r.len() >= info.ticknumber.max(0) as usize));
+                .is_some_and(|r| r.len() == services.len())
+            && data["points"].as_array().unwrap().iter().all(|row| {
+                row.as_array()
+                    .is_some_and(|r| r.len() >= info.ticknumber.max(0) as usize)
+            });
         if rows_ok {
             // fast path: update this tick only
             for (i, service) in services.iter().enumerate() {
@@ -723,8 +821,13 @@ async fn team_stat_data(
                     .unwrap_or(0)
                     <= info.ticknumber as usize;
             if needs_rebuild {
-                data["points"] =
-                    json!(vec![Value::Array(vec![json!(0.0); (info.ticknumber + 1) as usize]); services.len()]);
+                data["points"] = json!(vec![
+                    Value::Array(vec![
+                        json!(0.0);
+                        (info.ticknumber + 1) as usize
+                    ]);
+                    services.len()
+                ]);
             }
             if info.ticknumber > 0 {
                 data["services"] = json!(servicenames);
@@ -763,7 +866,13 @@ async fn service_stat_data(
 ) -> Result<(), String> {
     let servicenames: Vec<String> = services
         .iter()
-        .map(|s| if info.ticknumber >= 0 { s.name.clone() } else { "???".to_string() })
+        .map(|s| {
+            if info.ticknumber >= 0 {
+                s.name.clone()
+            } else {
+                "???".to_string()
+            }
+        })
         .collect();
     let empty_row = || json!({"a": 0, "v": 0});
     let mut data = read_json(
@@ -775,12 +884,13 @@ async fn service_stat_data(
     }
     if info.ticknumber >= 0 {
         let rows_ok = data["services"] == json!(servicenames)
-            && data["stats"].as_array().is_some_and(|r| r.len() == services.len())
             && data["stats"]
                 .as_array()
-                .unwrap()
-                .iter()
-                .all(|row| row.as_array().is_some_and(|r| r.len() >= info.ticknumber.max(0) as usize));
+                .is_some_and(|r| r.len() == services.len())
+            && data["stats"].as_array().unwrap().iter().all(|row| {
+                row.as_array()
+                    .is_some_and(|r| r.len() >= info.ticknumber.max(0) as usize)
+            });
         if rows_ok {
             let frozen = scoreboard_freeze && is_frozen(cfg, info.ticknumber, true);
             let counts = if frozen {
@@ -816,8 +926,13 @@ async fn service_stat_data(
                     .unwrap_or(0)
                     <= info.ticknumber as usize;
             if needs_rebuild {
-                data["stats"] =
-                    json!(vec![Value::Array(vec![empty_row(); (info.ticknumber + 1) as usize]); services.len()]);
+                data["stats"] = json!(vec![
+                    Value::Array(vec![
+                        empty_row();
+                        (info.ticknumber + 1) as usize
+                    ]);
+                    services.len()
+                ]);
             }
             if info.ticknumber > 0 {
                 data["services"] = json!(servicenames);
@@ -900,7 +1015,9 @@ pub async fn run_scoreboard_generator(cfg: &Config, db: PgPool) -> Result<(), St
             scoreboard.update_team_info().await?;
             let mut current: i64 = -1;
             if !scoreboard.exists(0, false) {
-                scoreboard.create_scoreboard(0, false, prepare_until == 0).await?;
+                scoreboard
+                    .create_scoreboard(0, false, prepare_until == 0)
+                    .await?;
             }
             while current <= prepare_until {
                 if !scoreboard.exists(current, has_started) {
@@ -911,7 +1028,12 @@ pub async fn run_scoreboard_generator(cfg: &Config, db: PgPool) -> Result<(), St
                 }
                 current += 1;
             }
-            tracing::info!("Scoreboard {}/{} prepared up to tick {}", i + 1, total, current - 1);
+            tracing::info!(
+                "Scoreboard {}/{} prepared up to tick {}",
+                i + 1,
+                total,
+                current - 1
+            );
         }
     }
 
@@ -938,7 +1060,11 @@ pub async fn run_scoreboard_generator(cfg: &Config, db: PgPool) -> Result<(), St
             if msg.get_channel_name() != "timing:scoreboard_tick" {
                 continue;
             }
-            let prepare_until: i64 = match msg.get_payload::<String>().ok().and_then(|s| s.parse().ok()) {
+            let prepare_until: i64 = match msg
+                .get_payload::<String>()
+                .ok()
+                .and_then(|s| s.parse().ok())
+            {
                 Some(v) => v,
                 None => continue,
             };
@@ -949,8 +1075,18 @@ pub async fn run_scoreboard_generator(cfg: &Config, db: PgPool) -> Result<(), St
             while current <= prepare_until {
                 tracing::info!("- Create scoreboard for tick {current} ...");
                 for scoreboard in scoreboards.iter_mut() {
-                    if let Err(e) = scoreboard.create_scoreboard(current, has_started, true).await {
-                        let _ = logger::log(&scoreboard.db, "scoring", "Scoreboard failed", &e, models::LOG_ERROR).await;
+                    if let Err(e) = scoreboard
+                        .create_scoreboard(current, has_started, true)
+                        .await
+                    {
+                        let _ = logger::log(
+                            &scoreboard.db,
+                            "scoring",
+                            "Scoreboard failed",
+                            &e,
+                            models::LOG_ERROR,
+                        )
+                        .await;
                         tracing::error!("Scoreboard failed: {e} (daemon)");
                     }
                 }

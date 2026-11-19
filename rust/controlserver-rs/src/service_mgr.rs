@@ -27,7 +27,9 @@ impl Default for ServiceRepoManager {
 
 impl ServiceRepoManager {
     pub fn new() -> ServiceRepoManager {
-        ServiceRepoManager { messages: Vec::new() }
+        ServiceRepoManager {
+            messages: Vec::new(),
+        }
     }
 
     fn report(&mut self, msg: String) {
@@ -116,8 +118,11 @@ impl ServiceRepoManager {
             Ok(())
         })();
         if is_unclean {
-            run(&["git", "stash", "apply"], dir.parent().unwrap_or(Path::new(".")))
-                .map_err(|e| e.to_string())?;
+            run(
+                &["git", "stash", "apply"],
+                dir.parent().unwrap_or(Path::new(".")),
+            )
+            .map_err(|e| e.to_string())?;
         }
         result?;
         self.report(format!("Pulled {}", dir.to_string_lossy()));
@@ -139,7 +144,10 @@ impl ServiceRepoManager {
         for dir in dirs {
             match ServiceConfig::from_file(dir.join("checkers").join("config.toml")) {
                 Ok(c) => results.push((dir, c)),
-                Err(_) => self.report(format!("Not a service (or no config): {}", dir.to_string_lossy())),
+                Err(_) => self.report(format!(
+                    "Not a service (or no config): {}",
+                    dir.to_string_lossy()
+                )),
             }
         }
         results
@@ -152,15 +160,19 @@ impl ServiceRepoManager {
         db: &PgPool,
         checker_script_dir: &str,
     ) -> Result<(String, Option<String>, bool), String> {
-        let (package, is_new) = db_filesystem::move_folder_to_package(db, Path::new(checker_script_dir)).await?;
+        let (package, is_new) =
+            db_filesystem::move_folder_to_package(db, Path::new(checker_script_dir)).await?;
         let base = Path::new(checker_script_dir)
             .parent()
             .unwrap_or(Path::new("."))
             .to_path_buf();
-        let fnames: Vec<PathBuf> = [base.join("dependencies.sh"), base.join("checker-requirements.txt")]
-            .into_iter()
-            .filter(|f| f.exists())
-            .collect();
+        let fnames: Vec<PathBuf> = [
+            base.join("dependencies.sh"),
+            base.join("checker-requirements.txt"),
+        ]
+        .into_iter()
+        .filter(|f| f.exists())
+        .collect();
         let setup_package = if fnames.is_empty() {
             None
         } else {

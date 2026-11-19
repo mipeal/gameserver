@@ -38,7 +38,9 @@ fn py_json_pairs(infos: &[(String, String)]) -> String {
 /// Recursive `os.walk(top, followlinks=True)` — yields (root, subdirs, files)
 /// with the ignored names filtered out of `subdirs` (so they're not descended).
 fn walk(top: &Path, out: &mut Vec<(PathBuf, Vec<PathBuf>, Vec<PathBuf>)>) {
-    let Ok(entries) = std::fs::read_dir(top) else { return };
+    let Ok(entries) = std::fs::read_dir(top) else {
+        return;
+    };
     let mut subdirs = Vec::new();
     let mut files = Vec::new();
     for entry in entries.flatten() {
@@ -123,22 +125,25 @@ async fn finish_package(
 ) -> Result<(String, bool), String> {
     file_information.sort_by(|a, b| a.0.cmp(&b.0));
     let package = md5_hex(py_json_pairs(&file_information).as_bytes());
-    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM checker_filesystem WHERE package = $1")
-        .bind(&package)
-        .fetch_one(db)
-        .await
-        .map_err(|e| e.to_string())?;
+    let count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM checker_filesystem WHERE package = $1")
+            .bind(&package)
+            .fetch_one(db)
+            .await
+            .map_err(|e| e.to_string())?;
     if count > 0 {
         return Ok((package, false));
     }
     for (path, file_hash) in filesystem {
-        sqlx::query("INSERT INTO checker_filesystem (package, path, file_hash) VALUES ($1, $2, $3)")
-            .bind(&package)
-            .bind(&path)
-            .bind(file_hash)
-            .execute(db)
-            .await
-            .map_err(|e| e.to_string())?;
+        sqlx::query(
+            "INSERT INTO checker_filesystem (package, path, file_hash) VALUES ($1, $2, $3)",
+        )
+        .bind(&package)
+        .bind(&path)
+        .bind(file_hash)
+        .execute(db)
+        .await
+        .map_err(|e| e.to_string())?;
     }
     Ok((package, true))
 }
@@ -181,12 +186,13 @@ pub async fn load_package_to_folder(
     if let Some(lfs) = lfs_path {
         std::fs::create_dir_all(lfs).map_err(|e| e.to_string())?;
     }
-    let rows: Vec<(String, Option<String>)> =
-        sqlx::query_as("SELECT path, file_hash FROM checker_filesystem WHERE package = $1 ORDER BY path")
-            .bind(package)
-            .fetch_all(db)
-            .await
-            .map_err(|e| e.to_string())?;
+    let rows: Vec<(String, Option<String>)> = sqlx::query_as(
+        "SELECT path, file_hash FROM checker_filesystem WHERE package = $1 ORDER BY path",
+    )
+    .bind(package)
+    .fetch_all(db)
+    .await
+    .map_err(|e| e.to_string())?;
     for (path, file_hash) in rows {
         let target = base.join(&path);
         match file_hash {

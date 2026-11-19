@@ -5,8 +5,8 @@
 use crate::dispatcher::Dispatcher;
 use crate::logger::{self, log_result_of_execution};
 use crate::models::{self, LOG_IMPORTANT};
-use crate::scoring::ScoringCalculation;
 use crate::scoreboard::Scoreboard;
+use crate::scoring::ScoringCalculation;
 use crate::timer::CtfEvents;
 use chrono::Utc;
 use saarctf_commons_rs::config::Config;
@@ -19,7 +19,14 @@ pub struct LogCtfEvents(pub PgPool);
 #[async_trait::async_trait]
 impl CtfEvents for LogCtfEvents {
     async fn on_start_tick(&self, tick: i64, _ts: chrono::DateTime<Utc>) {
-        let _ = logger::log(&self.0, "timer", &format!("New tick: {tick}"), "", LOG_IMPORTANT).await;
+        let _ = logger::log(
+            &self.0,
+            "timer",
+            &format!("New tick: {tick}"),
+            "",
+            LOG_IMPORTANT,
+        )
+        .await;
     }
     async fn on_start_ctf(&self) {
         let _ = logger::log(&self.0, "timer", "CTF starts", "", LOG_IMPORTANT).await;
@@ -76,7 +83,11 @@ pub struct DeferredCtfEvents {
 impl DeferredCtfEvents {
     /// `__init__`: default_scoreboards(scoring, publish=True).
     pub async fn new(cfg: &Config, db: PgPool) -> Result<DeferredCtfEvents, String> {
-        let scoring = Arc::new(ScoringCalculation::new(&db, &cfg.scoring).await.map_err(|e| e.to_string())?);
+        let scoring = Arc::new(
+            ScoringCalculation::new(&db, &cfg.scoring)
+                .await
+                .map_err(|e| e.to_string())?,
+        );
         let mut scoreboards = Vec::new();
         if !cfg.scoreboard_path.is_empty() {
             scoreboards.push(Arc::new(tokio::sync::Mutex::new(Scoreboard::new(
@@ -129,7 +140,8 @@ impl CtfEvents for DeferredCtfEvents {
         let db = self.db.clone();
         let cfg = self.cfg.clone();
         tokio::spawn(async move {
-            let mut redis = match saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await {
+            let mut redis = match saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+            {
                 Ok(r) => r,
                 Err(e) => {
                     tracing::error!("Couldn't start checker scripts: redis {e}");
@@ -144,19 +156,32 @@ impl CtfEvents for DeferredCtfEvents {
                 }
             };
             let t = std::time::Instant::now();
-            match dispatcher.dispatch_checker_scripts(&db, &mut redis, &timing, tick).await {
+            match dispatcher
+                .dispatch_checker_scripts(&db, &mut redis, &timing, tick)
+                .await
+            {
                 Ok(()) => {
                     let _ = logger::log(
                         &db,
                         "dispatcher",
-                        &format!("Checker scripts dispatched, took {:.3} sec", t.elapsed().as_secs_f64()),
+                        &format!(
+                            "Checker scripts dispatched, took {:.3} sec",
+                            t.elapsed().as_secs_f64()
+                        ),
                         "",
                         models::LOG_INFO,
                     )
                     .await;
                 }
                 Err(e) => {
-                    let _ = logger::log(&db, "dispatcher", &format!("Couldn't start checker scripts: {e}"), &format!("{e:?}"), models::LOG_ERROR).await;
+                    let _ = logger::log(
+                        &db,
+                        "dispatcher",
+                        &format!("Couldn't start checker scripts: {e}"),
+                        &format!("{e:?}"),
+                        models::LOG_ERROR,
+                    )
+                    .await;
                 }
             }
         });
@@ -173,7 +198,9 @@ impl CtfEvents for DeferredCtfEvents {
             let dispatcher = self.dispatcher.clone();
             let cfg = self.cfg.clone();
             tokio::spawn(async move {
-                let Ok(mut redis) = saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await else {
+                let Ok(mut redis) =
+                    saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+                else {
                     return;
                 };
                 if let Err(e) = dispatcher.revoke_checker_scripts(&mut redis, tick).await {
@@ -187,23 +214,38 @@ impl CtfEvents for DeferredCtfEvents {
             let db = self.db.clone();
             let cfg = self.cfg.clone();
             let _ = tokio::spawn(async move {
-                let Ok(mut redis) = saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await else {
+                let Ok(mut redis) =
+                    saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+                else {
                     return;
                 };
                 let t = std::time::Instant::now();
-                match dispatcher.collect_checker_results(&db, &mut redis, tick).await {
+                match dispatcher
+                    .collect_checker_results(&db, &mut redis, tick)
+                    .await
+                {
                     Ok(()) => {
                         let _ = logger::log(
                             &db,
                             "dispatcher",
-                            &format!("Collected checker script results, took {:.3} sec", t.elapsed().as_secs_f64()),
+                            &format!(
+                                "Collected checker script results, took {:.3} sec",
+                                t.elapsed().as_secs_f64()
+                            ),
                             "",
                             models::LOG_INFO,
                         )
                         .await;
                     }
                     Err(e) => {
-                        let _ = logger::log(&db, "dispatcher", &format!("Couldn't collect checker script results: {e}"), &format!("{e:?}"), models::LOG_ERROR).await;
+                        let _ = logger::log(
+                            &db,
+                            "dispatcher",
+                            &format!("Couldn't collect checker script results: {e}"),
+                            &format!("{e:?}"),
+                            models::LOG_ERROR,
+                        )
+                        .await;
                     }
                 }
             })
@@ -219,14 +261,24 @@ impl CtfEvents for DeferredCtfEvents {
                     let _ = logger::log(
                         &self.db,
                         "scoring",
-                        &format!("Ranking calculated, took {:.3} sec", t.elapsed().as_secs_f64()),
+                        &format!(
+                            "Ranking calculated, took {:.3} sec",
+                            t.elapsed().as_secs_f64()
+                        ),
                         "",
                         models::LOG_INFO,
                     )
                     .await;
                 }
                 Err(e) => {
-                    let _ = logger::log(&self.db, "scoring", &format!("Ranking calculation failed: {e}"), &e, models::LOG_ERROR).await;
+                    let _ = logger::log(
+                        &self.db,
+                        "scoring",
+                        &format!("Ranking calculation failed: {e}"),
+                        &e,
+                        models::LOG_ERROR,
+                    )
+                    .await;
                 }
             }
         }

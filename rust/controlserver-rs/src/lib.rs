@@ -4,6 +4,7 @@
 pub mod db_filesystem;
 pub mod dispatcher;
 pub mod endpoints;
+pub mod eno;
 pub mod events;
 pub mod flag_id_file;
 pub mod logger;

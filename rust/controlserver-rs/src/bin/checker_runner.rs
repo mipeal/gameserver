@@ -12,7 +12,11 @@ async fn main() {
     let concurrency = std::env::var("SAARCTF_RUNNER_CONCURRENCY")
         .ok()
         .and_then(|v| v.parse().ok())
-        .unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4));
+        .unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(|n| n.get())
+                .unwrap_or(4)
+        });
     worker::run_worker(&cfg, db, concurrency)
         .await
         .expect("worker");

@@ -18,10 +18,12 @@ pub struct CheckerRunOutput {
     pub data: Option<Value>,
 }
 
-const SEPARATOR: &str = "\n\n------------------------------------------------------------------------";
+const SEPARATOR: &str =
+    "\n\n------------------------------------------------------------------------";
 
 /// `run_checkerscript`: debug specials + the subprocess run with the soft limit
-/// as timeout (celery soft_time_limit, ADR-015).
+/// as timeout (celery soft_time_limit, ADR-015). (`eno:*` runner specs are
+/// dispatched natively in worker.rs — checker_runner/runners/eno.py port.)
 pub async fn run_checker(task: &TaskMessage, python_dir: &std::path::Path) -> CheckerRunOutput {
     let mut script = task.checker_script.clone();
     if script == "crashtest" {
@@ -192,8 +194,8 @@ mod tests {
             soft_limit: 30,
             deliver_at: None,
             kind: None,
-        args: None,
-    };
+            args: None,
+        };
         let out = run_checker(&task, std::path::Path::new(".")).await;
         assert_eq!(out.status, "CRASHED");
         assert!(out.output.unwrap().contains("Invalid script!"));
