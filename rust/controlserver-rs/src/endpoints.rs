@@ -78,7 +78,28 @@ fn router(state: AppState) -> Router {
         .route("/packages/test", post(packages_test))
         .route("/scripts/service_update", post(scripts_service_update))
         .route("/metrics/write", post(metrics_write))
+        // admin GUI JSON APIs (Leptos SPA data plane)
+        .route("/api/overview/status", get(api_overview_status))
+        .route("/api/teams/list", get(api_teams_list))
+        .route("/api/teams/view/{id}", get(api_teams_view))
+        .route("/api/services/list", get(api_services_list))
+        .route("/api/flags/analyze", get(api_flags_analyze))
+        .route("/api/checker_results", get(api_checker_results))
+        .route("/api/checker_status", get(api_checker_status))
+        .route(
+            "/api/checker_status/overview",
+            get(api_checker_status_overview),
+        )
+        .route("/api/patches", get(api_patches_list))
+        .route("/api/patches/run", post(api_patches_run))
+        .route("/api/patches/create", post(api_patches_create))
+        .route("/api/patches/publish", post(api_patches_publish))
+        .route("/api/patches/upload", post(api_patches_upload))
+        .route("/api/patches/hosts", post(api_patches_hosts))
+        .route("/patches/ansible/{fname}", get(patches_ansible_file))
         .with_state(shared)
+        // SPA static files (built by rust/admin-gui-rs); unknown paths → index.html
+        .fallback_service(spa_fallback_service())
 }
 
 // ---- /api/teams, /api/services -----------------------------------------------
@@ -1404,4 +1425,1213 @@ async fn scripts_service_update(State(state): State<Arc<AppState>>) -> (StatusCo
             (StatusCode::INTERNAL_SERVER_ERROR, Json(json!(messages)))
         }
     }
+}
+
+// ---- admin GUI JSON APIs (consumed by the Leptos SPA; replaces the HTML pages) ----
+
+/// `/` frontpage checks: timer + missing scripts + scoreboard state.
+async fn api_overview_status(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let missing_scripts: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM services WHERE checker_script_dir IS NOT NULL AND package IS NULL ORDER BY name",
+    )
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let mut paths: Vec<std::path::PathBuf> =
+        vec![std::path::PathBuf::from(&state.cfg.scoreboard_path)];
+    if let Some(p) = &state.cfg.scoreboard_path_internal {
+        if !p.is_empty() {
+            paths.push(std::path::PathBuf::from(p));
+        }
+    }
+    let writable = |p: &std::path::Path| {
+        std::fs::metadata(p)
+            .map(|m| !m.permissions().readonly())
+            .unwrap_or(false)
+    };
+    let missing_scoreboard = paths
+        .iter()
+        .any(|p| !p.join("api").join("scoreboard_current.json").exists());
+    let unwriteable_scoreboard = !missing_scoreboard
+        && paths.iter().any(|p| {
+            !writable(p)
+                || !writable(&p.join("api"))
+                || (p.join("index.css").exists() && !writable(&p.join("index.css")))
+        });
+    let teams: Vec<(i32, String)> = sqlx::query_as("SELECT id, name FROM teams ORDER BY id")
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?;
+    let t = state.timer.lock().await;
+    Ok(Json(json!({
+        "state": t.t.state.name(),
+        "desiredState": t.t.desired_state.name(),
+        "currentRound": t.t.current_tick,
+        "missing_scripts": missing_scripts.join(", "),
+        "missing_scoreboard": missing_scoreboard,
+        "unwriteable_scoreboard": unwriteable_scoreboard,
+        "teams": teams.iter().map(|(id, name)| json!({"id": id, "name": name})).collect::<Vec<_>>(),
+        "flower_ajax_url": state.cfg.flower_ajax_url,
+        "scoreboard_path": state.cfg.scoreboard_path,
+    })))
+}
+
+const TEAM_TRAFFIC_COLS: [&str; 8] = [
+    "down_teams_bytes",
+    "down_teams_syns",
+    "down_game_bytes",
+    "down_game_syns",
+    "up_teams_bytes",
+    "up_teams_syns",
+    "up_game_bytes",
+    "up_game_syns",
+];
+
+/// Teams page list: teams joined with their latest traffic stats, sortable and filterable.
+async fn api_teams_list(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let order = params
+        .get("sort")
+        .cloned()
+        .unwrap_or_else(|| "name".to_string());
+    let dir = params
+        .get("dir")
+        .cloned()
+        .unwrap_or_else(|| "asc".to_string());
+    let desc = dir == "desc";
+    let order_sql = if !order.contains('.') {
+        let cols: &[&str] = match order.as_str() {
+            "id" => &["teams.id"],
+            "name" => &["teams.name"],
+            "affiliation" => &["teams.affiliation"],
+            "website" => &["teams.website"],
+            "vpn_connected" => &[
+                "teams.vpn_connected",
+                "teams.vpn2_connected",
+                "teams.wg_vulnbox_connected",
+            ],
+            other => return Err(internal(format!("Invalid order: {other}"))),
+        };
+        cols.iter()
+            .map(|c| format!("{c}{}", if desc { " DESC" } else { "" }))
+            .collect::<Vec<_>>()
+            .join(", ")
+    } else if let Some(stats_key) = order.strip_prefix("traffic.") {
+        // traffic.<stat> or traffic.sum.<suffix>[.<prefix>]
+        let expr = if let Some(pattern) = stats_key.strip_prefix("sum.") {
+            let (suffix, prefix) = match pattern.split_once('.') {
+                Some((s, p)) => (s, p),
+                None => (pattern, ""),
+            };
+            let cols: Vec<&str> = TEAM_TRAFFIC_COLS
+                .iter()
+                .copied()
+                .filter(|c| c.ends_with(suffix) && c.starts_with(prefix))
+                .collect();
+            if cols.len() <= 1 {
+                return Err(internal("Invalid order"));
+            }
+            cols.iter()
+                .map(|c| format!("COALESCE(ts.{c}, 0)"))
+                .collect::<Vec<_>>()
+                .join(" + ")
+        } else {
+            if !TEAM_TRAFFIC_COLS.contains(&stats_key) {
+                return Err(internal("Invalid order"));
+            }
+            format!("ts.{stats_key}")
+        };
+        format!("{expr}{}", if desc { " DESC" } else { "" })
+    } else {
+        return Err(internal(format!("Invalid order: {order}")));
+    };
+    let mut filter = String::new();
+    if let Some(levels) = params.get("filter_level") {
+        let mut parts: Vec<String> = Vec::new();
+        for level in levels.split('|') {
+            match level {
+                "online" => parts.push(
+                    "(teams.vpn_connected = TRUE OR teams.vpn2_connected = TRUE OR teams.wg_vulnbox_connected = TRUE)".to_string(),
+                ),
+                "ever online" => parts.push("teams.vpn_last_connect IS NOT NULL".to_string()),
+                "offline" => parts.push(
+                    "(teams.vpn_connected = FALSE AND teams.vpn2_connected = FALSE AND teams.wg_vulnbox_connected = FALSE)".to_string(),
+                ),
+                _ => {}
+            }
+        }
+        if !parts.is_empty() {
+            filter = format!("WHERE ({})", parts.join(" OR "));
+        }
+    }
+    #[derive(sqlx::FromRow)]
+    struct Row {
+        id: i32,
+        name: String,
+        website: Option<String>,
+        affiliation: Option<String>,
+        logo: Option<String>,
+        vpn_connected: bool,
+        vpn2_connected: bool,
+        wg_vulnbox_connected: bool,
+        vpn_last_connect: Option<chrono::DateTime<chrono::Utc>>,
+        time: Option<chrono::DateTime<chrono::Utc>>,
+        down_teams_bytes: Option<i64>,
+        down_teams_syns: Option<i64>,
+        down_game_bytes: Option<i64>,
+        down_game_syns: Option<i64>,
+        up_teams_bytes: Option<i64>,
+        up_teams_syns: Option<i64>,
+        up_game_bytes: Option<i64>,
+        up_game_syns: Option<i64>,
+    }
+    let (current_stats_time,): (Option<chrono::DateTime<chrono::Utc>>,) =
+        sqlx::query_as("SELECT max(time) FROM team_traffic_stats")
+            .fetch_one(&state.db)
+            .await
+            .map_err(internal)?;
+    let current_stats_time = current_stats_time.unwrap_or_else(chrono::Utc::now);
+    let rows: Vec<Row> = sqlx::query_as::<_, Row>(&format!(
+        "SELECT teams.id, teams.name, teams.website, teams.affiliation, teams.logo, \
+         teams.vpn_connected, teams.vpn2_connected, teams.wg_vulnbox_connected, teams.vpn_last_connect, \
+         ts.time, ts.down_teams_bytes, ts.down_teams_syns, ts.down_game_bytes, ts.down_game_syns, \
+         ts.up_teams_bytes, ts.up_teams_syns, ts.up_game_bytes, ts.up_game_syns \
+         FROM teams LEFT JOIN team_traffic_stats ts \
+         ON teams.id = ts.team_id AND ts.time = $1 {filter} ORDER BY {order_sql}"
+    ))
+    .bind(current_stats_time)
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let per_page = 1000;
+    let total_pages =
+        (rows.len() / per_page + usize::from(!rows.len().is_multiple_of(per_page))).max(1);
+    let page: usize = params
+        .get("page")
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(1)
+        .max(1);
+    let page = page.min(total_pages);
+    Ok(Json(json!({
+        "current_stats_timestamp": current_stats_time.timestamp(),
+        "current_stats_timestamp_start": (current_stats_time - chrono::Duration::seconds(60)).timestamp(),
+        "pages": total_pages,
+        "teams": rows[(page - 1) * per_page..page * per_page].iter().map(|t| json!({
+            "id": t.id, "name": t.name, "website": t.website, "affiliation": t.affiliation,
+            "logo": t.logo, "vpn_connected": t.vpn_connected, "vpn2_connected": t.vpn2_connected,
+            "wg_vulnbox_connected": t.wg_vulnbox_connected,
+            "vpn_last_connect": t.vpn_last_connect.map(|d| d.timestamp()),
+            "traffic": {
+                "time": t.time.map(|d| d.timestamp()),
+                "down_teams_bytes": t.down_teams_bytes.unwrap_or(0), "down_teams_syns": t.down_teams_syns.unwrap_or(0),
+                "down_game_bytes": t.down_game_bytes.unwrap_or(0), "down_game_syns": t.down_game_syns.unwrap_or(0),
+                "up_teams_bytes": t.up_teams_bytes.unwrap_or(0), "up_teams_syns": t.up_teams_syns.unwrap_or(0),
+                "up_game_bytes": t.up_game_bytes.unwrap_or(0), "up_game_syns": t.up_game_syns.unwrap_or(0),
+            },
+        })).collect::<Vec<_>>(),
+    })))
+}
+
+/// Team detail: team + last 60 traffic samples (graph data pre-summed like the template).
+type TeamDetailRow = (
+    i32,
+    String,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    bool,
+    bool,
+    bool,
+    Option<chrono::DateTime<chrono::Utc>>,
+    Option<chrono::DateTime<chrono::Utc>>,
+);
+type ServiceListRow = (
+    i32,
+    String,
+    i32,
+    bool,
+    String,
+    Option<String>,
+    String,
+    Option<String>,
+);
+type FirstbloodRow = (
+    i16,
+    i16,
+    i16,
+    i32,
+    i16,
+    i16,
+    i16,
+    chrono::DateTime<chrono::Utc>,
+);
+type CheckerResultRow = (
+    i32,
+    i16,
+    i16,
+    i16,
+    String,
+    Option<String>,
+    Option<f64>,
+    Option<bool>,
+    Option<chrono::DateTime<chrono::Utc>>,
+);
+
+async fn api_teams_view(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let team: Option<TeamDetailRow> = sqlx::query_as(
+        "SELECT id, name, website, affiliation, vulnbox_ip, logo, vpn_connected, vpn2_connected, \
+             wg_vulnbox_connected, vpn_last_connect, vpn_last_disconnect FROM teams WHERE id = $1",
+    )
+    .bind(id)
+    .fetch_optional(&state.db)
+    .await
+    .map_err(internal)?;
+    #[derive(sqlx::FromRow)]
+    struct Ts {
+        time: chrono::DateTime<chrono::Utc>,
+        down_teams_bytes: i64,
+        down_teams_syns: i64,
+        down_game_bytes: i64,
+        down_game_syns: i64,
+        up_teams_bytes: i64,
+        up_teams_syns: i64,
+        up_game_bytes: i64,
+        up_game_syns: i64,
+    }
+    let stats: Vec<Ts> = sqlx::query_as::<_, Ts>(
+        "SELECT time, down_teams_bytes, down_teams_syns, down_game_bytes, down_game_syns, \
+         up_teams_bytes, up_teams_syns, up_game_bytes, up_game_syns FROM team_traffic_stats \
+         WHERE team_id = $1 ORDER BY time DESC LIMIT 60",
+    )
+    .bind(id)
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let Some((
+        id,
+        name,
+        website,
+        affiliation,
+        ip,
+        logo,
+        vpn_connected,
+        vpn2_connected,
+        wg_vulnbox_connected,
+        vpn_last_connect,
+        vpn_last_disconnect,
+    )) = team
+    else {
+        return Err((StatusCode::NOT_FOUND, "Team not found".to_string()));
+    };
+    Ok(Json(json!({
+        "id": id, "name": name, "website": website, "affiliation": affiliation,
+        "ip": ip, "logo": logo, "vpn_connected": vpn_connected, "vpn2_connected": vpn2_connected,
+        "wg_vulnbox_connected": wg_vulnbox_connected,
+        "vpn_last_connect": vpn_last_connect.map(|d| d.to_rfc3339()),
+        "vpn_last_disconnect": vpn_last_disconnect.map(|d| d.to_rfc3339()),
+        "labels": stats.iter().map(|s| s.time.timestamp() as f64).collect::<Vec<_>>(),
+        "graph1": [
+            {"label": "team's download", "data": stats.iter().map(|s| s.down_teams_bytes + s.down_game_bytes).collect::<Vec<_>>()},
+            {"label": "team's upload", "data": stats.iter().map(|s| s.up_teams_bytes + s.up_game_bytes).collect::<Vec<_>>()},
+        ],
+        "graph2": [
+            {"label": "team to team", "data": stats.iter().map(|s| s.down_teams_bytes + s.up_teams_bytes).collect::<Vec<_>>()},
+            {"label": "total", "data": stats.iter().map(|s| s.down_game_bytes + s.up_game_bytes).collect::<Vec<_>>()},
+        ],
+        "graph3": [
+            {"label": "team to team", "data": stats.iter().map(|s| s.down_teams_syns + s.up_teams_syns).collect::<Vec<_>>()},
+            {"label": "total", "data": stats.iter().map(|s| s.down_game_syns + s.up_game_syns).collect::<Vec<_>>()},
+        ],
+    })))
+}
+
+/// Services page: services + first-blood flags (deduped to max level per payload
+/// unless `firstbloods=all`).
+async fn api_services_list(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let services: Vec<ServiceListRow> =
+        sqlx::query_as(
+            "SELECT id, name, checker_timeout, checker_enabled, checker_runner, checker_script_dir, checker_script, package \
+             FROM services ORDER BY id",
+        )
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?;
+    let teams: Vec<(i32, String)> = sqlx::query_as("SELECT id, name FROM teams ORDER BY id")
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?;
+    let flags: Vec<FirstbloodRow> = sqlx::query_as(
+        "SELECT service_id, team_id, tick_issued, payload, tick_submitted, is_firstblood, id, ts \
+         FROM submitted_flags WHERE is_firstblood > 0 \
+         ORDER BY ts, tick_submitted, id",
+    )
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let all_firstbloods = params
+        .get("firstbloods")
+        .map(|v| v == "all")
+        .unwrap_or(false);
+    let mut first_bloods: std::collections::HashMap<i16, Vec<Value>> =
+        std::collections::HashMap::new();
+    // level-per-payload dedup, like the template data prep
+    if !all_firstbloods {
+        let mut level_per_payload: std::collections::HashMap<(i16, i32), i16> =
+            std::collections::HashMap::new();
+        for (_, team_id, _, payload, _, is_firstblood, _, _) in &flags {
+            level_per_payload
+                .entry((*team_id, *payload))
+                .and_modify(|l| *l = (*l).max(*is_firstblood))
+                .or_insert(*is_firstblood);
+        }
+        for flag in &flags {
+            let (service_id, team_id, tick_issued, payload, tick_submitted, is_firstblood, id, ts) =
+                flag;
+            if level_per_payload.get(&(*team_id, *payload)) == Some(is_firstblood) {
+                first_bloods.entry(*service_id).or_default().push(json!({
+                    "team_id": team_id, "tick_issued": tick_issued, "payload": payload,
+                    "tick_submitted": tick_submitted, "is_firstblood": is_firstblood, "id": id,
+                    "ts": ts.to_rfc3339(),
+                }));
+            }
+        }
+    } else {
+        for flag in &flags {
+            let (service_id, team_id, tick_issued, payload, tick_submitted, is_firstblood, id, ts) =
+                flag;
+            first_bloods.entry(*service_id).or_default().push(json!({
+                "team_id": team_id, "tick_issued": tick_issued, "payload": payload,
+                "tick_submitted": tick_submitted, "is_firstblood": is_firstblood, "id": id,
+                "ts": ts.to_rfc3339(),
+            }));
+        }
+    }
+    Ok(Json(json!({
+        "services": services.iter().map(|(id, name, timeout, enabled, runner, script_dir, script, package)| json!({
+            "id": id, "name": name, "checker_timeout": timeout, "checker_enabled": enabled,
+            "checker_runner": runner, "checker_script_dir": script_dir, "checker_script": script,
+            "package": package,
+            "first_bloods": first_bloods.get(&(*id as i16)).cloned().unwrap_or_default(),
+        })).collect::<Vec<_>>(),
+        "teams": teams.iter().map(|(id, name)| json!({"id": id, "name": name})).collect::<Vec<_>>(),
+    })))
+}
+
+/// Flags page: decode + verify a flag, list its submissions and checker results.
+/// Never returns the signing key material — only derived MACs of the submitted flag.
+async fn api_flags_analyze(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    use base64::Engine;
+    use hmac::Mac;
+    let flag = params
+        .get("flag")
+        .cloned()
+        .unwrap_or_default()
+        .trim()
+        .to_string();
+    let flag_inner_len = (8 + 16) * 4 / 3; // gamelib MAC_LENGTH = 16
+    let flag_regex = format!(
+        r"{}\{{[A-Za-z0-9-_]{{{flag_inner_len}}}\}}",
+        state.cfg.flag_prefix
+    );
+    let demo = |team: i64, tick: i64| -> String {
+        gamelib_rs::port::get_flag_with_key(state.cfg.secret_flag_key.clone(), 1, team, tick, 0)
+            .unwrap_or_default()
+    };
+    let demo_flags = vec![
+        json!({"title": "status check for teams", "expect": "[OK] You are team 65535", "flag": demo(0xFFFE, -1)}),
+        json!({"title": "status check for monitoring", "expect": "[OK] Status check passed.", "flag": demo(0xFFFF, -1)}),
+    ];
+    if flag.is_empty() {
+        return Ok(Json(
+            json!({"flag": Value::Null, "flag_regex": flag_regex, "demo_flags": demo_flags}),
+        ));
+    }
+    let fail = |err: String| json!({"flag": flag, "valid": false, "err": err, "flag_regex": flag_regex, "demo_flags": demo_flags});
+    let prefix = format!("{}{{", state.cfg.flag_prefix);
+    let inner = match flag.strip_prefix(&prefix).and_then(|f| f.strip_suffix('}')) {
+        Some(inner) if inner.len() == flag_inner_len => inner.to_string(),
+        _ => return Ok(Json(fail(format!("{prefix}...}}")))),
+    };
+    let data = match base64::engine::general_purpose::STANDARD
+        .decode(inner.replace('-', "+").replace('_', "/"))
+    {
+        Ok(d) => d,
+        Err(_) => return Ok(Json(fail("Invalid flag format".to_string()))),
+    };
+    if data.len() < 8 {
+        return Ok(Json(fail("Too short".to_string())));
+    }
+    let unpack_h = |i: usize| u16::from_le_bytes([data[i], data[i + 1]]) as i64;
+    let stored_tick = unpack_h(0);
+    let teamid = unpack_h(2);
+    let serviceid = unpack_h(4);
+    let payload = unpack_h(6);
+    let mac = hex::encode(&data[8..]);
+    let mut mac_ctx =
+        <hmac::Hmac<sha2::Sha256> as hmac::Mac>::new_from_slice(&state.cfg.secret_flag_key)
+            .map_err(|e| internal(e.to_string()))?;
+    mac_ctx.update(&data[..8]);
+    let real_mac = hex::encode(&mac_ctx.finalize().into_bytes()[..16]);
+    let team: Option<(i32, String)> = sqlx::query_as("SELECT id, name FROM teams WHERE id = $1")
+        .bind(teamid)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(internal)?;
+    let service: Option<(i32, String)> =
+        sqlx::query_as("SELECT id, name FROM services WHERE id = $1")
+            .bind(serviceid)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(internal)?;
+    let current_tick = state.timer.lock().await.t.current_tick;
+    let valid_except_mac = stored_tick <= current_tick && team.is_some() && service.is_some();
+    let valid = valid_except_mac && mac == real_mac;
+    let repaired_flag = if valid_except_mac && !valid {
+        let mut fixed = data[..8].to_vec();
+        fixed
+            .extend_from_slice(&hex::decode(&real_mac).map_err(|e| internal(e.to_string()))?[..16]);
+        Some(format!(
+            "{}{{{}}}",
+            state.cfg.flag_prefix,
+            base64::engine::general_purpose::STANDARD
+                .encode(fixed)
+                .replace('+', "-")
+                .replace('/', "_")
+        ))
+    } else {
+        None
+    };
+    let submissions: Vec<Value> = if valid {
+        sqlx::query_as::<_, (i16, i16, i16, i32, i16, chrono::DateTime<chrono::Utc>)>(
+            "SELECT submitted_by, team_id, service_id, payload, tick_submitted, ts FROM submitted_flags \
+             WHERE tick_issued = $1 AND team_id = $2 AND service_id = $3 AND payload = $4 ORDER BY ts",
+        )
+        .bind(stored_tick as i16)
+        .bind(teamid as i16)
+        .bind(serviceid as i16)
+        .bind(payload as i32)
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?
+        .into_iter()
+        .map(|(submitted_by, team_id, service_id, payload, tick_submitted, ts)| {
+            json!({"submitted_by": submitted_by, "team_id": team_id, "service_id": service_id,
+                   "payload": payload, "tick_submitted": tick_submitted, "ts": ts.to_rfc3339()})
+        })
+        .collect()
+    } else {
+        vec![]
+    };
+    async fn result_json(db: &sqlx::PgPool, teamid: i64, serviceid: i64, tick: i64) -> Value {
+        sqlx::query_as::<_, (i16, i16, i16, String, Option<String>, Option<f64>, Option<chrono::DateTime<chrono::Utc>>)>(
+            "SELECT tick, team_id, service_id, status, message, time, finished FROM checker_results \
+             WHERE tick = $1 AND team_id = $2 AND service_id = $3 LIMIT 1",
+        )
+        .bind(tick as i16)
+        .bind(teamid as i16)
+        .bind(serviceid as i16)
+        .fetch_optional(db)
+        .await
+        .ok()
+        .flatten()
+        .map(|(tick, team_id, service_id, status, message, time, finished)| {
+            json!({"tick": tick, "team_id": team_id, "service_id": service_id, "status": status,
+                   "message": message, "time": time, "finished": finished.map(|d| d.to_rfc3339())})
+        })
+        .unwrap_or(Value::Null)
+    }
+    Ok(Json(json!({
+        "flag": flag, "flag_regex": flag_regex, "demo_flags": demo_flags,
+        "stored_tick": stored_tick, "teamid": teamid, "serviceid": serviceid, "payload": payload,
+        "mac": mac, "real_mac": real_mac,
+        "team": team.as_ref().map(|(id, name)| json!({"id": id, "name": name})),
+        "service": service.as_ref().map(|(id, name)| json!({"id": id, "name": name})),
+        "current_round": current_tick,
+        "valid": valid, "valid_except_mac": valid_except_mac, "repaired_flag": repaired_flag,
+        "submissions": submissions,
+        "result_store": result_json(&state.db, teamid, serviceid, stored_tick).await,
+        "result_retrieve": result_json(&state.db, teamid, serviceid, stored_tick + 1).await,
+    })))
+}
+
+/// Checker results page: paginated list with filters + teams/services for the dropdowns.
+async fn api_checker_results(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let order = params
+        .get("sort")
+        .cloned()
+        .unwrap_or_else(|| "id".to_string());
+    let dir = params
+        .get("dir")
+        .cloned()
+        .unwrap_or_else(|| "desc".to_string());
+    const RESULT_COLS: [&str; 9] = [
+        "id",
+        "tick",
+        "team_id",
+        "service_id",
+        "status",
+        "message",
+        "time",
+        "run_over_time",
+        "finished",
+    ];
+    if !RESULT_COLS.contains(&order.as_str()) {
+        return Err(internal(format!("Invalid order: {order}")));
+    }
+    let mut where_parts: Vec<String> = Vec::new();
+    if let Some(f) = params.get("filter_status") {
+        let statuses: Vec<String> = f
+            .split('|')
+            .filter(|s| !s.is_empty() && s.chars().all(|c| c.is_ascii_alphanumeric()))
+            .map(|s| format!("'{s}'"))
+            .collect();
+        if !statuses.is_empty() {
+            where_parts.push(format!("status IN ({})", statuses.join(",")));
+        }
+    }
+    if let Some(f) = params
+        .get("filter_team")
+        .and_then(|v| v.parse::<i32>().ok())
+        .filter(|v| *v != 0)
+    {
+        where_parts.push(format!("team_id = {f}"));
+    }
+    if let Some(f) = params
+        .get("filter_service")
+        .and_then(|v| v.parse::<i32>().ok())
+        .filter(|v| *v != 0)
+    {
+        where_parts.push(format!("service_id = {f}"));
+    }
+    if let Some(f) = params
+        .get("filter_tick")
+        .and_then(|v| v.parse::<i32>().ok())
+        .filter(|v| *v != 0)
+    {
+        where_parts.push(format!("tick = {f}"));
+    }
+    let where_sql = if where_parts.is_empty() {
+        String::new()
+    } else {
+        format!("WHERE {}", where_parts.join(" AND "))
+    };
+    let (count,): (i64,) =
+        sqlx::query_as(&format!("SELECT count(*) FROM checker_results {where_sql}"))
+            .fetch_one(&state.db)
+            .await
+            .map_err(internal)?;
+    let per_page = 50;
+    let total_pages = (((count as usize) / per_page)
+        + usize::from(count > 0 && count % per_page as i64 == 0))
+    .max(1);
+    let page: usize = params
+        .get("page")
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(1)
+        .max(1)
+        .min(total_pages);
+    let rows: Vec<CheckerResultRow> = sqlx::query_as(&format!(
+        "SELECT id, tick, team_id, service_id, status, message, time, run_over_time, finished \
+             FROM checker_results {where_sql} ORDER BY {order} {} LIMIT {per_page} OFFSET {}",
+        if dir == "desc" { "DESC" } else { "ASC" },
+        (page - 1) * per_page
+    ))
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let teams: Vec<(i32, String)> = sqlx::query_as("SELECT id, name FROM teams ORDER BY name")
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?;
+    let services: Vec<(i32, String)> =
+        sqlx::query_as("SELECT id, name FROM services ORDER BY name")
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?;
+    Ok(Json(json!({
+        "pages": total_pages, "count": count,
+        "results": rows.iter().map(|(id, tick, team_id, service_id, status, message, time, run_over_time, finished)| json!({
+            "id": id, "tick": tick, "team_id": team_id, "service_id": service_id, "status": status,
+            "message": message, "time": time, "run_over_time": run_over_time,
+            "finished": finished.map(|d| d.to_rfc3339()),
+        })).collect::<Vec<_>>(),
+        "teams": teams.iter().map(|(id, name)| json!({"id": id, "name": name})).collect::<Vec<_>>(),
+        "services": services.iter().map(|(id, name)| json!({"id": id, "name": name})).collect::<Vec<_>>(),
+        "states": ["SUCCESS", "FLAGMISSING", "MUMBLE", "OFFLINE", "RECOVERING", "TIMEOUT", "REVOKED", "CRASHED", "PENDING"],
+    })))
+}
+
+/// Checker status for one tick: per-service stats + finish-time histogram buckets.
+async fn api_checker_status(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let current_tick = state.timer.lock().await.t.current_tick;
+    let tick: i64 = params
+        .get("tick")
+        .and_then(|v| v.parse().ok())
+        .filter(|v| *v != 0)
+        .unwrap_or(current_tick);
+    let (count_finished,): (i64,) = sqlx::query_as(
+        "SELECT count(*) FROM checker_results WHERE tick = $1 AND status != 'PENDING' AND status != 'REVOKED'",
+    )
+    .bind(tick as i16)
+    .fetch_one(&state.db)
+    .await
+    .map_err(internal)?;
+    let combinations = tick_combinations(&state.cfg.redis, tick).await?;
+    let services: Vec<(i32, String)> =
+        sqlx::query_as("SELECT id, name FROM services ORDER BY name")
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?;
+    if combinations.is_empty() {
+        return Err((
+            StatusCode::NOT_FOUND,
+            format!("Round {tick} has not yet been dispatched."),
+        ));
+    }
+    #[derive(sqlx::FromRow)]
+    struct Res {
+        service_id: i16,
+        status: String,
+        time: Option<f64>,
+        finished: Option<chrono::DateTime<chrono::Utc>>,
+        run_over_time: Option<bool>,
+    }
+    let results: Vec<Res> = sqlx::query_as::<_, Res>(
+        "SELECT service_id, status, time, finished, run_over_time FROM checker_results \
+         WHERE tick = $1 ORDER BY finished",
+    )
+    .bind(tick as i16)
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        .await
+        .map_err(internal)?;
+    let tick_start: i64 = redis::cmd("GET")
+        .arg(format!("round:{tick}:start"))
+        .query_async::<Option<String>>(&mut redis)
+        .await
+        .map_err(internal)?
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(0);
+    let tick_end: i64 = redis::cmd("GET")
+        .arg(format!("round:{tick}:end"))
+        .query_async::<Option<String>>(&mut redis)
+        .await
+        .map_err(internal)?
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(0);
+    let mut stats: std::collections::HashMap<i16, Value> = std::collections::HashMap::new();
+    let mut total_status: std::collections::HashMap<String, i64> = std::collections::HashMap::new();
+    let mut total_time = 0.0f64;
+    let mut total_time_count = 0i64;
+    let mut no_finished_timestamp = 0i64;
+    let mut first_finished: Option<i64> = None;
+    let mut last_finished: Option<i64> = None;
+    let dispatched: std::collections::HashMap<i16, i64> = combinations.iter().fold(
+        std::collections::HashMap::new(),
+        |mut m, &(_, service_id, _)| {
+            *m.entry(service_id as i16).or_insert(0) += 1;
+            m
+        },
+    );
+    for r in &results {
+        let s = stats.entry(r.service_id).or_insert_with(|| {
+            json!({"dispatched": 0, "results": 0, "finished": 0, "time": 0.0, "time_count": 0, "toolate": 0, "status": {}})
+        });
+        s["dispatched"] = json!(dispatched.get(&r.service_id).copied().unwrap_or(0));
+        s["results"] = json!(s["results"].as_i64().unwrap_or(0) + 1);
+        if r.status != "REVOKED" && r.status != "PENDING" {
+            s["finished"] = json!(s["finished"].as_i64().unwrap_or(0) + 1);
+        }
+        if let Some(t) = r.time {
+            s["time"] = json!(s["time"].as_f64().unwrap_or(0.0) + t);
+            s["time_count"] = json!(s["time_count"].as_i64().unwrap_or(0) + 1);
+            total_time += t;
+            total_time_count += 1;
+        }
+        let entry = s["status"]
+            .as_object_mut()
+            .unwrap()
+            .entry(r.status.clone())
+            .or_insert(json!(0));
+        *entry = json!(entry.as_i64().unwrap_or(0) + 1);
+        *total_status.entry(r.status.clone()).or_insert(0) += 1;
+        if r.run_over_time == Some(true) {
+            s["toolate"] = json!(s["toolate"].as_i64().unwrap_or(0) + 1);
+        }
+        if let Some(f) = r.finished {
+            let ts = f.timestamp();
+            first_finished = Some(first_finished.map_or(ts, |m: i64| m.min(ts)));
+            last_finished = Some(last_finished.map_or(ts, |m: i64| m.max(ts)));
+        } else {
+            no_finished_timestamp += 1;
+        }
+    }
+    // pending = dispatched - results (like the template data prep)
+    let mut service_stats: Vec<Value> = Vec::new();
+    for (id, name) in &services {
+        let s = stats.entry(*id as i16).or_insert_with(|| {
+            json!({"dispatched": 0, "results": 0, "finished": 0, "time": 0.0, "time_count": 0, "toolate": 0, "status": {}})
+        });
+        let pending = s["dispatched"].as_i64().unwrap_or(0) - s["results"].as_i64().unwrap_or(0);
+        if pending > 0 {
+            let entry = s["status"]
+                .as_object_mut()
+                .unwrap()
+                .entry("PENDING".to_string())
+                .or_insert(json!(0));
+            *entry = json!(entry.as_i64().unwrap_or(0) + pending);
+            *total_status.entry("PENDING".to_string()).or_insert(0) += pending;
+        }
+        service_stats.push(json!({
+            "service_id": id, "name": name,
+            "dispatched": s["dispatched"], "results": s["results"], "finished": s["finished"],
+            "time": s["time"], "time_count": s["time_count"], "toolate": s["toolate"],
+            "status": s["status"],
+        }));
+    }
+    // finished-per-bucket histogram (5s buckets), cumulative like the template
+    let bucketsize = 5;
+    let mut t = tick_start.min(first_finished.unwrap_or(tick_start));
+    let mut hist: Vec<Value> = Vec::new();
+    if t != 0 || first_finished.is_some() {
+        let mut cum: std::collections::HashMap<String, i64> = std::collections::HashMap::new();
+        hist.push(json!({"t": t, "status": cum}));
+        for r in &results {
+            if let Some(f) = r.finished {
+                while f.timestamp() >= t {
+                    t += bucketsize;
+                    hist.push(json!({"t": t, "status": cum}));
+                }
+                let key = if r.run_over_time == Some(true) {
+                    "TOOLATE".to_string()
+                } else {
+                    r.status.clone()
+                };
+                *cum.entry(key).or_insert(0) += 1;
+                if let Some(last) = hist.last_mut() {
+                    last["status"] = json!(cum);
+                }
+            }
+        }
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0) as i64;
+        while t < tick_end && t < now {
+            t += bucketsize;
+            hist.push(json!({"t": t, "status": cum}));
+        }
+    }
+    Ok(Json(json!({
+        "tick": tick, "count_finished": count_finished, "count_dispatched": combinations.len(),
+        "server_time": std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0),
+        "tick_start": tick_start, "tick_end": tick_end,
+        "services": service_stats,
+        "total_status": total_status, "total_time": total_time, "total_time_count": total_time_count,
+        "total_toolate": service_stats.iter().map(|s| s["toolate"].as_i64().unwrap_or(0)).sum::<i64>(),
+        "finished_per_tick": hist, "no_finished_timestamp": no_finished_timestamp,
+        "first_finished": first_finished, "last_finished": last_finished,
+    })))
+}
+
+/// `DispatcherFactory.build(...).get_tick_combinations(tick)` — the stored dispatch order.
+async fn tick_combinations(
+    redis_cfg: &serde_json::Value,
+    tick: i64,
+) -> Result<Vec<(i64, i64, i64)>, (StatusCode, String)> {
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(redis_cfg)
+        .await
+        .map_err(internal)?;
+    let order_json: Option<String> = redis::cmd("GET")
+        .arg(format!("dispatcher:order:{tick}"))
+        .query_async(&mut redis)
+        .await
+        .map_err(internal)?;
+    Ok(match order_json {
+        Some(json) => serde_json::from_str(&json).map_err(internal)?,
+        None => vec![],
+    })
+}
+
+/// Checker status overview: per-tick task counts for the last 30 ticks (or all).
+async fn api_checker_status_overview(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let current_tick = state.timer.lock().await.t.current_tick;
+    let all = false; // /checker_status/overview (the /all variant stays reachable via query below)
+    let first_tick = if all { 1 } else { (current_tick - 30).max(1) };
+    let redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        .await
+        .map_err(internal)?;
+    #[derive(sqlx::FromRow)]
+    struct OkRow {
+        tick: i16,
+        count: i64,
+        over_time: Option<i64>,
+    }
+    let results_ok: Vec<OkRow> = sqlx::query_as::<_, OkRow>(
+        "SELECT tick, count(id), sum(run_over_time::int) FROM checker_results \
+         WHERE tick >= $1 AND tick <= $2 AND status IN ('SUCCESS','FLAGMISSING','MUMBLE','OFFLINE','RECOVERING') GROUP BY tick",
+    )
+    .bind(first_tick as i16)
+    .bind(current_tick as i16)
+    .fetch_all(&state.db)
+    .await
+    .map_err(internal)?;
+    async fn count_by_status(
+        db: &sqlx::PgPool,
+        first_tick: i64,
+        current_tick: i64,
+        status: &str,
+    ) -> Result<std::collections::HashMap<i16, i64>, (StatusCode, String)> {
+        Ok(sqlx::query_as::<_, (i16, i64)>(
+            "SELECT tick, count(id) FROM checker_results WHERE tick >= $1 AND tick <= $2 AND status = $3 GROUP BY tick",
+        )
+        .bind(first_tick as i16)
+        .bind(current_tick as i16)
+        .bind(status)
+        .fetch_all(db)
+        .await
+        .map_err(internal)?
+        .into_iter()
+        .collect())
+    }
+    let results_warn = count_by_status(&state.db, first_tick, current_tick, "TIMEOUT").await?;
+    let results_error = count_by_status(&state.db, first_tick, current_tick, "CRASHED").await?;
+    let results_revoked = count_by_status(&state.db, first_tick, current_tick, "REVOKED").await?;
+    let last_finished: std::collections::HashMap<i16, chrono::DateTime<chrono::Utc>> =
+        sqlx::query_as(
+            "SELECT tick, max(finished) FROM checker_results WHERE tick >= $1 AND tick <= $2 GROUP BY tick",
+        )
+        .bind(first_tick as i16)
+        .bind(current_tick as i16)
+        .fetch_all(&state.db)
+        .await
+        .map_err(internal)?
+        .into_iter()
+        .collect();
+    let mut ticks: Vec<Value> = Vec::new();
+    for tick in first_tick..=current_tick {
+        let get = |key: String| {
+            let mut redis = redis.clone();
+            async move {
+                redis::cmd("GET")
+                    .arg(key)
+                    .query_async::<Option<String>>(&mut redis)
+                    .await
+                    .ok()
+                    .flatten()
+                    .and_then(|s| s.parse().ok())
+                    .unwrap_or(0)
+            }
+        };
+        let start = get(format!("round:{tick}:start")).await;
+        let end = get(format!("round:{tick}:end")).await;
+        let time = get(format!("round:{tick}:time")).await;
+        let dispatched = tick_combinations(&state.cfg.redis, tick)
+            .await
+            .map(|c| c.len())
+            .unwrap_or(0);
+        let ok_row = results_ok.iter().find(|r| r.tick as i64 == tick);
+        let (tasks_ok, tasks_toolate) = match ok_row {
+            Some(r) => (r.count - r.over_time.unwrap_or(0), r.over_time.unwrap_or(0)),
+            None => (0, 0),
+        };
+        ticks.push(json!({
+            "number": tick,
+            "start": start,
+            "end": end,
+            "time": time,
+            "dispatched": dispatched,
+            "tasks_ok": tasks_ok,
+            "tasks_warn": results_warn.get(&(tick as i16)).copied().unwrap_or(0),
+            "tasks_error": results_error.get(&(tick as i16)).copied().unwrap_or(0),
+            "tasks_revoked": results_revoked.get(&(tick as i16)).copied().unwrap_or(0),
+            "tasks_toolate": tasks_toolate,
+            "last_finished": last_finished.get(&(tick as i16)).map(|d| d.timestamp()),
+        }));
+    }
+    Ok(Json(json!({"first_tick": first_tick, "ticks": ticks})))
+}
+
+// ---- patches page (uses the shared patch_utils from saarctf_commons_rs) ----
+
+use saarctf_commons_rs::patch_utils::PatchUtils;
+
+const ANSIBLE_COMMAND: [&str; 2] = ["ansible-playbook", "-f"];
+
+async fn api_patches_list(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let path = std::path::Path::new(&state.cfg.patches_path);
+    let _ = std::fs::create_dir_all(path);
+    if let Some(public) = &state.cfg.patches_public_path {
+        let _ = std::fs::create_dir_all(public);
+    }
+    let public_files: Vec<String> = state
+        .cfg
+        .patches_public_path
+        .as_ref()
+        .and_then(|p| std::fs::read_dir(p).ok())
+        .map(|rd| {
+            rd.filter_map(|e| e.ok())
+                .map(|e| e.file_name().to_string_lossy().to_string())
+                .collect()
+        })
+        .unwrap_or_default();
+    let mut files: Vec<String> = std::fs::read_dir(path)
+        .map(|rd| {
+            rd.filter_map(|e| e.ok())
+                .map(|e| e.file_name().to_string_lossy().to_string())
+                .filter(|f| f != "hosts.yaml" && f != "hosts_nop.yaml")
+                .collect()
+        })
+        .unwrap_or_default();
+    files.sort();
+    Ok(Json(json!({
+        "patches_path": state.cfg.patches_path,
+        "patches_public_path": state.cfg.patches_public_path,
+        "files": files.iter().map(|f| {
+            let url = state.cfg.patches_url.as_ref().filter(|_| public_files.contains(f))
+                .map(|u| format!("{u}/{f}"));
+            json!({"name": f, "url": url})
+        }).collect::<Vec<_>>(),
+    })))
+}
+
+/// Run a patch via ansible (90s timeout, like the form on the HTML page).
+async fn api_patches_run(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<Value>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    use std::process::Stdio;
+    let is_test = body.get("target").and_then(|v| v.as_str()) == Some("test");
+    let fname = body
+        .get("filename")
+        .and_then(|v| v.as_str())
+        .filter(|f| !f.contains("..") && !f.contains('/'))
+        .ok_or_else(|| internal("Invalid filename"))?
+        .to_string();
+    let patch_path = std::path::Path::new(&state.cfg.patches_path).join(&fname);
+    if !patch_path.exists() {
+        return Err(internal("Invalid filename"));
+    }
+    let _ = PatchUtils::new(&state.cfg, patch_path, vec![])
+        .create_ansible_hosts_template(&state.db)
+        .await;
+    let mut command = tokio::process::Command::new(ANSIBLE_COMMAND[0]);
+    command
+        .args([ANSIBLE_COMMAND[1], "-f"])
+        .arg("32")
+        .arg(&fname)
+        .arg("-i")
+        .arg(if is_test {
+            "hosts_nop.yaml"
+        } else {
+            "hosts.yaml"
+        })
+        .current_dir(&state.cfg.patches_path)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    let ts = std::time::Instant::now();
+    let (success, output) = match command.output().await {
+        Ok(out) => {
+            let mut text = format!(
+                "> {} {}\n",
+                ANSIBLE_COMMAND.join(" "),
+                [
+                    fname.as_str(),
+                    "-i",
+                    if is_test {
+                        "hosts_nop.yaml"
+                    } else {
+                        "hosts.yaml"
+                    },
+                    "-f",
+                    "32"
+                ]
+                .join(" ")
+            );
+            text.push_str(&String::from_utf8_lossy(&out.stdout));
+            text.push_str(&String::from_utf8_lossy(&out.stderr));
+            (out.status.success(), text)
+        }
+        Err(e) => (false, format!("> {e}")),
+    };
+    Ok(Json(json!({
+        "output": output, "success": success, "runtime": ts.elapsed().as_secs(),
+    })))
+}
+
+const BASH_DEFAULT_CONTENT: &str =
+    "#!/usr/bin/env bash\nset -e\n\n# TODO code your patch\n\necho \"DONE\"\n";
+const PYTHON_DEFAULT_CONTENT: &str = "#!/usr/bin/env python3\n\ndef readfile(fname):\n    with open(fname, 'r') as f:\n        return f.read()\n        \ndef writefile(fname, content):\n    with open(fname, 'w') as f:\n        f.write(fname, content)\n        \n# TODO code your patch\n\nprint('DONE')\n";
+
+async fn api_patches_create(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<Value>,
+) -> Result<&'static str, (StatusCode, String)> {
+    let mut fname = body
+        .get("filename")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| internal("Invalid filename"))?
+        .to_string();
+    let scripttype = body
+        .get("type")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| internal("Invalid type"))?;
+    let fname_ok = fname.len() >= 3
+        && fname
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-'));
+    if !fname_ok {
+        return Err(internal("Invalid filename"));
+    }
+    let content = match scripttype {
+        "bash" => {
+            if !fname.ends_with(".sh") {
+                fname += ".sh";
+            }
+            BASH_DEFAULT_CONTENT
+        }
+        "python" => {
+            if !fname.ends_with(".py") {
+                fname += ".py";
+            }
+            PYTHON_DEFAULT_CONTENT
+        }
+        _ => return Err(internal("Invalid type")),
+    };
+    let full = std::path::Path::new(&state.cfg.patches_path).join(&fname);
+    if !full.exists() {
+        std::fs::write(&full, content).map_err(internal)?;
+    }
+    let p = PatchUtils::new(&state.cfg, full, vec![]);
+    p.create_ansible_template().map_err(internal)?;
+    p.create_ansible_hosts_template(&state.db)
+        .await
+        .map_err(internal)?;
+    Ok("OK")
+}
+
+async fn api_patches_publish(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<Value>,
+) -> Result<&'static str, (StatusCode, String)> {
+    let fname = body
+        .get("filename")
+        .and_then(|v| v.as_str())
+        .filter(|f| !f.contains("..") && !f.contains('/'))
+        .ok_or_else(|| internal("Invalid filename"))?;
+    let p = PatchUtils::new(&state.cfg, std::path::PathBuf::from(fname), vec![]);
+    p.publish_patch_files().map_err(internal)?;
+    Ok("OK")
+}
+
+/// Raw-body upload: `POST /api/patches/upload?filename=...`.
+async fn api_patches_upload(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+    body: axum::body::Bytes,
+) -> Result<&'static str, (StatusCode, String)> {
+    let mut filename = params
+        .get("filename")
+        .filter(|f| !f.contains("..") && !f.contains('/') && f.len() >= 3)
+        .ok_or_else(|| (StatusCode::BAD_REQUEST, "Invalid filename".to_string()))?
+        .to_string();
+    // secure_filename(): keep only [A-Za-z0-9_.-], strip leading dots/dashes
+    filename = filename
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-'))
+        .collect::<String>()
+        .trim_start_matches(['.', '-'])
+        .to_string();
+    if filename.len() < 3 {
+        return Err((StatusCode::BAD_REQUEST, "Invalid filename".to_string()));
+    }
+    std::fs::write(
+        std::path::Path::new(&state.cfg.patches_path).join(&filename),
+        &body,
+    )
+    .map_err(internal)?;
+    Ok("OK")
+}
+
+async fn api_patches_hosts(
+    State(state): State<Arc<AppState>>,
+) -> Result<&'static str, (StatusCode, String)> {
+    PatchUtils::new(&state.cfg, std::path::PathBuf::new(), vec![])
+        .create_ansible_hosts_template(&state.db)
+        .await
+        .map_err(internal)?;
+    Ok("OK")
+}
+
+/// `/patches/ansible/<fname>` — download the generated ansible files.
+async fn patches_ansible_file(
+    State(state): State<Arc<AppState>>,
+    Path(fname): Path<String>,
+) -> Result<impl axum::response::IntoResponse, (StatusCode, &'static str)> {
+    let (content, name): (String, &str) = match fname.as_str() {
+        "hosts.yaml" => (
+            PatchUtils::new(&state.cfg, std::path::PathBuf::new(), vec![])
+                .get_ansible_hosts_templates(&state.db)
+                .await
+                .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db error"))?
+                .0,
+            "hosts.yaml",
+        ),
+        "hosts_nop.yaml" => (
+            PatchUtils::new(&state.cfg, std::path::PathBuf::new(), vec![])
+                .get_ansible_hosts_templates(&state.db)
+                .await
+                .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "db error"))?
+                .1,
+            "hosts_nop.yaml",
+        ),
+        "ansible_template.yaml" => (PatchUtils::ansible_base_template(), "ansible_template.yaml"),
+        _ => return Err((StatusCode::NOT_FOUND, "Invalid filename")),
+    };
+    Ok((
+        [
+            (
+                "Content-disposition",
+                format!("attachment; filename={name}"),
+            ),
+            ("Content-type", "text/vnd.yaml".to_string()),
+        ],
+        content,
+    ))
+}
+
+/// SPA asset serving: `ADMIN_GUI_DIST` (default `../admin-gui-rs/dist`).
+/// Files are served as-is; everything else falls back to index.html.
+fn spa_fallback_service() -> tower_http::services::ServeDir<tower_http::services::ServeFile> {
+    let dist =
+        std::env::var("ADMIN_GUI_DIST").unwrap_or_else(|_| "../admin-gui-rs/dist".to_string());
+    tower_http::services::ServeDir::new(&dist).fallback(tower_http::services::ServeFile::new(
+        std::path::Path::new(&dist).join("index.html"),
+    ))
 }

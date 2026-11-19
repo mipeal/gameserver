@@ -1,8 +1,7 @@
 //! Port of `controlserver/patch_utils.py` — ansible playbook/inventory
 //! generation and patch publishing for the vulnbox patch scripts.
 
-use controlserver_rs::models::Team;
-use saarctf_commons_rs::config::Config;
+use crate::config::Config;
 use sqlx::PgPool;
 use std::path::{Path, PathBuf};
 
@@ -146,8 +145,8 @@ impl PatchUtils {
         &self,
         db: &PgPool,
     ) -> Result<(String, String), String> {
-        let online_teams: Vec<Team> = sqlx::query_as(
-            "SELECT * FROM teams \
+        let online_teams: Vec<(i32, String)> = sqlx::query_as(
+            "SELECT id, name FROM teams \
              WHERE vpn_connected OR vpn2_connected OR wg_vulnbox_connected ORDER BY id",
         )
         .fetch_all(db)
@@ -156,11 +155,11 @@ impl PatchUtils {
         let mut tmpl = ANSIBLE_HOSTS_TEMPLATE.to_string();
         let mut tmpl2 = ANSIBLE_HOSTS_TEMPLATE.to_string();
         let nop = self.cfg.scoring.nop_team_id.as_i64().unwrap_or(-1);
-        for team in online_teams {
-            let ip = self.cfg.network.team_id_to_vulnbox_ip(team.id as i64);
-            tmpl += &format!("\n        {ip}:  # {}", team.name);
-            if team.id as i64 == nop {
-                tmpl2 += &format!("\n        {ip}:  # {}", team.name);
+        for (team_id, team_name) in online_teams {
+            let ip = self.cfg.network.team_id_to_vulnbox_ip(team_id as i64);
+            tmpl += &format!("\n        {ip}:  # {team_name}");
+            if team_id as i64 == nop {
+                tmpl2 += &format!("\n        {ip}:  # {team_name}");
             }
         }
         Ok((tmpl, tmpl2))

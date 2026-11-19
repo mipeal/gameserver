@@ -25,6 +25,7 @@ async-trait = "0.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["fmt", "json", "chrono"] }
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
+tower-http = { version = "0.6", features = ["fs"] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

@@ -5,6 +5,7 @@
 pub mod config;
 pub mod metrics;
 pub mod network;
+pub mod patch_utils;
 pub mod redis;
 pub mod retry;
 

@@ -89,3 +89,22 @@ Deferred out of wave 1 (none block operation):
 Wireguard-sync note: netlink (pyroute2) → `ip`/`wg` CLI subprocesses, Linux-only at
 runtime; pubkey comparison derives the expected public key from the private key
 (wg never returns private keys). Untestable on macOS beyond unit tests.
+
+## Wave 5 complete (2026-11-19)
+
+Leptos CSR SPA (`rust/admin-gui-rs`) replacing all Python admin HTML pages, served by
+controlserver-rs via `tower-http` ServeDir fallback (`ADMIN_GUI_DIST` env, default
+`../admin-gui-rs/dist`). Build: `cd rust/admin-gui-rs && trunk build --release`
+(rustup toolchain first — Homebrew rust lacks wasm32 std).
+
+- 15 JSON admin endpoints in endpoints.rs (overview/status, teams list/view,
+  services+first-bloods, flags/analyze, checker_results, checker_status(+overview),
+  patches list/run/create/publish/upload/hosts + ansible downloads) — server shapes
+  mirror the Python HTML pages' data prep 1:1 (ADR-004).
+- SPA pages: Overview (status/timing/vpn/logs, set_vpn + set_timing), Teams list +
+  team graphs, Services, Checker Status + overview, Checker Results + view, Flags
+  analyzer, Patches (run/test/publish/create/upload via FileReader), Packages.
+- patch_utils moved to saarctf-commons-rs (broke scripts→controlserver dep cycle);
+  shared `python_dir()` helper in commons (`SAARCTF_PYTHON_DIR` env).
+- Patches upload uses raw body + `?filename=` (internal contract with our SPA, not
+  Python multipart) — flagged divergence.

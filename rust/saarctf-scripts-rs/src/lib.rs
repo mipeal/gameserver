@@ -6,7 +6,7 @@ use controlserver_rs::load_config;
 use saarctf_commons_rs::config::Config;
 use sqlx::PgPool;
 
-pub mod patch_utils;
+pub use saarctf_commons_rs::patch_utils;
 pub mod vpnlib;
 
 /// Script bootstrap: logging, config, `set_clientname('script-<name>')`,
