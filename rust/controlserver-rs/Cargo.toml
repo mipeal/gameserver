@@ -1,0 +1,35 @@
+[package]
+name = "controlserver-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+gamelib-rs = { path = "../gamelib-rs" }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "migrate"] }
+redis = { version = "0.32", features = ["connection-manager", "tokio-comp"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "signal", "process", "io-util"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+uuid = { version = "1", features = ["v4"] }
+async-trait = "0.1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "json", "chrono"] }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[lib]
+name = "controlserver_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "controlserver"
+path = "src/bin/controlserver.rs"
+
+[[bin]]
+name = "checker_runner"
+path = "src/bin/checker_runner.rs"

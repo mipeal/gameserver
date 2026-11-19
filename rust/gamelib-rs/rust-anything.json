@@ -1,0 +1,248 @@
+{
+ "schema": "rust-anything/bridge@1",
+ "root": "/tmp/recenv",
+ "unit": "gamelib/",
+ "language": "python",
+ "kind": "pyo3",
+ "crate_name": "gamelib-rs",
+ "exports": [
+  {
+   "name": "is_generatable_flag_id",
+   "file": "gamelib/flag_ids.py",
+   "line": 95,
+   "params": [
+    {
+     "name": "flag_id_type",
+     "ts_type": "string",
+     "optional": false,
+     "rest": false
+    }
+   ],
+   "returns": "boolean",
+   "is_async": false,
+   "is_generator": false,
+   "type_params": [],
+   "uses_instanceof": false
+  },
+  {
+   "name": "is_valid_flag_id",
+   "file": "gamelib/flag_ids.py",
+   "line": 103,
+   "params": [
+    {
+     "name": "flag_id_type",
+     "ts_type": "string",
+     "optional": false,
+     "rest": false
+    }
+   ],
+   "returns": "boolean",
+   "is_async": false,
+   "is_generator": false,
+   "type_params": [],
+   "uses_instanceof": false
+  },
+  {
+   "name": "get_flag",
+   "file": "gamelib/gamelib.py",
+   "line": 54,
+   "params": [
+    {
+     "name": "team_id",
+     "ts_type": "int",
+     "optional": false,
+     "rest": false
+    },
+    {
+     "name": "service_id",
+     "ts_type": "int",
+     "optional": false,
+     "rest": false
+    },
+    {
+     "name": "tick",
+     "ts_type": "int",
+     "optional": false,
+     "rest": false
+    },
+    {
+     "name": "payload",
+     "ts_type": "int",
+     "optional": true,
+     "rest": false,
+     "default": "0"
+    }
+   ],
+   "returns": "string",
+   "is_async": false,
+   "is_generator": false,
+   "type_params": [],
+   "uses_instanceof": false
+  },
+  {
+   "name": "ucfirst",
+   "file": "gamelib/usernames.py",
+   "line": 5691,
+   "params": [
+    {
+     "name": "s",
+     "ts_type": "string",
+     "optional": false,
+     "rest": false
+    }
+   ],
+   "returns": "string",
+   "is_async": false,
+   "is_generator": false,
+   "type_params": [],
+   "uses_instanceof": false
+  }
+ ],
+ "classes": [],
+ "js_only": [
+  {
+   "name": "remote_connection",
+   "file": "gamelib/connections.py",
+   "line": 89,
+   "reason": "takes `**kwargs`"
+  },
+  {
+   "name": "Session",
+   "file": "gamelib/connections.py",
+   "line": 22,
+   "reason": "class: inherits from requests.Session, public attribute `follow_external_redirects`, public attribute `headers['User-Agent']`, public class attribute `user_agents`"
+  },
+  {
+   "name": "translate_checker_exceptions",
+   "file": "gamelib/exceptions.py",
+   "line": 38,
+   "reason": "decorated with `@contextmanager`"
+  },
+  {
+   "name": "handle_checker_exceptions",
+   "file": "gamelib/exceptions.py",
+   "line": 75,
+   "reason": "calls its parameter `c`: a callable"
+  },
+  {
+   "name": "CheckerException",
+   "file": "gamelib/exceptions.py",
+   "line": 8,
+   "reason": "class: inherits from Exception, public attribute `message`, special method `__str__`"
+  },
+  {
+   "name": "FlagMissingException",
+   "file": "gamelib/exceptions.py",
+   "line": 16,
+   "reason": "class: inherits from CheckerException"
+  },
+  {
+   "name": "MumbleException",
+   "file": "gamelib/exceptions.py",
+   "line": 23,
+   "reason": "class: inherits from CheckerException"
+  },
+  {
+   "name": "OfflineException",
+   "file": "gamelib/exceptions.py",
+   "line": 30,
+   "reason": "class: inherits from CheckerException"
+  },
+  {
+   "name": "generate_flag_id",
+   "file": "gamelib/flag_ids.py",
+   "line": 16,
+   "reason": "takes `**kwargs`"
+  },
+  {
+   "name": "generate_flag_id_rnd",
+   "file": "gamelib/flag_ids.py",
+   "line": 39,
+   "reason": "takes `**kwargs`"
+  },
+  {
+   "name": "SampleServiceInterface",
+   "file": "gamelib/gamelib-sample.py",
+   "line": 7,
+   "reason": "class: inherits from ServiceInterface"
+  },
+  {
+   "name": "Team",
+   "file": "gamelib/gamelib.py",
+   "line": 62,
+   "reason": "class: decorated with `@dataclass`, public class attribute `id`, public class attribute `ip`, public class attribute `name`"
+  },
+  {
+   "name": "ServiceConfig",
+   "file": "gamelib/gamelib.py",
+   "line": 69,
+   "reason": "class: `@classmethod` method `from_dict`, `@classmethod` method `from_file`, decorated with `@dataclass`, method `with_params` returns an instance, public class attribute `flag_ids`, public class attribute `flags_per_tick`, public class attribute `interface_class`, public class attribute `interface_file`, public class attribute `name`, public class attribute `num_payloads`, public class attribute `ports`, public class attribute `service_id`, special method `__post_init__`"
+  },
+  {
+   "name": "ServiceInterface",
+   "file": "gamelib/gamelib.py",
+   "line": 101,
+   "reason": "class: `@abstractmethod` method `check_integrity`, `@abstractmethod` method `retrieve_flags`, `@abstractmethod` method `store_flags`, inherits from ABC, public attribute `config`, public attribute `id`"
+  },
+  {
+   "name": "GameLogger",
+   "file": "gamelib/gamelogger.py",
+   "line": 7,
+   "reason": "class: `@classmethod` method `log`, `@classmethod` method `reset`, `@staticmethod` method `format_arg`"
+  },
+  {
+   "name": "generate_username",
+   "file": "gamelib/usernames.py",
+   "line": 5709,
+   "reason": "a command-line entry point: it stays in Python, and `app front-door` takes the command line over when the whole app moves"
+  },
+  {
+   "name": "get_flag_regex",
+   "file": "gamelib/gamelib.py",
+   "line": 50,
+   "reason": "returns re.Pattern; Rust side uses get_flag_regex_pattern() (ADR-013)"
+  },
+  {
+   "name": "assert_equals",
+   "file": "gamelib/gamelib.py",
+   "line": 294,
+   "reason": "service-facing helper, stays Python (ADR-013)"
+  },
+  {
+   "name": "assert_requests_response",
+   "file": "gamelib/gamelib.py",
+   "line": 304,
+   "reason": "service-facing helper over requests.Response, stays Python (ADR-013)"
+  },
+  {
+   "name": "generate_name",
+   "file": "gamelib/usernames.py",
+   "line": 5695,
+   "reason": "takes a Python random.Random `generator` param, stays Python (ADR-013)"
+  },
+  {
+   "name": "generate_password",
+   "file": "gamelib/usernames.py",
+   "line": 5715,
+   "reason": "module-level OS random, stays Python (ADR-013)"
+  },
+  {
+   "name": "generate_random_string",
+   "file": "gamelib/usernames.py",
+   "line": 5720,
+   "reason": "module-level OS random, stays Python (ADR-013)"
+  },
+  {
+   "name": "generate_dummy_flag",
+   "file": "gamelib/usernames.py",
+   "line": 5725,
+   "reason": "module-level OS random, stays Python (ADR-013)"
+  },
+  {
+   "name": "generate_random_text",
+   "file": "gamelib/usernames.py",
+   "line": 5729,
+   "reason": "module-level OS random, stays Python (ADR-013)"
+  }
+ ]
+}

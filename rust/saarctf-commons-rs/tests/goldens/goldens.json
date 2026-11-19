@@ -1,0 +1,3727 @@
+{
+ "fixtures": {
+  "config.sample.json": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_2_metrics",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf_2",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "localhost",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 3,
+      "host": "localhost",
+      "port": 6379
+     },
+     "website": "sqlite:///../../saarctf-webpage/db.sqlite3"
+    },
+    "dispatcher_check_vpn_status": true,
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "logo_input_path": "...",
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1.0,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1.0,
+     "sla_factor": 1.0
+    },
+    "secret_flags": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "service_remotes": [],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "celery_redis_url": "redis://localhost:6379/4",
+    "celery_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "postgres_psycopg2": "host='' port=5432 dbname='saarctf_2'",
+    "postgres_sqlalchemy": "postgresql+psycopg2:///saarctf_2"
+   },
+   "validate": "ok"
+  },
+  "config.sample.json+env": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_2_metrics",
+      "password": "",
+      "port": "1234",
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf_2",
+      "password": "",
+      "port": 5432,
+      "server": "override-db.example",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "rabbit.example",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 7,
+      "host": "localhost",
+      "password": "override-pw",
+      "port": 6379
+     },
+     "website": "sqlite:///../../saarctf-webpage/db.sqlite3"
+    },
+    "dispatcher_check_vpn_status": true,
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "logo_input_path": "...",
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1.0,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1.0,
+     "sla_factor": 1.0
+    },
+    "secret_flags": "deadbeefdeadbeefdeadbeefdeadbeef",
+    "service_remotes": [],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "celery_redis_url": "redis://:override-pw@localhost:6379/8",
+    "celery_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "postgres_psycopg2": "host='override-db.example' port=5432 dbname='saarctf_2'",
+    "postgres_sqlalchemy": "postgresql+psycopg2://override-db.example:5432/saarctf_2"
+   },
+   "validate": "ok"
+  },
+  "config.sample.yaml": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "cte25",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_metrics",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "localhost",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 0,
+      "host": "localhost",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": true,
+    "environment": "dev",
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1,
+     "sla_factor": 1
+    },
+    "secret_flags": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "service_remotes": [
+     "ssh://git@gitlab.saarsec.rocks:2222/..."
+    ],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_logo_url": "...",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "celery_redis_url": "redis://localhost:6379/1",
+    "celery_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "postgres_psycopg2": "host='' port=5432 dbname='saarctf'",
+    "postgres_sqlalchemy": "postgresql+psycopg2:///saarctf"
+   },
+   "validate": "ok"
+  },
+  "config.sample.yaml+env": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "cte25",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_metrics",
+      "password": "",
+      "port": "1234",
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf",
+      "password": "",
+      "port": 5432,
+      "server": "override-db.example",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "rabbit.example",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 7,
+      "host": "localhost",
+      "password": "override-pw",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": true,
+    "environment": "dev",
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1,
+     "sla_factor": 1
+    },
+    "secret_flags": "deadbeefdeadbeefdeadbeefdeadbeef",
+    "service_remotes": [
+     "ssh://git@gitlab.saarsec.rocks:2222/..."
+    ],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_logo_url": "...",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "celery_redis_url": "redis://:override-pw@localhost:6379/8",
+    "celery_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "postgres_psycopg2": "host='override-db.example' port=5432 dbname='saarctf'",
+    "postgres_sqlalchemy": "postgresql+psycopg2://override-db.example:5432/saarctf"
+   },
+   "validate": "ok"
+  },
+  "config_norabbit.yaml": {
+   "network": {
+    "-1": {
+     "gateway": "1.39.1",
+     "network_range": "1.39.39.0/24",
+     "testbox": "1.39.3",
+     "vpn_peers": [
+      "1.40.1",
+      "1.40.2"
+     ],
+     "vulnbox": "1.39.2"
+    },
+    "0": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.0.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.0",
+      "1.0.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "1": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.1.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "10": {
+     "gateway": "1.1.1",
+     "network_range": "1.1.10.0/24",
+     "testbox": "1.1.3",
+     "vpn_peers": [
+      "1.1.0",
+      "1.1.1"
+     ],
+     "vulnbox": "1.1.2"
+    },
+    "100": {
+     "gateway": "1.10.1",
+     "network_range": "1.10.20.0/24",
+     "testbox": "1.10.3",
+     "vpn_peers": [
+      "1.10.0",
+      "1.10.1"
+     ],
+     "vulnbox": "1.10.2"
+    },
+    "1000": {
+     "gateway": "1.20.1",
+     "network_range": "1.20.0.0/24",
+     "testbox": "1.20.3",
+     "vpn_peers": [
+      "1.18.0",
+      "1.18.1"
+     ],
+     "vulnbox": "1.20.2"
+    },
+    "1024": {
+     "gateway": "1.22.1",
+     "network_range": "1.22.24.0/24",
+     "testbox": "1.22.3",
+     "vpn_peers": [
+      "1.20.0",
+      "1.20.1"
+     ],
+     "vulnbox": "1.22.2"
+    },
+    "127": {
+     "gateway": "1.12.1",
+     "network_range": "1.12.7.0/24",
+     "testbox": "1.12.3",
+     "vpn_peers": [
+      "1.12.1",
+      "1.12.2"
+     ],
+     "vulnbox": "1.12.2"
+    },
+    "128": {
+     "gateway": "1.12.1",
+     "network_range": "1.12.8.0/24",
+     "testbox": "1.12.3",
+     "vpn_peers": [
+      "1.12.0",
+      "1.12.1"
+     ],
+     "vulnbox": "1.12.2"
+    },
+    "2": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.2.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.0",
+      "1.0.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "255": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.15.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.1",
+      "1.25.2"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "256": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.16.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.0",
+      "1.25.1"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "257": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.17.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.1",
+      "1.25.2"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "3": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.3.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "31": {
+     "gateway": "1.3.1",
+     "network_range": "1.3.31.0/24",
+     "testbox": "1.3.3",
+     "vpn_peers": [
+      "1.3.1",
+      "1.3.2"
+     ],
+     "vulnbox": "1.3.2"
+    },
+    "40": {
+     "gateway": "1.4.1",
+     "network_range": "1.4.0.0/24",
+     "testbox": "1.4.3",
+     "vpn_peers": [
+      "1.4.0",
+      "1.4.1"
+     ],
+     "vulnbox": "1.4.2"
+    },
+    "4095": {
+     "gateway": "1.9.1",
+     "network_range": "1.9.15.0/24",
+     "testbox": "1.9.3",
+     "vpn_peers": [
+      "1.40.1",
+      "1.40.2"
+     ],
+     "vulnbox": "1.9.2"
+    },
+    "5": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.5.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "63": {
+     "gateway": "1.6.1",
+     "network_range": "1.6.23.0/24",
+     "testbox": "1.6.3",
+     "vpn_peers": [
+      "1.6.1",
+      "1.6.2"
+     ],
+     "vulnbox": "1.6.2"
+    },
+    "64": {
+     "gateway": "1.6.1",
+     "network_range": "1.6.24.0/24",
+     "testbox": "1.6.3",
+     "vpn_peers": [
+      "1.6.0",
+      "1.6.1"
+     ],
+     "vulnbox": "1.6.2"
+    },
+    "65534": {
+     "gateway": "1.33.1",
+     "network_range": "1.33.14.0/24",
+     "testbox": "1.33.3",
+     "vpn_peers": [
+      "1.34.0",
+      "1.34.1"
+     ],
+     "vulnbox": "1.33.2"
+    },
+    "65535": {
+     "gateway": "1.33.1",
+     "network_range": "1.33.15.0/24",
+     "testbox": "1.33.3",
+     "vpn_peers": [
+      "1.34.1",
+      "1.34.2"
+     ],
+     "vulnbox": "1.33.2"
+    },
+    "70000": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.0.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.30.0",
+      "1.30.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": null,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": null,
+     "10.1.5.7": null,
+     "10.10.10.10": null,
+     "10.39.200.3": null,
+     "10.40.0.1": 400,
+     "127.0.0.1": 0,
+     "8.8.8.8": 88,
+     "vulnbox(-1)": null,
+     "vulnbox(0)": 2,
+     "vulnbox(1)": 2,
+     "vulnbox(10)": null,
+     "vulnbox(100)": null,
+     "vulnbox(1000)": 202,
+     "vulnbox(1024)": null,
+     "vulnbox(127)": 122,
+     "vulnbox(128)": 122,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": null,
+     "vulnbox(256)": null,
+     "vulnbox(257)": null,
+     "vulnbox(3)": 2,
+     "vulnbox(31)": null,
+     "vulnbox(40)": 42,
+     "vulnbox(4095)": null,
+     "vulnbox(5)": 2,
+     "vulnbox(63)": null,
+     "vulnbox(64)": null,
+     "vulnbox(65534)": null,
+     "vulnbox(65535)": null,
+     "vulnbox(70000)": 2
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/tmp/checker",
+    "coder_url": null,
+    "ctfroute_namespace": "",
+    "databases": {
+     "metrics": {
+      "database": "ctf_metrics",
+      "password": "pw",
+      "port": 8086,
+      "server": "db.example",
+      "username": "ctf"
+     },
+     "postgres": {
+      "database": "ctf",
+      "password": "pw",
+      "port": 5432,
+      "server": "db.example",
+      "username": "ctf"
+     },
+     "rabbitmq": null,
+     "redis": {
+      "db": 5,
+      "host": "redis.example",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": false,
+    "external_timer": false,
+    "flag_prefix": "FLAG",
+    "flags_rounds_valid": 5,
+    "flower_ajax_url": "http://flower.example",
+    "flower_internal_url": "http://flower.example",
+    "flower_url": "http://flower.example",
+    "grafana_url": null,
+    "network": {
+     "gateway_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       41,
+       0
+      ],
+      [
+       1,
+       2,
+       0
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "nop_team_id": 2,
+    "patches_path": "/tmp/checker/patches",
+    "patches_public_path": null,
+    "patches_url": "http://score.example/patches",
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/tmp/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": "http://score.example/",
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "custom_algo_weight": 3,
+     "def_factor": 1.0,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 5,
+     "nop_team_id": 2,
+     "off_factor": 1.0,
+     "sla_factor": 1.0
+    },
+    "secret_flags": "00112233445566778899aabbccddeeff",
+    "service_remotes": [],
+    "services_path": "/tmp/checker/services",
+    "tick_duration_default": 60,
+    "vpnboard_path": "/tmp/scoreboard",
+    "wireguard_sync": null
+   },
+   "urls": {
+    "celery_rabbitmq_url": "ValueError: RabbitMQ not configured",
+    "celery_redis_url": "redis://redis.example:6379/6",
+    "celery_url": "redis://redis.example:6379/6",
+    "postgres_psycopg2": "host='db.example' port=5432 dbname='ctf' user='ctf' password='pw'",
+    "postgres_sqlalchemy": "postgresql+psycopg2://ctf:pw@db.example:5432/ctf"
+   },
+   "validate": "ok"
+  },
+  "config_norabbit.yaml+env": {
+   "network": {
+    "-1": {
+     "gateway": "1.39.1",
+     "network_range": "1.39.39.0/24",
+     "testbox": "1.39.3",
+     "vpn_peers": [
+      "1.40.1",
+      "1.40.2"
+     ],
+     "vulnbox": "1.39.2"
+    },
+    "0": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.0.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.0",
+      "1.0.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "1": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.1.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "10": {
+     "gateway": "1.1.1",
+     "network_range": "1.1.10.0/24",
+     "testbox": "1.1.3",
+     "vpn_peers": [
+      "1.1.0",
+      "1.1.1"
+     ],
+     "vulnbox": "1.1.2"
+    },
+    "100": {
+     "gateway": "1.10.1",
+     "network_range": "1.10.20.0/24",
+     "testbox": "1.10.3",
+     "vpn_peers": [
+      "1.10.0",
+      "1.10.1"
+     ],
+     "vulnbox": "1.10.2"
+    },
+    "1000": {
+     "gateway": "1.20.1",
+     "network_range": "1.20.0.0/24",
+     "testbox": "1.20.3",
+     "vpn_peers": [
+      "1.18.0",
+      "1.18.1"
+     ],
+     "vulnbox": "1.20.2"
+    },
+    "1024": {
+     "gateway": "1.22.1",
+     "network_range": "1.22.24.0/24",
+     "testbox": "1.22.3",
+     "vpn_peers": [
+      "1.20.0",
+      "1.20.1"
+     ],
+     "vulnbox": "1.22.2"
+    },
+    "127": {
+     "gateway": "1.12.1",
+     "network_range": "1.12.7.0/24",
+     "testbox": "1.12.3",
+     "vpn_peers": [
+      "1.12.1",
+      "1.12.2"
+     ],
+     "vulnbox": "1.12.2"
+    },
+    "128": {
+     "gateway": "1.12.1",
+     "network_range": "1.12.8.0/24",
+     "testbox": "1.12.3",
+     "vpn_peers": [
+      "1.12.0",
+      "1.12.1"
+     ],
+     "vulnbox": "1.12.2"
+    },
+    "2": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.2.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.0",
+      "1.0.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "255": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.15.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.1",
+      "1.25.2"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "256": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.16.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.0",
+      "1.25.1"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "257": {
+     "gateway": "1.25.1",
+     "network_range": "1.25.17.0/24",
+     "testbox": "1.25.3",
+     "vpn_peers": [
+      "1.25.1",
+      "1.25.2"
+     ],
+     "vulnbox": "1.25.2"
+    },
+    "3": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.3.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "31": {
+     "gateway": "1.3.1",
+     "network_range": "1.3.31.0/24",
+     "testbox": "1.3.3",
+     "vpn_peers": [
+      "1.3.1",
+      "1.3.2"
+     ],
+     "vulnbox": "1.3.2"
+    },
+    "40": {
+     "gateway": "1.4.1",
+     "network_range": "1.4.0.0/24",
+     "testbox": "1.4.3",
+     "vpn_peers": [
+      "1.4.0",
+      "1.4.1"
+     ],
+     "vulnbox": "1.4.2"
+    },
+    "4095": {
+     "gateway": "1.9.1",
+     "network_range": "1.9.15.0/24",
+     "testbox": "1.9.3",
+     "vpn_peers": [
+      "1.40.1",
+      "1.40.2"
+     ],
+     "vulnbox": "1.9.2"
+    },
+    "5": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.5.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.0.1",
+      "1.0.2"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "63": {
+     "gateway": "1.6.1",
+     "network_range": "1.6.23.0/24",
+     "testbox": "1.6.3",
+     "vpn_peers": [
+      "1.6.1",
+      "1.6.2"
+     ],
+     "vulnbox": "1.6.2"
+    },
+    "64": {
+     "gateway": "1.6.1",
+     "network_range": "1.6.24.0/24",
+     "testbox": "1.6.3",
+     "vpn_peers": [
+      "1.6.0",
+      "1.6.1"
+     ],
+     "vulnbox": "1.6.2"
+    },
+    "65534": {
+     "gateway": "1.33.1",
+     "network_range": "1.33.14.0/24",
+     "testbox": "1.33.3",
+     "vpn_peers": [
+      "1.34.0",
+      "1.34.1"
+     ],
+     "vulnbox": "1.33.2"
+    },
+    "65535": {
+     "gateway": "1.33.1",
+     "network_range": "1.33.15.0/24",
+     "testbox": "1.33.3",
+     "vpn_peers": [
+      "1.34.1",
+      "1.34.2"
+     ],
+     "vulnbox": "1.33.2"
+    },
+    "70000": {
+     "gateway": "1.0.1",
+     "network_range": "1.0.0.0/24",
+     "testbox": "1.0.3",
+     "vpn_peers": [
+      "1.30.0",
+      "1.30.1"
+     ],
+     "vulnbox": "1.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": null,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": null,
+     "10.1.5.7": null,
+     "10.10.10.10": null,
+     "10.39.200.3": null,
+     "10.40.0.1": 400,
+     "127.0.0.1": 0,
+     "8.8.8.8": 88,
+     "vulnbox(-1)": null,
+     "vulnbox(0)": 2,
+     "vulnbox(1)": 2,
+     "vulnbox(10)": null,
+     "vulnbox(100)": null,
+     "vulnbox(1000)": 202,
+     "vulnbox(1024)": null,
+     "vulnbox(127)": 122,
+     "vulnbox(128)": 122,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": null,
+     "vulnbox(256)": null,
+     "vulnbox(257)": null,
+     "vulnbox(3)": 2,
+     "vulnbox(31)": null,
+     "vulnbox(40)": 42,
+     "vulnbox(4095)": null,
+     "vulnbox(5)": 2,
+     "vulnbox(63)": null,
+     "vulnbox(64)": null,
+     "vulnbox(65534)": null,
+     "vulnbox(65535)": null,
+     "vulnbox(70000)": 2
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/tmp/checker",
+    "coder_url": null,
+    "ctfroute_namespace": "",
+    "databases": {
+     "metrics": {
+      "database": "ctf_metrics",
+      "password": "pw",
+      "port": "1234",
+      "server": "db.example",
+      "username": "ctf"
+     },
+     "postgres": {
+      "database": "ctf",
+      "password": "pw",
+      "port": 5432,
+      "server": "override-db.example",
+      "username": "ctf"
+     },
+     "rabbitmq": {
+      "host": "rabbit.example"
+     },
+     "redis": {
+      "db": 7,
+      "host": "redis.example",
+      "password": "override-pw",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": false,
+    "external_timer": false,
+    "flag_prefix": "FLAG",
+    "flags_rounds_valid": 5,
+    "flower_ajax_url": "http://flower.example",
+    "flower_internal_url": "http://flower.example",
+    "flower_url": "http://flower.example",
+    "grafana_url": null,
+    "network": {
+     "gateway_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       41,
+       0
+      ],
+      [
+       1,
+       2,
+       0
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       10,
+       40,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "nop_team_id": 2,
+    "patches_path": "/tmp/checker/patches",
+    "patches_public_path": null,
+    "patches_url": "http://score.example/patches",
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/tmp/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": "http://score.example/",
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "custom_algo_weight": 3,
+     "def_factor": 1.0,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 5,
+     "nop_team_id": 2,
+     "off_factor": 1.0,
+     "sla_factor": 1.0
+    },
+    "secret_flags": "deadbeefdeadbeefdeadbeefdeadbeef",
+    "service_remotes": [],
+    "services_path": "/tmp/checker/services",
+    "tick_duration_default": 60,
+    "vpnboard_path": "/tmp/scoreboard",
+    "wireguard_sync": null
+   },
+   "urls": {
+    "celery_rabbitmq_url": "KeyError: 'username'",
+    "celery_redis_url": "redis://:override-pw@redis.example:6379/8",
+    "celery_url": "KeyError: 'username'",
+    "postgres_psycopg2": "host='override-db.example' port=5432 dbname='ctf' user='ctf' password='pw'",
+    "postgres_sqlalchemy": "postgresql+psycopg2://ctf:pw@override-db.example:5432/ctf"
+   },
+   "validate": "ok"
+  },
+  "config_test.yaml": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "cte25",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_metrics",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf",
+      "password": "",
+      "port": 5432,
+      "server": "",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "localhost",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 0,
+      "host": "localhost",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": true,
+    "environment": "dev",
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1,
+     "sla_factor": 1
+    },
+    "secret_flags": "0000000000000000000000000000000000000000000000000000000000000000",
+    "service_remotes": [
+     "ssh://git@gitlab.saarsec.rocks:2222/..."
+    ],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_logo_url": "...",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "celery_redis_url": "redis://localhost:6379/1",
+    "celery_url": "amqp://saarctf:123456789@localhost:5672/saarctf",
+    "postgres_psycopg2": "host='' port=5432 dbname='saarctf'",
+    "postgres_sqlalchemy": "postgresql+psycopg2:///saarctf"
+   },
+   "validate": "ok"
+  },
+  "config_test.yaml+env": {
+   "network": {
+    "-1": {
+     "gateway": "127.255.199.1",
+     "network_range": "127.255.199.0/24",
+     "testbox": "127.255.199.3",
+     "vpn_peers": [
+      "10.303.199.1",
+      "10.303.199.2"
+     ],
+     "vulnbox": "127.255.199.2"
+    },
+    "0": {
+     "gateway": "127.0.0.1",
+     "network_range": "127.0.0.0/24",
+     "testbox": "127.0.0.3",
+     "vpn_peers": [
+      "10.48.0.1",
+      "10.48.0.2"
+     ],
+     "vulnbox": "127.0.0.2"
+    },
+    "1": {
+     "gateway": "127.0.1.1",
+     "network_range": "127.0.1.0/24",
+     "testbox": "127.0.1.3",
+     "vpn_peers": [
+      "10.48.1.1",
+      "10.48.1.2"
+     ],
+     "vulnbox": "127.0.1.2"
+    },
+    "10": {
+     "gateway": "127.0.10.1",
+     "network_range": "127.0.10.0/24",
+     "testbox": "127.0.10.3",
+     "vpn_peers": [
+      "10.48.10.1",
+      "10.48.10.2"
+     ],
+     "vulnbox": "127.0.10.2"
+    },
+    "100": {
+     "gateway": "127.0.100.1",
+     "network_range": "127.0.100.0/24",
+     "testbox": "127.0.100.3",
+     "vpn_peers": [
+      "10.48.100.1",
+      "10.48.100.2"
+     ],
+     "vulnbox": "127.0.100.2"
+    },
+    "1000": {
+     "gateway": "127.5.0.1",
+     "network_range": "127.5.0.0/24",
+     "testbox": "127.5.0.3",
+     "vpn_peers": [
+      "10.53.0.1",
+      "10.53.0.2"
+     ],
+     "vulnbox": "127.5.0.2"
+    },
+    "1024": {
+     "gateway": "127.5.24.1",
+     "network_range": "127.5.24.0/24",
+     "testbox": "127.5.24.3",
+     "vpn_peers": [
+      "10.53.24.1",
+      "10.53.24.2"
+     ],
+     "vulnbox": "127.5.24.2"
+    },
+    "127": {
+     "gateway": "127.0.127.1",
+     "network_range": "127.0.127.0/24",
+     "testbox": "127.0.127.3",
+     "vpn_peers": [
+      "10.48.127.1",
+      "10.48.127.2"
+     ],
+     "vulnbox": "127.0.127.2"
+    },
+    "128": {
+     "gateway": "127.0.128.1",
+     "network_range": "127.0.128.0/24",
+     "testbox": "127.0.128.3",
+     "vpn_peers": [
+      "10.48.128.1",
+      "10.48.128.2"
+     ],
+     "vulnbox": "127.0.128.2"
+    },
+    "2": {
+     "gateway": "127.0.2.1",
+     "network_range": "127.0.2.0/24",
+     "testbox": "127.0.2.3",
+     "vpn_peers": [
+      "10.48.2.1",
+      "10.48.2.2"
+     ],
+     "vulnbox": "127.0.2.2"
+    },
+    "255": {
+     "gateway": "127.1.55.1",
+     "network_range": "127.1.55.0/24",
+     "testbox": "127.1.55.3",
+     "vpn_peers": [
+      "10.49.55.1",
+      "10.49.55.2"
+     ],
+     "vulnbox": "127.1.55.2"
+    },
+    "256": {
+     "gateway": "127.1.56.1",
+     "network_range": "127.1.56.0/24",
+     "testbox": "127.1.56.3",
+     "vpn_peers": [
+      "10.49.56.1",
+      "10.49.56.2"
+     ],
+     "vulnbox": "127.1.56.2"
+    },
+    "257": {
+     "gateway": "127.1.57.1",
+     "network_range": "127.1.57.0/24",
+     "testbox": "127.1.57.3",
+     "vpn_peers": [
+      "10.49.57.1",
+      "10.49.57.2"
+     ],
+     "vulnbox": "127.1.57.2"
+    },
+    "3": {
+     "gateway": "127.0.3.1",
+     "network_range": "127.0.3.0/24",
+     "testbox": "127.0.3.3",
+     "vpn_peers": [
+      "10.48.3.1",
+      "10.48.3.2"
+     ],
+     "vulnbox": "127.0.3.2"
+    },
+    "31": {
+     "gateway": "127.0.31.1",
+     "network_range": "127.0.31.0/24",
+     "testbox": "127.0.31.3",
+     "vpn_peers": [
+      "10.48.31.1",
+      "10.48.31.2"
+     ],
+     "vulnbox": "127.0.31.2"
+    },
+    "40": {
+     "gateway": "127.0.40.1",
+     "network_range": "127.0.40.0/24",
+     "testbox": "127.0.40.3",
+     "vpn_peers": [
+      "10.48.40.1",
+      "10.48.40.2"
+     ],
+     "vulnbox": "127.0.40.2"
+    },
+    "4095": {
+     "gateway": "127.20.95.1",
+     "network_range": "127.20.95.0/24",
+     "testbox": "127.20.95.3",
+     "vpn_peers": [
+      "10.68.95.1",
+      "10.68.95.2"
+     ],
+     "vulnbox": "127.20.95.2"
+    },
+    "5": {
+     "gateway": "127.0.5.1",
+     "network_range": "127.0.5.0/24",
+     "testbox": "127.0.5.3",
+     "vpn_peers": [
+      "10.48.5.1",
+      "10.48.5.2"
+     ],
+     "vulnbox": "127.0.5.2"
+    },
+    "63": {
+     "gateway": "127.0.63.1",
+     "network_range": "127.0.63.0/24",
+     "testbox": "127.0.63.3",
+     "vpn_peers": [
+      "10.48.63.1",
+      "10.48.63.2"
+     ],
+     "vulnbox": "127.0.63.2"
+    },
+    "64": {
+     "gateway": "127.0.64.1",
+     "network_range": "127.0.64.0/24",
+     "testbox": "127.0.64.3",
+     "vpn_peers": [
+      "10.48.64.1",
+      "10.48.64.2"
+     ],
+     "vulnbox": "127.0.64.2"
+    },
+    "65534": {
+     "gateway": "127.71.134.1",
+     "network_range": "127.71.134.0/24",
+     "testbox": "127.71.134.3",
+     "vpn_peers": [
+      "10.119.134.1",
+      "10.119.134.2"
+     ],
+     "vulnbox": "127.71.134.2"
+    },
+    "65535": {
+     "gateway": "127.71.135.1",
+     "network_range": "127.71.135.0/24",
+     "testbox": "127.71.135.3",
+     "vpn_peers": [
+      "10.119.135.1",
+      "10.119.135.2"
+     ],
+     "vulnbox": "127.71.135.2"
+    },
+    "70000": {
+     "gateway": "127.94.0.1",
+     "network_range": "127.94.0.0/24",
+     "testbox": "127.94.0.3",
+     "vpn_peers": [
+      "10.142.0.1",
+      "10.142.0.2"
+     ],
+     "vulnbox": "127.94.0.2"
+    },
+    "ip_to_id": {
+     "1.2.3.4": 403,
+     "10.0.0.0": 0,
+     "10.0.0.1": 0,
+     "10.0.39.255": 39,
+     "10.1.5.7": 205,
+     "10.10.10.10": 2010,
+     "10.39.200.3": 7800,
+     "10.40.0.1": 8000,
+     "127.0.0.1": 0,
+     "8.8.8.8": 1608,
+     "vulnbox(-1)": 51199,
+     "vulnbox(0)": 0,
+     "vulnbox(1)": 1,
+     "vulnbox(10)": 10,
+     "vulnbox(100)": 100,
+     "vulnbox(1000)": 1000,
+     "vulnbox(1024)": 1024,
+     "vulnbox(127)": 127,
+     "vulnbox(128)": 128,
+     "vulnbox(2)": 2,
+     "vulnbox(255)": 255,
+     "vulnbox(256)": 256,
+     "vulnbox(257)": 257,
+     "vulnbox(3)": 3,
+     "vulnbox(31)": 31,
+     "vulnbox(40)": 40,
+     "vulnbox(4095)": 4095,
+     "vulnbox(5)": 5,
+     "vulnbox(63)": 63,
+     "vulnbox(64)": 64,
+     "vulnbox(65534)": 14334,
+     "vulnbox(65535)": 14335,
+     "vulnbox(70000)": 18800
+    }
+   },
+   "to_dict": {
+    "checker_packages_path": "/dev/shm/packages",
+    "coder_url": null,
+    "ctfroute_namespace": "cte25",
+    "databases": {
+     "metrics": {
+      "database": "saarctf_metrics",
+      "password": "",
+      "port": "1234",
+      "server": "",
+      "username": ""
+     },
+     "postgres": {
+      "database": "saarctf",
+      "password": "",
+      "port": 5432,
+      "server": "override-db.example",
+      "username": ""
+     },
+     "rabbitmq": {
+      "host": "rabbit.example",
+      "password": "123456789",
+      "port": 5672,
+      "username": "saarctf",
+      "vhost": "saarctf"
+     },
+     "redis": {
+      "db": 7,
+      "host": "localhost",
+      "password": "override-pw",
+      "port": 6379
+     }
+    },
+    "dispatcher_check_vpn_status": true,
+    "environment": "dev",
+    "external_timer": false,
+    "flag_prefix": "SAAR",
+    "flower_ajax_url": "http://localhost:5555/",
+    "flower_internal_url": "http://localhost:5555/",
+    "flower_url": "http://localhost:5555/",
+    "grafana_url": null,
+    "network": {
+     "gameserver_ip": "10.32.250.2",
+     "gateway_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "team_range": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       0
+      ],
+      24
+     ],
+     "testbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       3
+      ]
+     ],
+     "vpn_peer_ips": [
+      [
+       1,
+       1,
+       10
+      ],
+      [
+       200,
+       256,
+       48
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "vulnbox_ip": [
+      [
+       1,
+       1,
+       127
+      ],
+      [
+       200,
+       256,
+       0
+      ],
+      [
+       1,
+       200,
+       0
+      ],
+      [
+       1,
+       1,
+       2
+      ]
+     ]
+    },
+    "patches_path": "/dev/shm/patches",
+    "patches_public_path": "/dev/shm/patches-webroot",
+    "patches_url": null,
+    "runner": {
+     "dispatcher": "dispatcher:CeleryDispatcher",
+     "eno": {
+      "check_past_ticks": 5,
+      "timeout": 15
+     }
+    },
+    "scoreboard_freeze": null,
+    "scoreboard_path": "/dev/shm/scoreboard",
+    "scoreboard_path_internal": null,
+    "scoreboard_url": null,
+    "scoring": {
+     "algorithm": "saarctf:SaarctfScoreAlgorithm",
+     "def_factor": 1,
+     "firstblood_algorithm": "firstblood:DefaultFirstBloodAlgorithm",
+     "flags_rounds_valid": 10,
+     "nop_team_id": 1,
+     "off_factor": 1,
+     "sla_factor": 1
+    },
+    "secret_flags": "deadbeefdeadbeefdeadbeefdeadbeef",
+    "service_remotes": [
+     "ssh://git@gitlab.saarsec.rocks:2222/..."
+    ],
+    "services_path": "/dev/shm/packages/services",
+    "tick_duration_default": 120,
+    "vpnboard_path": "/dev/shm/vpnboard",
+    "website_logo_url": "...",
+    "website_team_url": "...",
+    "wireguard_sync": {
+     "api_base": "/api/router/",
+     "api_concurrency": 1,
+     "api_server": "https://ctf.saarland",
+     "api_token": "..."
+    }
+   },
+   "urls": {
+    "celery_rabbitmq_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "celery_redis_url": "redis://:override-pw@localhost:6379/8",
+    "celery_url": "amqp://saarctf:123456789@rabbit.example:5672/saarctf",
+    "postgres_psycopg2": "host='override-db.example' port=5432 dbname='saarctf'",
+    "postgres_sqlalchemy": "postgresql+psycopg2://override-db.example:5432/saarctf"
+   },
+   "validate": "ok"
+  }
+ },
+ "influx": {
+  "lines": [
+   "test_metric x=42i 1700000000000000000\n",
+   "test_metric x=-7i 1700000000000000000\n",
+   "test_metric b=Truei 1700000000000000000\n",
+   "test_metric b=Falsei 1700000000000000000\n",
+   "test_metric s=\"hello \\\"world\\\"\\n\\t\\u00fc\\u5fae\\ud83d\\ude00\" 1700000000000000000\n",
+   "test_metric s=\"plain\" 1700000000000000000\n",
+   "test_metric f=1.5 1700000000000000000\n",
+   "test_metric f=15.0 1700000000000000000\n",
+   "test_metric f=1e+16 1700000000000000000\n",
+   "test_metric f=1.5e+16 1700000000000000000\n",
+   "test_metric f=1e-05 1700000000000000000\n",
+   "test_metric f=-0.0 1700000000000000000\n",
+   "test_metric f=0.1 1700000000000000000\n",
+   "test_metric f=0.3333333333333333 1700000000000000000\n",
+   "test_metric f=nan 1700000000000000000\n",
+   "test_metric f=inf 1700000000000000000\n",
+   "test_metric f=-inf 1700000000000000000\n",
+   "test_metric f=3.0,i=3i 1700000000000000000\n",
+   "test_metric,team=5i,service=\"name with space\" v=1i 1700000000000000000\n",
+   "test_metric,ok=Truei v=2.5 1700000000000000000\n",
+   "test_metric v=1i 1700000000123456768\n",
+   "test_metric v=1i 0\n",
+   "test_metric v=1i -5000000000\n",
+   "test_metric v=1i 1700000000000000000\n",
+   "test_metric v=1i 1700000000500000000\n"
+  ]
+ }
+}

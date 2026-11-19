@@ -1,0 +1,878 @@
+{"fn": "is_generatable_flag_id", "args": ["İstanbulsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [".leading"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ab"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.tsa:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Hello Worldstraße"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.json😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["key_name-1"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["é日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straße"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ünïcödé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["  padded  "], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.jsonabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [".leadingns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["tab\tseparated"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿bomé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["absrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcab"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀c{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["éstraße"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [""], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀abc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["é"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..b﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßeabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLO"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀cabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hello world"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿bomab"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Hello World"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿boma..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abtab\tseparated"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀a😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.jsona:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["  padded  a"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLO{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2a:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [".leading  padded  "], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["aemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Hello Worldsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbulline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.jsona"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":a.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..b日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["tab\tseparatedabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.c.leading"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLOa.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßea😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿bomHello World"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.ts./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀  padded  "], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["helloa😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.tshello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀ns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hello日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["key_name-1hello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.Hello World"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["日本語のテキストns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["{name} has {count} itemsa.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hellons:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.pathsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abc{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["éhello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.pathtrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["aΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLOa..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.path./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["éa..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbula😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLOline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..b:"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀cHELLO"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbul日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀csrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀ünïcödé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["éünïcödé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["  padded  straße"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mixHELLO"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.a:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcİstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straße😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.jsonns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["key_name-1ab"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.path  padded  "], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.ca.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀é"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mix.leading"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mixline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbulabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Hello World﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßeİstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["{name} has {count} itemsİstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.tsabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a:b:c﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["aba:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..bhello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀c﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":a:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀ca:b:c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.patha..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["﻿bomline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["tab\tseparatedemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["aHELLO"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["éns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.ca😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["日本語のテキストHello World"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["./x/**/*.jsonsrc/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.ts﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a:b:chello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a:b:cabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.c😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hello{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hellohello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["key_name-1.leading"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.path{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mixhello"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["tab\tseparated./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbul{name} has {count} items"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.İstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mix😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..bünïcödé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hellokey_name-1"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ünïcödéemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["tab\tseparateda"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abc😀"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mixΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßeé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.cΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["étrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.tsa"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a.b.ca..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ünïcödéns:key.path"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.pathHELLO"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLOtrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..bline1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abcabc"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["key_name-1:"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["HELLOemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbulé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ns:key.pathtab\tseparated"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["{name} has {count} items﻿bom"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbultrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["src/a/b.tsünïcödé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hellohello world"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ünïcödétrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["é  padded  "], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Hello Worldé"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a..btab\tseparated"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣtrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀a"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2line1\nline2"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣa.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2a.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": [":a..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["İstanbulİstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["line1\nline2ΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßea..b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.a.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["  padded  src/a/b.ts"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b😀ca"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["trailing.emoji 👍🏽 mix"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["é./x/**/*.json"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["straßea.b.c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["😀.leading"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["hellotrailing."], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abİstanbul"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["emoji 👍🏽 mix日本語のテキスト"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΊΣΥΦΟΣa😀b😀c"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["abkey_name-1"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["héllo wörld"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["👍🏽 thumbs"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["日本語"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ılık ırmak"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["👨‍👩‍👧 family"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a😀b"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["Iı İi"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["K K k"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ſ s S"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["x‍y 👨‍👩‍👧"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["a b c　d"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["١٢٣ ٤٥"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["𝟘𝟙 ²³"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["snake_case foo-bar o'neil"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ǅungla Ǆ"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["one\r\ntwo threefour"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["café café"], "ok": false}
+{"fn": "is_generatable_flag_id", "args": ["ΣΑΣ σας ς"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mix"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキスト"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["é"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["helloab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  "], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣtab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..bHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":a"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣ.leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello Worldsrc/a/b.ts"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀cé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparatedHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["abc"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [""], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1straße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aba:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["éns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..bab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["İstanbul"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straßeline1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["trailing."], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["src/a/b.ts"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  ünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.ca"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["İstanbul😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLOa..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["helloline1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leading./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mixa.b.c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀ctab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bomab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..ba.b.c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2a:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bom{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["İstanbulab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödéa:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingHELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["{name} has {count} items.leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:cHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLOHELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLOé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLOΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aabc"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1abc"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparatedé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["src/a/b.tsΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀ca"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hellons:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  {name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1line1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:ca😀b😀c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello Worlda"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["😀hello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mixHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["trailing.ab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキスト😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello worldHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..ba..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello日本語のテキスト"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":a:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀cstraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparateda"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödéHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..b{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":src/a/b.ts"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello Worldemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aa..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["abca:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödéhello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["{name} has {count} items﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:ckey_name-1"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.cünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["./x/**/*.jsona.b.c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bomhello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["abab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:cé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1trailing."], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödé  padded  "], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["😀./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["é﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.cİstanbul"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  emoji 👍🏽 mix"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ns:key.patha..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  ns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straße:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["é:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparatedkey_name-1"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello World😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣ:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:c./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["😀{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.cΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödéstraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキストünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["./x/**/*.jsonHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["{name} has {count} itemsns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparatedab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straße  padded  "], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello world./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀cabc"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bomstraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straßestraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ab:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキストline1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:cab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2ünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparated:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["éa"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["trailing.ünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["./x/**/*.json.leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..b日本語のテキスト"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキスト{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello worldstraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..bHELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":trailing."], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ab.leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1emoji 👍🏽 mix"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":İstanbul"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [":straße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bom:"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2ns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["﻿bomΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straße😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:cΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Hello Worldtab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b😀c.leading"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.c./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hello./x/**/*.json"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straßehello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1ΣΊΣΥΦΟΣ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.ctab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["straße﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["src/a/b.ts﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["éhello world"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a..bline1\nline2"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ns:key.pathab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aHELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.cns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparatedemoji 👍🏽 mix"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2日本語のテキスト"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingns:key.path"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["😀ab"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["./x/**/*.jsontrailing."], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingstraße"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["line1\nline2İstanbul"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["  padded  İstanbul"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mix{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mixHELLO"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ünïcödéünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["hellotab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["src/a/b.tstab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΊΣΥΦΟΣHello World"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["tab\tseparated  padded  "], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["HELLOa.b.c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": [".leadingé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["aé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語のテキストa:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:ca"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mix😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.c{name} has {count} items"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.ca:b:c"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1😀"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mixünïcödé"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a:b:c﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["{name} has {count} itemsa..b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["key_name-1a"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a.b.c﻿bom"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["emoji 👍🏽 mixtab\tseparated"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["héllo wörld"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["👍🏽 thumbs"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["日本語"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ılık ırmak"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["👨‍👩‍👧 family"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a😀b"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["Iı İi"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["K K k"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ſ s S"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["x‍y 👨‍👩‍👧"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["a b c　d"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["١٢٣ ٤٥"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["𝟘𝟙 ²³"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["snake_case foo-bar o'neil"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ǅungla Ǆ"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["one\r\ntwo threefour"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["café café"], "ok": false}
+{"fn": "is_valid_flag_id", "args": ["ΣΑΣ σας ς"], "ok": false}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 1, 2147483647, 1], "ok": "SAAR{__9kAAEAAQBazGDExspQipYpTXSGOKWz}"}
+{"fn": "get_flag", "args": [-1, 100, 0, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 255, 7], "ok": "SAAR{BwD_AP8AAAC3xo74aGdDmQZOov4Dlc5S}"}
+{"fn": "get_flag", "args": [100, 42, 255, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 255, 0, 1], "ok": "SAAR{AABkAP8AAQBp5wGZ8CFdFI-i8qxId_-V}"}
+{"fn": "get_flag", "args": [1, 2, 42, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 42, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 2, 9223372036854775807, 2], "ok": "SAAR{__8CAAIAAgAaGs7WiiTc8ECyJahwCux6}"}
+{"fn": "get_flag", "args": [2, -100, -2147483648, 1], "ok": "SAAR{AAACAJz_AQBK5EABPbGONjiz2i7YXhqr}"}
+{"fn": "get_flag", "args": [42, -1, 7, 255], "ok": "SAAR{BwAqAP___wDqKEOutlNI2xRS0dGunToA}"}
+{"fn": "get_flag", "args": [2, 1, 2, {"$undefined": true}], "ok": "SAAR{AgACAAEAAACAPXSRlCEtyZpcnRtb-b2P}"}
+{"fn": "get_flag", "args": [2, -2147483648, 9223372036854775807, 255], "ok": "SAAR{__8CAAAA_wBMm50kBTzyixK9uLazBL-S}"}
+{"fn": "get_flag", "args": [-2147483648, -100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 42, -100], "ok": "SAAR{nP9kACoAAAA3kNZMJNaMUhSf6VHMaCK2}"}
+{"fn": "get_flag", "args": [255, -1, 7, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 2147483647, 100, 0], "ok": "SAAR{ZAACAP__AACN4GTCRHwwhQUiDm6ErN7j}"}
+{"fn": "get_flag", "args": [0, 9223372036854775807, 2, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 255, 9223372036854775807, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2147483647, -100, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 7, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, -1, 100, 255], "ok": "SAAR{ZAAqAP___wD5riA6G6McMaV6WvvDKcbj}"}
+{"fn": "get_flag", "args": [0, -100, -100, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 0, 2147483647, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 7, 2, 0], "ok": "SAAR{AgAAAAcAAAB0Nshm-RsEYJ9GOcBt3_TR}"}
+{"fn": "get_flag", "args": [100, -1, 7], "ok": "SAAR{BwBkAP__AACHW4ryns02VUm2ta0bSb8y}"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, -2147483648, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 2147483647, -100, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, -100, -1, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 9223372036854775807, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, -2147483648, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, -1, 255, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 100, -100, 42], "ok": "SAAR{nP8CAGQAKgC0gasusvDShvJ3PiLkW591}"}
+{"fn": "get_flag", "args": [-2147483648, 1, 100, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, -2147483648, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, -1, 1, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, -100, 0, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 42, 0, 1], "ok": "SAAR{AAAAACoAAQBL-GrTMNCcXKQBhMARhiOZ}"}
+{"fn": "get_flag", "args": [-100, -1, 1, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 0, -2147483648, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 42, -1, 7], "ok": "SAAR{__9kACoABwA_l7AlUHyRJN5vygVYwqU2}"}
+{"fn": "get_flag", "args": [-100, 2147483647, 2147483647, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 255, 255, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 100, 42, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, -100, 255, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 1, 1, {"$undefined": true}], "ok": "SAAR{AQAqAAEAAAAXR2F6oKPJy28zT0aBZ_7K}"}
+{"fn": "get_flag", "args": [-2147483648, 255, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 100, -2147483648, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 1, 42, 1], "ok": "SAAR{KgACAAEAAQBpZx0qcAqsuOMEgu8665EW}"}
+{"fn": "get_flag", "args": [7, -100, 2, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 2147483647, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2147483647, 2, 42], "ok": "SAAR{AgAAAP__KgCNqbmPDxZRcgaSGnkxhHuw}"}
+{"fn": "get_flag", "args": [9223372036854775807, 100, 100, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, -2147483648, -2147483648, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, -2147483648, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 2, -100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 7, -1, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 2, 255, 2], "ok": "SAAR{_wACAAIAAgBGm0N1F4wxoTJtrGa-BZT0}"}
+{"fn": "get_flag", "args": [0, 2, 1, {"$undefined": true}], "ok": "SAAR{AQAAAAIAAACWjXD2ErP2VSbhCZJHRfCa}"}
+{"fn": "get_flag", "args": [2, 7, 2, 7], "ok": "SAAR{AgACAAcABwArZauF8ak_ljXkLYKAokc4}"}
+{"fn": "get_flag", "args": [1, -1, -100, 255], "ok": "SAAR{nP8BAP___wAXJvBgMUOydXz0rABY_RZ8}"}
+{"fn": "get_flag", "args": [100, 0, 7, 7], "ok": "SAAR{BwBkAAAABwDrxg8IMxTv1DKHYy4PI-Ij}"}
+{"fn": "get_flag", "args": [-2147483648, -100, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 42, 9223372036854775807, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 2147483647, 7, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 2, 0, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 7, -2147483648, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 7, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, -100, 42, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 2, -100, 0], "ok": "SAAR{nP8CAAIAAAC_Ey4ytwXIjghMxESwBdtX}"}
+{"fn": "get_flag", "args": [42, 0, 2147483647, 1], "ok": "SAAR{__8qAAAAAQB41sAPAVOqCfAL1CDtxK1h}"}
+{"fn": "get_flag", "args": [2147483647, -2147483648, 255, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 100, 2147483647, {"$undefined": true}], "ok": "SAAR{__8CAGQAAADo38JIMAk8iMBrqfUz-k3R}"}
+{"fn": "get_flag", "args": [2, 255, 100, 2], "ok": "SAAR{ZAACAP8AAgB6Rp9tgK3Pdioa3rhsHg-L}"}
+{"fn": "get_flag", "args": [0, 9223372036854775807, -2147483648, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 42, 1, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, -1, 42, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 100, -2147483648, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 9223372036854775807, -1, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 7, 2, {"$undefined": true}], "ok": "SAAR{AgACAAcAAACtthW0zxTpRw0twlng2WG5}"}
+{"fn": "get_flag", "args": [7, 9223372036854775807, 7, {"$undefined": true}], "ok": "SAAR{BwAHAP__AAAxcN_xS6CJumOf2YCio_Z7}"}
+{"fn": "get_flag", "args": [-1, 0, -100, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 100, 7, 100], "ok": "SAAR{BwABAGQAZAAGMktZcTGRrIBX1bWBv64e}"}
+{"fn": "get_flag", "args": [2, 2147483647, 1, {"$undefined": true}], "ok": "SAAR{AQACAP__AACDtJAJbQ-owBjvbATFeefH}"}
+{"fn": "get_flag", "args": [2147483647, -2147483648, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 1, 100, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 2, 1, {"$undefined": true}], "ok": "SAAR{AQBkAAIAAACuN__sQqJv0rloOv1R_e2i}"}
+{"fn": "get_flag", "args": [9223372036854775807, 7, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 0, 100, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [7, 100, -100, 255], "ok": "SAAR{nP8HAGQA_wAbh01gr9KAe7G-r1CUDzO_}"}
+{"fn": "get_flag", "args": [255, -100, -100, 255], "ok": "SAAR{nP__AJz__wC4Cs2UOQelsyEgyrP45miY}"}
+{"fn": "get_flag", "args": [9223372036854775807, 7, 100, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 100, 2147483647, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 7, 2147483647, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2, 1, 1], "ok": "SAAR{AQAAAAIAAQB4HNik799u2cnKJRj88y83}"}
+{"fn": "get_flag", "args": [100, -2147483648, 255, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 1, 1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, -1, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2147483647, 42, {"$undefined": true}], "ok": "SAAR{KgAAAP__AAC0ZEODjMX1f1FJUTDaiclN}"}
+{"fn": "get_flag", "args": [7, 100, -1, 0], "ok": "SAAR{__8HAGQAAACMY-xvJf_USsP8brW8daQI}"}
+{"fn": "get_flag", "args": [0, 9223372036854775807, -1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, -100, 9223372036854775807, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 100, -100, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 42, 0, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 0, -1, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 7, 2, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 7, 1, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 9223372036854775807, 7, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 9223372036854775807, 9223372036854775807, 42], "ok": "SAAR{__8CAP__KgAnhVtv_wzKAr-OF_g9ahBD}"}
+{"fn": "get_flag", "args": [-2147483648, 2147483647, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 42, 42, 42], "ok": "SAAR{KgACACoAKgCAG-AjhJv-tz9rviix-6e4}"}
+{"fn": "get_flag", "args": [2147483647, 9223372036854775807, -100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 2, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 255, 42, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 100, 100, 2], "ok": "SAAR{ZAABAGQAAgA4-BH2Qosvi13bqmjs6NOJ}"}
+{"fn": "get_flag", "args": [-100, 2147483647, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 0, 2147483647], "ok": "SAAR{____AAAAAAAu45_8bMRKXeeukJDgARt4}"}
+{"fn": "get_flag", "args": [2, 9223372036854775807, -100, 2], "ok": "SAAR{nP8CAP__AgCegHWnfCfOq1RqJlrTU7cJ}"}
+{"fn": "get_flag", "args": [42, -100, 100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 42, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 0, 100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, -1, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 1, 255], "ok": "SAAR{_wABAAEAAAAiI3OFZOYRMOdeGpqYEBGK}"}
+{"fn": "get_flag", "args": [100, 255, 100, {"$undefined": true}], "ok": "SAAR{ZABkAP8AAAD1DTbKYUdU6dLV0YAGKFAR}"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 2, 2, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 2147483647, 9223372036854775807, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2, 42, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 0, -100, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 255, 2147483647, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 1, 1, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 2, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [7, -1, -1, 1], "ok": "SAAR{__8HAP__AQDmSKWji7RajcL-tS3eKq-t}"}
+{"fn": "get_flag", "args": [255, 9223372036854775807, 100, {"$undefined": true}], "ok": "SAAR{ZAD_AP__AAA5iBdI5OvKW1eY9V0MLfJJ}"}
+{"fn": "get_flag", "args": [9223372036854775807, -1, 2, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 42, 0, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 2147483647, 2, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 9223372036854775807, 1, 100], "ok": "SAAR{AQAAAP__ZADjcwTg0Sf7qVfhZmpgTAfc}"}
+{"fn": "get_flag", "args": [-1, 2147483647, -2147483648, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 2, 7, 1], "ok": "SAAR{BwAAAAIAAQDenq-T690I3BZd-OKZGhCV}"}
+{"fn": "get_flag", "args": [0, -100, 0, {"$undefined": true}], "ok": "SAAR{AAAAAJz_AABBw8uK1OS6WqjjC9nKNSWE}"}
+{"fn": "get_flag", "args": [-2147483648, 0, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 0, 255, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 2147483647, -2147483648, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 1, 2147483647, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483648, 0, 42, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 7, -1, 100], "ok": "SAAR{__8BAAcAZABlEiBapba53HfdB_9nyDiw}"}
+{"fn": "get_flag", "args": [2, 9223372036854775807, 7, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 100, 7, 2], "ok": "SAAR{BwBkAGQAAgBTj6yR5N9RlGt0648zaJGo}"}
+{"fn": "get_flag", "args": [-2147483648, -100, 0, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, -1, 7, 42], "ok": "SAAR{BwD_AP__KgDigFq5uKXzZyUGY4cA2_Qt}"}
+{"fn": "get_flag", "args": [7, 42, 2, 7], "ok": "SAAR{AgAHACoABwA48rFTOpB4GQX7Z__Dg0NP}"}
+{"fn": "get_flag", "args": [1, 42, 100], "ok": "SAAR{ZAABACoAAACPveU_yyerR6zdM__jM3nI}"}
+{"fn": "get_flag", "args": [-1, 0, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 100, 0, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 1, -1, 7], "ok": "SAAR{____AAEABwC-UXOwZjYXfmgeYiBAFKzJ}"}
+{"fn": "get_flag", "args": [2, -100, 100, 0], "ok": "SAAR{ZAACAJz_AAAhPVxUgkkdoFCXn9Dp0Fjt}"}
+{"fn": "get_flag", "args": [2, -1, 0], "ok": "SAAR{AAACAP__AABwRyr0p5HF06s_qfghJMw0}"}
+{"fn": "get_flag", "args": [9223372036854775807, 0, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 2147483647, 255, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 42, 255, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 2147483647, 255, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 2, 7, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, -1, 100, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 1, -1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 2147483647, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 100, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2, 2, 100, 0], "ok": "SAAR{ZAACAAIAAACxbc1xSby1ScWUQ3-6LVLy}"}
+{"fn": "get_flag", "args": [-100, 255, 9223372036854775807, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 255, -100, {"$undefined": true}], "ok": "SAAR{nP8AAP8AAACay0voR1WfDoNTaR_FTTle}"}
+{"fn": "get_flag", "args": [1, 100, 255, 100], "ok": "SAAR{_wABAGQAZAAoGPBQUfYV8XlHGlLdtU-Z}"}
+{"fn": "get_flag", "args": [0, 255, 2], "ok": "SAAR{AgAAAP8AAAChsNYJN9kfzDxanERj_I1Y}"}
+{"fn": "get_flag", "args": [7, 7, 0, 7], "ok": "SAAR{AAAHAAcABwAitZuu7qRWkv3K-ikZNSgS}"}
+{"fn": "get_flag", "args": [100, -1, 9223372036854775807, 42], "ok": "SAAR{__9kAP__KgAp24mLvL4lWC4MREU7UUY6}"}
+{"fn": "get_flag", "args": [9223372036854775807, -2147483648, 7, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 100, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 2147483647, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 7, 1, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [42, 100, -2147483648, 2], "ok": "SAAR{AAAqAGQAAgBjIB9fhJBzbLi70wQv433N}"}
+{"fn": "get_flag", "args": [-100, 255, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [7, -2147483648, 42, 100], "ok": "SAAR{KgAHAAAAZABknd6FnyeohHWEz2jibtBS}"}
+{"fn": "get_flag", "args": [-1, 42, 0, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 100, 100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 42, 9223372036854775807, {"$undefined": true}], "ok": "SAAR{__8AACoAAACwzDWuWv1FUXTSdlg6XP_g}"}
+{"fn": "get_flag", "args": [7, 42, 2, {"$undefined": true}], "ok": "SAAR{AgAHACoAAAC1jghUDaDMF6b3Tkz5TdUl}"}
+{"fn": "get_flag", "args": [-2147483648, -100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [7, 2147483647, 2147483647, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-100, 1, 7, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [100, 255, 0, 42], "ok": "SAAR{AABkAP8AKgCN2qBbW9HW1aGQ2v2i80_0}"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, 2, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [255, 0, 2], "ok": "SAAR{AgD_AAAAAACDzBtn1rGA3iZYKmS1SKyn}"}
+{"fn": "get_flag", "args": [255, 9223372036854775807, 255, 1], "ok": "SAAR{_wD_AP__AQC_kX6JDOY4z5eRiRzl6Kto}"}
+{"fn": "get_flag", "args": [9223372036854775807, 2, -2147483648, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, -100, 42, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [1, 42, 0, 100], "ok": "SAAR{AAABACoAZABEZyUCePApA2c0kHxOYLnP}"}
+{"fn": "get_flag", "args": [2147483647, 7, 2147483647, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-7, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-1, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [0, 1, 100, 100], "ok": "SAAR{ZAAAAAEAZADBkD1leZdTV1VBaT8ViQf9}"}
+{"fn": "get_flag", "args": [2147483648, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-2147483649, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9007199254740993, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [9223372036854775807, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [-9223372036854775808, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, -7, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, -1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 0, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 2147483648, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, -2147483649, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 9007199254740993, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 9223372036854775807, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, -9223372036854775808, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, -7, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, -1, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 0, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 2147483648, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, -2147483649, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 9007199254740993, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 9223372036854775807, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, -9223372036854775808, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, -7], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, -2147483649], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 9007199254740993], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "get_flag", "args": [2147483647, 1, 100, -9223372036854775808], "error": "error: 'H' format requires 0 <= number <= 65535"}
+{"fn": "ucfirst", "args": ["﻿bom"], "ok": "﻿bom"}
+{"fn": "ucfirst", "args": ["a{name} has {count} items"], "ok": "A{name} has {count} items"}
+{"fn": "ucfirst", "args": ["ésrc/a/b.ts"], "ok": "Ésrc/a/b.ts"}
+{"fn": "ucfirst", "args": ["a.b.c"], "ok": "A.b.c"}
+{"fn": "ucfirst", "args": ["a"], "ok": "A"}
+{"fn": "ucfirst", "args": ["HELLO"], "ok": "HELLO"}
+{"fn": "ucfirst", "args": ["a.b.cns:key.path"], "ok": "A.b.cns:key.path"}
+{"fn": "ucfirst", "args": ["src/a/b.ts"], "ok": "Src/a/b.ts"}
+{"fn": "ucfirst", "args": ["abc"], "ok": "Abc"}
+{"fn": "ucfirst", "args": [":日本語のテキスト"], "ok": ":日本語のテキスト"}
+{"fn": "ucfirst", "args": ["abchello world"], "ok": "Abchello world"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣ"], "ok": "ΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["hello"], "ok": "Hello"}
+{"fn": "ucfirst", "args": ["trailing."], "ok": "Trailing."}
+{"fn": "ucfirst", "args": ["a😀b😀c"], "ok": "A😀b😀c"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemsabc"], "ok": "{name} has {count} itemsabc"}
+{"fn": "ucfirst", "args": ["tab\tseparated"], "ok": "Tab\tseparated"}
+{"fn": "ucfirst", "args": ["a😀b😀cHELLO"], "ok": "A😀b😀cHELLO"}
+{"fn": "ucfirst", "args": ["Hello World"], "ok": "Hello World"}
+{"fn": "ucfirst", "args": ["straße:"], "ok": "Straße:"}
+{"fn": "ucfirst", "args": ["ab"], "ok": "Ab"}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mix"], "ok": "Emoji 👍🏽 mix"}
+{"fn": "ucfirst", "args": [".leading"], "ok": ".leading"}
+{"fn": "ucfirst", "args": ["é"], "ok": "É"}
+{"fn": "ucfirst", "args": ["ns:key.path"], "ok": "Ns:key.path"}
+{"fn": "ucfirst", "args": ["key_name-1"], "ok": "Key_name-1"}
+{"fn": "ucfirst", "args": [""], "error": "IndexError: string index out of range"}
+{"fn": "ucfirst", "args": ["a:b:c"], "ok": "A:b:c"}
+{"fn": "ucfirst", "args": ["Hello Worldabc"], "ok": "Hello Worldabc"}
+{"fn": "ucfirst", "args": ["😀"], "ok": "😀"}
+{"fn": "ucfirst", "args": ["tab\tseparatedΣΊΣΥΦΟΣ"], "ok": "Tab\tseparatedΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["trailing.a..b"], "ok": "Trailing.a..b"}
+{"fn": "ucfirst", "args": ["./x/**/*.json"], "ok": "./x/**/*.json"}
+{"fn": "ucfirst", "args": [":"], "ok": ":"}
+{"fn": "ucfirst", "args": ["{name} has {count} items"], "ok": "{name} has {count} items"}
+{"fn": "ucfirst", "args": ["straße"], "ok": "Straße"}
+{"fn": "ucfirst", "args": ["éline1\nline2"], "ok": "Éline1\nline2"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣkey_name-1"], "ok": "ΣΊΣΥΦΟΣkey_name-1"}
+{"fn": "ucfirst", "args": ["日本語のテキスト"], "ok": "日本語のテキスト"}
+{"fn": "ucfirst", "args": ["hello world{name} has {count} items"], "ok": "Hello world{name} has {count} items"}
+{"fn": "ucfirst", "args": ["éa.b.c"], "ok": "Éa.b.c"}
+{"fn": "ucfirst", "args": ["İstanbul"], "ok": "İstanbul"}
+{"fn": "ucfirst", "args": ["a..b"], "ok": "A..b"}
+{"fn": "ucfirst", "args": ["hello world"], "ok": "Hello world"}
+{"fn": "ucfirst", "args": ["éabc"], "ok": "Éabc"}
+{"fn": "ucfirst", "args": ["Hello Worldline1\nline2"], "ok": "Hello Worldline1\nline2"}
+{"fn": "ucfirst", "args": ["line1\nline2"], "ok": "Line1\nline2"}
+{"fn": "ucfirst", "args": ["straßehello"], "ok": "Straßehello"}
+{"fn": "ucfirst", "args": ["akey_name-1"], "ok": "Akey_name-1"}
+{"fn": "ucfirst", "args": ["straße日本語のテキスト"], "ok": "Straße日本語のテキスト"}
+{"fn": "ucfirst", "args": ["trailing.İstanbul"], "ok": "Trailing.İstanbul"}
+{"fn": "ucfirst", "args": ["ünïcödé"], "ok": "Ünïcödé"}
+{"fn": "ucfirst", "args": ["İstanbula.b.c"], "ok": "İstanbula.b.c"}
+{"fn": "ucfirst", "args": ["  padded  "], "ok": "  padded  "}
+{"fn": "ucfirst", "args": ["﻿bom:"], "ok": "﻿bom:"}
+{"fn": "ucfirst", "args": ["hello./x/**/*.json"], "ok": "Hello./x/**/*.json"}
+{"fn": "ucfirst", "args": ["éstraße"], "ok": "Éstraße"}
+{"fn": "ucfirst", "args": ["日本語のテキストünïcödé"], "ok": "日本語のテキストünïcödé"}
+{"fn": "ucfirst", "args": ["  padded  a"], "ok": "  padded  a"}
+{"fn": "ucfirst", "args": ["key_name-1ns:key.path"], "ok": "Key_name-1ns:key.path"}
+{"fn": "ucfirst", "args": ["İstanbulΣΊΣΥΦΟΣ"], "ok": "İstanbulΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["Hello Worldİstanbul"], "ok": "Hello Worldİstanbul"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemsa"], "ok": "{name} has {count} itemsa"}
+{"fn": "ucfirst", "args": ["aünïcödé"], "ok": "Aünïcödé"}
+{"fn": "ucfirst", "args": [":tab\tseparated"], "ok": ":tab\tseparated"}
+{"fn": "ucfirst", "args": ["src/a/b.ts😀"], "ok": "Src/a/b.ts😀"}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mix:"], "ok": "Emoji 👍🏽 mix:"}
+{"fn": "ucfirst", "args": ["İstanbul:"], "ok": "İstanbul:"}
+{"fn": "ucfirst", "args": ["éa..b"], "ok": "Éa..b"}
+{"fn": "ucfirst", "args": ["src/a/b.tsemoji 👍🏽 mix"], "ok": "Src/a/b.tsemoji 👍🏽 mix"}
+{"fn": "ucfirst", "args": ["﻿bom.leading"], "ok": "﻿bom.leading"}
+{"fn": "ucfirst", "args": ["ünïcödéns:key.path"], "ok": "Ünïcödéns:key.path"}
+{"fn": "ucfirst", "args": ["ns:key.path😀"], "ok": "Ns:key.path😀"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣab"], "ok": "ΣΊΣΥΦΟΣab"}
+{"fn": "ucfirst", "args": ["😀key_name-1"], "ok": "😀key_name-1"}
+{"fn": "ucfirst", "args": ["key_name-1  padded  "], "ok": "Key_name-1  padded  "}
+{"fn": "ucfirst", "args": ["HELLO﻿bom"], "ok": "HELLO﻿bom"}
+{"fn": "ucfirst", "args": ["trailing.line1\nline2"], "ok": "Trailing.line1\nline2"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣhello world"], "ok": "ΣΊΣΥΦΟΣhello world"}
+{"fn": "ucfirst", "args": ["ns:key.path.leading"], "ok": "Ns:key.path.leading"}
+{"fn": "ucfirst", "args": ["﻿boma😀b😀c"], "ok": "﻿boma😀b😀c"}
+{"fn": "ucfirst", "args": ["İstanbulé"], "ok": "İstanbulé"}
+{"fn": "ucfirst", "args": ["hello{name} has {count} items"], "ok": "Hello{name} has {count} items"}
+{"fn": "ucfirst", "args": ["ünïcödé:"], "ok": "Ünïcödé:"}
+{"fn": "ucfirst", "args": ["aba:b:c"], "ok": "Aba:b:c"}
+{"fn": "ucfirst", "args": ["trailing.trailing."], "ok": "Trailing.trailing."}
+{"fn": "ucfirst", "args": ["a.b.c.leading"], "ok": "A.b.c.leading"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣsrc/a/b.ts"], "ok": "ΣΊΣΥΦΟΣsrc/a/b.ts"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣ日本語のテキスト"], "ok": "ΣΊΣΥΦΟΣ日本語のテキスト"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemstrailing."], "ok": "{name} has {count} itemstrailing."}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mix  padded  "], "ok": "Emoji 👍🏽 mix  padded  "}
+{"fn": "ucfirst", "args": ["trailing.a.b.c"], "ok": "Trailing.a.b.c"}
+{"fn": "ucfirst", "args": ["tab\tseparatedabc"], "ok": "Tab\tseparatedabc"}
+{"fn": "ucfirst", "args": [":ünïcödé"], "ok": ":ünïcödé"}
+{"fn": "ucfirst", "args": ["  padded  trailing."], "ok": "  padded  trailing."}
+{"fn": "ucfirst", "args": ["é:"], "ok": "É:"}
+{"fn": "ucfirst", "args": ["Hello Worldstraße"], "ok": "Hello Worldstraße"}
+{"fn": "ucfirst", "args": ["key_name-1a"], "ok": "Key_name-1a"}
+{"fn": "ucfirst", "args": ["a.b.c日本語のテキスト"], "ok": "A.b.c日本語のテキスト"}
+{"fn": "ucfirst", "args": ["line1\nline2  padded  "], "ok": "Line1\nline2  padded  "}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mixa"], "ok": "Emoji 👍🏽 mixa"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣhello"], "ok": "ΣΊΣΥΦΟΣhello"}
+{"fn": "ucfirst", "args": ["İstanbulİstanbul"], "ok": "İstanbulİstanbul"}
+{"fn": "ucfirst", "args": ["src/a/b.tsHELLO"], "ok": "Src/a/b.tsHELLO"}
+{"fn": "ucfirst", "args": ["😀a😀b😀c"], "ok": "😀a😀b😀c"}
+{"fn": "ucfirst", "args": ["key_name-1.leading"], "ok": "Key_name-1.leading"}
+{"fn": "ucfirst", "args": ["a..b😀"], "ok": "A..b😀"}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mixé"], "ok": "Emoji 👍🏽 mixé"}
+{"fn": "ucfirst", "args": ["a😀b😀ckey_name-1"], "ok": "A😀b😀ckey_name-1"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣ./x/**/*.json"], "ok": "ΣΊΣΥΦΟΣ./x/**/*.json"}
+{"fn": "ucfirst", "args": ["a..b﻿bom"], "ok": "A..b﻿bom"}
+{"fn": "ucfirst", "args": ["日本語のテキストé"], "ok": "日本語のテキストé"}
+{"fn": "ucfirst", "args": ["  padded  line1\nline2"], "ok": "  padded  line1\nline2"}
+{"fn": "ucfirst", "args": ["İstanbulns:key.path"], "ok": "İstanbulns:key.path"}
+{"fn": "ucfirst", "args": ["straßea..b"], "ok": "Straßea..b"}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mixa..b"], "ok": "Emoji 👍🏽 mixa..b"}
+{"fn": "ucfirst", "args": ["src/a/b.ts﻿bom"], "ok": "Src/a/b.ts﻿bom"}
+{"fn": "ucfirst", "args": ["a:b:c:"], "ok": "A:b:c:"}
+{"fn": "ucfirst", "args": ["日本語のテキストabc"], "ok": "日本語のテキストabc"}
+{"fn": "ucfirst", "args": ["HELLOtab\tseparated"], "ok": "HELLOtab\tseparated"}
+{"fn": "ucfirst", "args": ["trailing.日本語のテキスト"], "ok": "Trailing.日本語のテキスト"}
+{"fn": "ucfirst", "args": ["a.b.ca"], "ok": "A.b.ca"}
+{"fn": "ucfirst", "args": ["tab\tseparatedé"], "ok": "Tab\tseparatedé"}
+{"fn": "ucfirst", "args": ["a😀b😀cé"], "ok": "A😀b😀cé"}
+{"fn": "ucfirst", "args": [".leadingünïcödé"], "ok": ".leadingünïcödé"}
+{"fn": "ucfirst", "args": ["a..bkey_name-1"], "ok": "A..bkey_name-1"}
+{"fn": "ucfirst", "args": ["😀trailing."], "ok": "😀trailing."}
+{"fn": "ucfirst", "args": ["😀İstanbul"], "ok": "😀İstanbul"}
+{"fn": "ucfirst", "args": ["straßea.b.c"], "ok": "Straßea.b.c"}
+{"fn": "ucfirst", "args": ["hello world😀"], "ok": "Hello world😀"}
+{"fn": "ucfirst", "args": ["abab"], "ok": "Abab"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemstab\tseparated"], "ok": "{name} has {count} itemstab\tseparated"}
+{"fn": "ucfirst", "args": ["a😀b😀cHello World"], "ok": "A😀b😀cHello World"}
+{"fn": "ucfirst", "args": ["src/a/b.tsΣΊΣΥΦΟΣ"], "ok": "Src/a/b.tsΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["key_name-1key_name-1"], "ok": "Key_name-1key_name-1"}
+{"fn": "ucfirst", "args": ["ns:key.pathline1\nline2"], "ok": "Ns:key.pathline1\nline2"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemsa..b"], "ok": "{name} has {count} itemsa..b"}
+{"fn": "ucfirst", "args": ["a:b:cstraße"], "ok": "A:b:cstraße"}
+{"fn": "ucfirst", "args": [":é"], "ok": ":é"}
+{"fn": "ucfirst", "args": ["a:b:cabc"], "ok": "A:b:cabc"}
+{"fn": "ucfirst", "args": ["{name} has {count} itemskey_name-1"], "ok": "{name} has {count} itemskey_name-1"}
+{"fn": "ucfirst", "args": ["abcİstanbul"], "ok": "Abcİstanbul"}
+{"fn": "ucfirst", "args": ["hellokey_name-1"], "ok": "Hellokey_name-1"}
+{"fn": "ucfirst", "args": ["ΣΊΣΥΦΟΣa😀b😀c"], "ok": "ΣΊΣΥΦΟΣa😀b😀c"}
+{"fn": "ucfirst", "args": ["emoji 👍🏽 mixünïcödé"], "ok": "Emoji 👍🏽 mixünïcödé"}
+{"fn": "ucfirst", "args": ["aa:b:c"], "ok": "Aa:b:c"}
+{"fn": "ucfirst", "args": ["a:b:cé"], "ok": "A:b:cé"}
+{"fn": "ucfirst", "args": ["ünïcödé日本語のテキスト"], "ok": "Ünïcödé日本語のテキスト"}
+{"fn": "ucfirst", "args": ["./x/**/*.jsonabc"], "ok": "./x/**/*.jsonabc"}
+{"fn": "ucfirst", "args": ["a..bhello"], "ok": "A..bhello"}
+{"fn": "ucfirst", "args": ["a.b.cHello World"], "ok": "A.b.cHello World"}
+{"fn": "ucfirst", "args": ["abctrailing."], "ok": "Abctrailing."}
+{"fn": "ucfirst", "args": ["ns:key.pathhello"], "ok": "Ns:key.pathhello"}
+{"fn": "ucfirst", "args": ["{name} has {count} items😀"], "ok": "{name} has {count} items😀"}
+{"fn": "ucfirst", "args": ["  padded  hello"], "ok": "  padded  hello"}
+{"fn": "ucfirst", "args": ["src/a/b.tsé"], "ok": "Src/a/b.tsé"}
+{"fn": "ucfirst", "args": ["key_name-1hello"], "ok": "Key_name-1hello"}
+{"fn": "ucfirst", "args": ["line1\nline2ns:key.path"], "ok": "Line1\nline2ns:key.path"}
+{"fn": "ucfirst", "args": ["😀ab"], "ok": "😀ab"}
+{"fn": "ucfirst", "args": ["éΣΊΣΥΦΟΣ"], "ok": "ÉΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["a.b.cİstanbul"], "ok": "A.b.cİstanbul"}
+{"fn": "ucfirst", "args": ["tab\tseparateda"], "ok": "Tab\tseparateda"}
+{"fn": "ucfirst", "args": ["line1\nline2a😀b😀c"], "ok": "Line1\nline2a😀b😀c"}
+{"fn": "ucfirst", "args": ["ahello"], "ok": "Ahello"}
+{"fn": "ucfirst", "args": ["😀.leading"], "ok": "😀.leading"}
+{"fn": "ucfirst", "args": ["./x/**/*.json{name} has {count} items"], "ok": "./x/**/*.json{name} has {count} items"}
+{"fn": "ucfirst", "args": ["😀tab\tseparated"], "ok": "😀tab\tseparated"}
+{"fn": "ucfirst", "args": ["helloHELLO"], "ok": "HelloHELLO"}
+{"fn": "ucfirst", "args": ["HELLOab"], "ok": "HELLOab"}
+{"fn": "ucfirst", "args": ["tab\tseparatedtab\tseparated"], "ok": "Tab\tseparatedtab\tseparated"}
+{"fn": "ucfirst", "args": ["a:b:cHello World"], "ok": "A:b:cHello World"}
+{"fn": "ucfirst", "args": ["a:b:chello world"], "ok": "A:b:chello world"}
+{"fn": "ucfirst", "args": ["hello world.leading"], "ok": "Hello world.leading"}
+{"fn": "ucfirst", "args": ["  padded  ΣΊΣΥΦΟΣ"], "ok": "  padded  ΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": ["﻿bomline1\nline2"], "ok": "﻿bomline1\nline2"}
+{"fn": "ucfirst", "args": ["straße﻿bom"], "ok": "Straße﻿bom"}
+{"fn": "ucfirst", "args": ["hello world日本語のテキスト"], "ok": "Hello world日本語のテキスト"}
+{"fn": "ucfirst", "args": ["a..b.leading"], "ok": "A..b.leading"}
+{"fn": "ucfirst", "args": ["  padded  abc"], "ok": "  padded  abc"}
+{"fn": "ucfirst", "args": ["trailing.key_name-1"], "ok": "Trailing.key_name-1"}
+{"fn": "ucfirst", "args": ["abcns:key.path"], "ok": "Abcns:key.path"}
+{"fn": "ucfirst", "args": ["a😀b😀ca😀b😀c"], "ok": "A😀b😀ca😀b😀c"}
+{"fn": "ucfirst", "args": ["ünïcödéünïcödé"], "ok": "Ünïcödéünïcödé"}
+{"fn": "ucfirst", "args": ["tab\tseparatedHELLO"], "ok": "Tab\tseparatedHELLO"}
+{"fn": "ucfirst", "args": ["a😀b😀cline1\nline2"], "ok": "A😀b😀cline1\nline2"}
+{"fn": "ucfirst", "args": ["日本語のテキストa..b"], "ok": "日本語のテキストa..b"}
+{"fn": "ucfirst", "args": ["Hello Worldtrailing."], "ok": "Hello Worldtrailing."}
+{"fn": "ucfirst", "args": ["  padded  :"], "ok": "  padded  :"}
+{"fn": "ucfirst", "args": ["a..babc"], "ok": "A..babc"}
+{"fn": "ucfirst", "args": ["a😀b😀cİstanbul"], "ok": "A😀b😀cİstanbul"}
+{"fn": "ucfirst", "args": ["a..bİstanbul"], "ok": "A..bİstanbul"}
+{"fn": "ucfirst", "args": ["HELLOsrc/a/b.ts"], "ok": "HELLOsrc/a/b.ts"}
+{"fn": "ucfirst", "args": ["日本語のテキストΣΊΣΥΦΟΣ"], "ok": "日本語のテキストΣΊΣΥΦΟΣ"}
+{"fn": "ucfirst", "args": [".leading😀"], "ok": ".leading😀"}
+{"fn": "ucfirst", "args": ["abcHELLO"], "ok": "AbcHELLO"}
+{"fn": "ucfirst", "args": ["ünïcödéa"], "ok": "Ünïcödéa"}
+{"fn": "ucfirst", "args": [":straße"], "ok": ":straße"}
+{"fn": "ucfirst", "args": ["ünïcödésrc/a/b.ts"], "ok": "Ünïcödésrc/a/b.ts"}
+{"fn": "ucfirst", "args": ["abcünïcödé"], "ok": "Abcünïcödé"}
+{"fn": "ucfirst", "args": ["😀a.b.c"], "ok": "😀a.b.c"}
+{"fn": "ucfirst", "args": ["héllo wörld"], "ok": "Héllo wörld"}
+{"fn": "ucfirst", "args": ["👍🏽 thumbs"], "ok": "👍🏽 thumbs"}
+{"fn": "ucfirst", "args": ["日本語"], "ok": "日本語"}
+{"fn": "ucfirst", "args": ["ılık ırmak"], "ok": "Ilık ırmak"}
+{"fn": "ucfirst", "args": ["👨‍👩‍👧 family"], "ok": "👨‍👩‍👧 family"}
+{"fn": "ucfirst", "args": ["a b"], "ok": "A b"}
+{"fn": "ucfirst", "args": ["a😀b"], "ok": "A😀b"}
