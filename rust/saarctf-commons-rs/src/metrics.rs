@@ -203,11 +203,11 @@ impl MetricRecorder for TelegrafTailMetricsRecorder {
 
 /// `TelegrafBufferMetricsRecorder` — writes into any sink (stdout, a socket, …).
 pub struct TelegrafBufferMetricsRecorder {
-    file: Box<dyn Write>,
+    file: Box<dyn Write + Send>,
 }
 
 impl TelegrafBufferMetricsRecorder {
-    pub fn new(file: Box<dyn Write>) -> Self {
+    pub fn new(file: Box<dyn Write + Send>) -> Self {
         TelegrafBufferMetricsRecorder { file }
     }
 }
@@ -215,5 +215,34 @@ impl TelegrafBufferMetricsRecorder {
 impl MetricRecorder for TelegrafBufferMetricsRecorder {
     fn get_writer(&mut self) -> &mut dyn Write {
         &mut self.file
+    }
+}
+
+/// `Metrics` global proxy (Python had a module-level `MetricsProxy` instance).
+static METRICS: std::sync::OnceLock<std::sync::Mutex<Option<Box<dyn MetricRecorder + Send>>>> =
+    std::sync::OnceLock::new();
+
+/// `setup_default_metrics` — from the `METRICS_LOGFILE` env var (`-` = stdout).
+pub fn setup_default_metrics() {
+    let recorder: Box<dyn MetricRecorder + Send> = match std::env::var("METRICS_LOGFILE") {
+        Ok(f) if f == "-" => Box::new(TelegrafBufferMetricsRecorder::new(Box::new(std::io::stdout()))),
+        Ok(f) => Box::new(TelegrafTailMetricsRecorder::new(f)),
+        Err(_) => return,
+    };
+    let cell = METRICS.get_or_init(|| std::sync::Mutex::new(None));
+    *cell.lock().unwrap() = Some(recorder);
+}
+
+/// `Metrics.record_many(...)` — no-op until `setup_default_metrics` ran.
+pub fn metrics_record_many(
+    metric: &str,
+    values: Vec<(String, MetricValue)>,
+    ts: Timestamp,
+    attributes: Vec<(String, MetricValue)>,
+) {
+    if let Some(cell) = METRICS.get() {
+        if let Some(recorder) = cell.lock().unwrap().as_mut() {
+            recorder.record_many(metric, values, ts, attributes);
+        }
     }
 }

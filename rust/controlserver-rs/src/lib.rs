@@ -2,6 +2,7 @@
 //! axum/tokio crate with two binaries. Schema: migrations/0001_baseline.sql (ADR-005).
 
 pub mod dispatcher;
+pub mod endpoints;
 pub mod events;
 pub mod flag_id_file;
 pub mod logger;

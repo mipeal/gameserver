@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = "0.8"
 saarctf-commons-rs = { path = "../saarctf-commons-rs" }
 gamelib-rs = { path = "../gamelib-rs" }
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "migrate"] }
