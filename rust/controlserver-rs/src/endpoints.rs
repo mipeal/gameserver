@@ -497,20 +497,28 @@ async fn overview_set_vpn(
         vpn.set_state(s).await.map_err(err)?;
     }
     if let Some(ban) = body.get("ban") {
-        let team_id = ban.get("team_id").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+        let team_id = ban
+            .get("team_id")
+            .and_then(|v| v.as_i64())
+            .and_then(|v| i32::try_from(v).ok())
+            .unwrap_or(0); // out-of-range/non-numeric → no-op, like team_id 0
         let tick = ban.get("tick").and_then(|v| v.as_i64());
         vpn.ban_team(team_id, tick).await.map_err(err)?;
     }
     if let Some(unban) = body.get("unban").and_then(|v| v.as_i64()) {
-        vpn.unban_team(unban as i32).await.map_err(err)?;
+        if let Ok(id) = i32::try_from(unban) {
+            vpn.unban_team(id).await.map_err(err)?;
+        }
     }
     if let Some(add) = body.get("add_permission").and_then(|v| v.as_i64()) {
-        vpn.add_permission_team(add as i32).await.map_err(err)?;
+        if let Ok(id) = i32::try_from(add) {
+            vpn.add_permission_team(id).await.map_err(err)?;
+        }
     }
     if let Some(remove) = body.get("remove_permission").and_then(|v| v.as_i64()) {
-        vpn.remove_permission_team(remove as i32)
-            .await
-            .map_err(err)?;
+        if let Ok(id) = i32::try_from(remove) {
+            vpn.remove_permission_team(id).await.map_err(err)?;
+        }
     }
     Ok("OK")
 }
@@ -609,9 +617,10 @@ fn end_of_tick(s: &TimerSnapshot, tick: Option<i64>) -> Option<i64> {
     }
     let open_at = game_start_time(s);
     if s.state == CtfState::Running && tick >= s.current_tick {
-        Some(s.tick_end? + (tick - s.current_tick) * s.tick_time)
+        s.tick_end?
+            .checked_add((tick - s.current_tick).checked_mul(s.tick_time)?)
     } else if s.state != CtfState::Running && tick >= s.current_tick {
-        Some(open_at? + (tick - s.current_tick) * s.tick_time)
+        open_at?.checked_add((tick - s.current_tick).checked_mul(s.tick_time)?)
     } else {
         None
     }
