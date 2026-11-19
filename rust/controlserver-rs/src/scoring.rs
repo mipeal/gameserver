@@ -216,6 +216,10 @@ pub struct ScoringCalculation {
     pub algo: Algo,
     services: Vec<crate::models::Service>,
     pub first_blood: FirstBlood,
+    /// `FilteredScoringCalculation` options: empty/false = unfiltered (the
+    /// Python subclass overrode these three methods; folded in here).
+    pub exclude_team_ids: HashSet<i16>,
+    pub subtract_nop_points: bool,
 }
 
 impl ScoringCalculation {
@@ -229,7 +233,24 @@ impl ScoringCalculation {
             algo: Algo::from_config(&cfg.algorithm)?,
             services,
             first_blood: FirstBlood::new(cfg),
+            exclude_team_ids: HashSet::new(),
+            subtract_nop_points: false,
         })
+    }
+
+    /// `FilteredScoringCalculation` — a ScoringCalculation that acts like some
+    /// teams don't exist (optionally offsetting every point sum by the NOP
+    /// team's points so anyone worse than NOP gets 0).
+    pub async fn filtered(
+        db: &PgPool,
+        cfg: &ScoringConfig,
+        exclude_team_ids: HashSet<i16>,
+        subtract_nop_points: bool,
+    ) -> Result<ScoringCalculation, String> {
+        let mut calc = Self::new(db, cfg).await?;
+        calc.exclude_team_ids = exclude_team_ids;
+        calc.subtract_nop_points = subtract_nop_points;
+        Ok(calc)
     }
 
     fn flags_rounds_valid(&self) -> i64 {
@@ -282,6 +303,7 @@ impl ScoringCalculation {
                     );
                 }
             }
+            results.retain(|(team_id, _), _| !self.exclude_team_ids.contains(team_id));
             return Ok(results);
         }
         let mut team_points: Vec<TeamPointsLite> = sqlx::query_as(
@@ -304,10 +326,12 @@ impl ScoringCalculation {
             .fetch_all(db)
             .await?;
         }
-        Ok(team_points
+        let mut results: HashMap<(i16, i16), TeamPointsLite> = team_points
             .into_iter()
             .map(|tp| ((tp.team_id, tp.service_id), tp))
-            .collect())
+            .collect();
+        results.retain(|(team_id, _), _| !self.exclude_team_ids.contains(team_id));
+        Ok(results)
     }
 
     /// `_get_submitted_flags` — this tick's submissions plus per-flag counts of
@@ -1023,9 +1047,13 @@ impl ScoringCalculation {
         &self,
         db: &PgPool,
     ) -> Result<Vec<crate::models::Team>, sqlx::Error> {
-        sqlx::query_as("SELECT * FROM teams ORDER BY id")
+        let teams: Vec<crate::models::Team> = sqlx::query_as("SELECT * FROM teams ORDER BY id")
             .fetch_all(db)
-            .await
+            .await?;
+        Ok(teams
+            .into_iter()
+            .filter(|t| !self.exclude_team_ids.contains(&(t.id as i16)))
+            .collect())
     }
 
     /// `get_considered_services`.
@@ -1050,7 +1078,7 @@ impl ScoringCalculation {
                 sqlx::query_as("SELECT id, name FROM teams ORDER BY id")
                     .fetch_all(db)
                     .await?;
-            return Ok(teams
+            let entries: Vec<RankingEntry> = teams
                 .into_iter()
                 .map(|(id, name)| RankingEntry {
                     team_id: id as i16,
@@ -1059,7 +1087,8 @@ impl ScoringCalculation {
                     rank: 1,
                     points: 0.0,
                 })
-                .collect());
+                .collect();
+            return Ok(self.filter_rankings(entries));
         }
         let rows: Vec<(i16, i32, i32, f64)> = sqlx::query_as(
             "SELECT r.team_id, r.tick, r.rank, r.points FROM team_rankings r \
@@ -1084,7 +1113,41 @@ impl ScoringCalculation {
                 rank,
                 points,
             })
-            .collect())
+            .collect::<Vec<_>>())
+        .map(|rankings| self.filter_rankings(rankings))
+    }
+
+    /// `FilteredScoringCalculation.get_ranking_for_tick`: drop excluded teams
+    /// (compensating ranks) and optionally offset points by the NOP team's sum.
+    fn filter_rankings(&self, mut rankings: Vec<RankingEntry>) -> Vec<RankingEntry> {
+        if self.exclude_team_ids.is_empty() && !self.subtract_nop_points {
+            return rankings;
+        }
+        rankings.sort_by_key(|r| r.rank);
+        let nop = self.cfg.nop_team_id.as_i64().unwrap_or(-1);
+        let point_offset = if self.subtract_nop_points {
+            rankings
+                .iter()
+                .find(|r| r.team_id as i64 == nop)
+                .map(|r| r.points)
+                .unwrap_or(0.0)
+        } else {
+            0.0
+        };
+        let mut removed = 0;
+        rankings
+            .into_iter()
+            .filter_map(|mut r| {
+                if self.exclude_team_ids.contains(&r.team_id) {
+                    removed += 1;
+                    None
+                } else {
+                    r.rank -= removed;
+                    r.points = (r.points - point_offset).max(0.0);
+                    Some(r)
+                }
+            })
+            .collect()
     }
 }
 

@@ -72,24 +72,24 @@ impl Service {
 pub fn parse_ports_str(ports: &str) -> Result<Vec<(String, i32)>, String> {
     ports
         .split(',')
-            .filter_map(|x| {
-                let x = x.trim();
-                if x.is_empty() {
-                    return None;
-                }
-                Some(x)
-            })
-            .map(|x| {
-                let (proto, port) = x
-                    .split_once(':')
-                    .ok_or_else(|| format!("ValueError: bad port spec {x:?}"))?;
-                Ok((
-                    proto.to_string(),
-                    port.parse()
-                        .map_err(|_| format!("ValueError: bad port {port:?}"))?,
-                ))
-            })
-            .collect()
+        .filter_map(|x| {
+            let x = x.trim();
+            if x.is_empty() {
+                return None;
+            }
+            Some(x)
+        })
+        .map(|x| {
+            let (proto, port) = x
+                .split_once(':')
+                .ok_or_else(|| format!("ValueError: bad port spec {x:?}"))?;
+            Ok((
+                proto.to_string(),
+                port.parse()
+                    .map_err(|_| format!("ValueError: bad port {port:?}"))?,
+            ))
+        })
+        .collect()
 }
 
 #[derive(Debug, Clone, FromRow)]
