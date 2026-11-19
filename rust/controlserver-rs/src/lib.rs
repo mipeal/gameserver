@@ -14,6 +14,7 @@ pub mod scoreboard;
 pub mod scoring;
 pub mod service_mgr;
 pub mod timer;
+pub mod vpncontrol;
 pub mod worker;
 
 use saarctf_commons_rs::config::Config;

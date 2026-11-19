@@ -18,13 +18,6 @@ use std::sync::Arc;
 const GROUP: &str = "rust-workers";
 const RUNNING_TTL_SECS: i64 = 2 * 60 * 60;
 
-/// Where the Python tree lives (checker_runner/ runs from there).
-fn python_dir() -> std::path::PathBuf {
-    std::env::var("SAARCTF_PYTHON_DIR")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|_| std::path::PathBuf::from("."))
-}
-
 /// The worker process (celery_cmd.py + the celery worker loop).
 pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<(), String> {
     let client = redis::Client::open(
@@ -39,7 +32,7 @@ pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<
         client,
         write_conn: tokio::sync::Mutex::new(write_conn),
         streams: tokio::sync::RwLock::new(Vec::new()),
-        python_dir: python_dir(),
+        python_dir: saarctf_commons_rs::config::python_dir(cfg),
         cfg: cfg.clone(),
         checker_packages_path: cfg.checker_packages_path.clone(),
         checker_packages_lfs: cfg.checker_packages_lfs.clone(),

@@ -22,13 +22,6 @@ pub fn is_frozen(cfg: &Config, tick: i64, public: bool) -> bool {
             .is_some_and(|freeze| tick > freeze)
 }
 
-/// The python tree root (scoreboard/dist + controlserver/static live there).
-fn python_dir() -> PathBuf {
-    std::env::var("SAARCTF_PYTHON_DIR")
-        .map(PathBuf::from)
-        .unwrap_or_else(|_| PathBuf::from("."))
-}
-
 /// `TickInformation`.
 pub type CheckerResults = HashMap<(i16, i16), (String, Option<String>)>;
 
@@ -138,7 +131,7 @@ impl Scoreboard {
             db,
             firstblood_level: calculation.first_blood.get_required_level(),
             calculation,
-            angular_build_path: python_dir()
+            angular_build_path: saarctf_commons_rs::config::python_dir(cfg)
                 .join("scoreboard")
                 .join("dist")
                 .join("scoreboard"),
@@ -683,7 +676,7 @@ impl Scoreboard {
         }
         let api_path = self.output.join("api");
         std::fs::create_dir_all(&api_path).map_err(|e| e.to_string())?;
-        let base = python_dir();
+        let base = saarctf_commons_rs::config::python_dir(&self.cfg);
         let static_dir = base.join("controlserver").join("static");
         if static_dir.exists() {
             std::fs::copy(

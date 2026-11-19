@@ -66,7 +66,7 @@ front door + app replay + lift. Stop for the user's go-ahead at each wave bounda
 Python-side notes: celery `run_command`/`preload_packages` broadcast tasks not yet
 modeled (TaskMessage has no kind field) — add when service-mgr endpoints arrive. eno
 runner_spec currently falls through to the saarctf subprocess runner (port eno.rs later).
-SAARCTF_PYTHON_DIR env sets the Python tree root for subprocess cwd (default ".").
+SAARCTF_PYTHON_DIR env sets the Python tree root (default: config file's dir, `saarctf_commons_rs::config::python_dir`).
 
 ## Wave 1 complete (2026-11-19)
 
@@ -85,7 +85,6 @@ Deferred out of wave 1 (none block operation):
 - `/overview/components` — redis CLIENT LIST parsing, skipped
 - `patch_utils` — only used by HTML /patches + wave-2 scripts
 - eno runner_spec falls through to the saarctf subprocess runner (port eno.rs wave 2)
-- SAARCTF_PYTHON_DIR default resolves to "." — should probably be the config file's dir
 
 Wireguard-sync note: netlink (pyroute2) → `ip`/`wg` CLI subprocesses, Linux-only at
 runtime; pubkey comparison derives the expected public key from the private key

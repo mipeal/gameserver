@@ -7,11 +7,8 @@ use std::path::Path;
 
 const BASEPORT: i32 = 10000;
 
-fn vpn_dir() -> std::path::PathBuf {
-    std::env::var("SAARCTF_PYTHON_DIR")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|_| std::path::PathBuf::from(".."))
-        .join("vpn")
+fn vpn_dir(cfg: &Config) -> std::path::PathBuf {
+    saarctf_commons_rs::config::python_dir(cfg).join("vpn")
 }
 
 fn cfg_str(cfg: &Config, key: &str) -> String {
@@ -76,7 +73,7 @@ fn build_server_config(
     }
 
     // write config
-    let root = vpn_dir();
+    let root = vpn_dir(cfg);
     let mut serverconfig = format!(
         "\n    # OpenVPN Configuration for Team #{team_id} - \"{name}\"\n    topology p2p\n    ifconfig {peers}\n    proto udp\n    port {port}\n    dev tun{team_id}\n    dev-type tun\n    \n    # route game network there\n    route {route}\n    #push \"route {game_route}\"\n    #TODO avoid loops\n    \n    cipher AES-128-CBC\n    # ncp-ciphers AES-128-GCM\n    auth SHA256\n    keepalive 15 60\n    connect-retry 5 30\n    \n    # \"secure\" version\n    #user nobody\n    #group nogroup\n    #persist-tun\n    \n    # version with up/down callbacks\n    route-delay\n    up-restart\n    up-delay\n    \n    max-clients 1\n    persist-key\n    status /var/log/vpn/openvpn-status-team{team_id}.log\n\n    script-security 3\n    up \"{root}/on-connect.sh {team_id} teamhosted\"\n    down \"{root}/on-disconnect.sh {team_id} teamhosted\"\n    \n    verb 3\n    explicit-exit-notify 1\n    \n    <secret>\n    {secret}\n    </secret>\n    ",
         name = team_name,

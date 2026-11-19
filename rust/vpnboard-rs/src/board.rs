@@ -8,15 +8,9 @@ use chrono::{DateTime, TimeZone, Utc};
 use controlserver_rs::models::Team;
 use saarctf_commons_rs::config::Config;
 use std::collections::HashSet;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub struct VpnBoard;
-
-fn python_dir() -> PathBuf {
-    std::env::var("SAARCTF_PYTHON_DIR")
-        .map(PathBuf::from)
-        .unwrap_or_else(|_| PathBuf::from(".."))
-}
 
 impl VpnBoard {
     pub fn new(cfg: &Config) -> Result<Self, String> {
@@ -25,13 +19,15 @@ impl VpnBoard {
             std::fs::create_dir_all(path).map_err(|e| e.to_string())?;
         }
         if !path.join("index.css").exists() {
-            Self::copy_static_files(path)?;
+            Self::copy_static_files(cfg, path)?;
         }
         Ok(VpnBoard)
     }
 
-    fn copy_static_files(path: &Path) -> Result<(), String> {
-        let static_dir = python_dir().join("controlserver").join("static");
+    fn copy_static_files(cfg: &Config, path: &Path) -> Result<(), String> {
+        let static_dir = saarctf_commons_rs::config::python_dir(cfg)
+            .join("controlserver")
+            .join("static");
         std::fs::copy(
             static_dir.join("css").join("vpnboard.css"),
             path.join("index.css"),

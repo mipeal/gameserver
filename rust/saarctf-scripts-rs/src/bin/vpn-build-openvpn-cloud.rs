@@ -8,11 +8,8 @@ use std::path::Path;
 const BASEPORT: i32 = 12000;
 const BASEPORT2: i32 = 14000;
 
-fn vpn_dir() -> std::path::PathBuf {
-    std::env::var("SAARCTF_PYTHON_DIR")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|_| std::path::PathBuf::from(".."))
-        .join("vpn")
+fn vpn_dir(cfg: &Config) -> std::path::PathBuf {
+    saarctf_commons_rs::config::python_dir(cfg).join("vpn")
 }
 
 fn cfg_str(cfg: &Config, key: &str) -> String {
@@ -41,7 +38,7 @@ fn build_cloud_server_config(
     saarctf_scripts_rs::vpnlib::generate_vpn_keys(&secret_path)?;
 
     // write config
-    let vpnroot = vpn_dir();
+    let vpnroot = vpn_dir(cfg);
     let run_sh = "/bin/gspython";
     let mut serverconfig = format!(
         "\n    # OpenVPN Cloud Configuration for Team #{team_id} - \"{name}\"\n    proto udp\n    port {port}\n    dev tun{dev}\n    dev-type tun\n\n    push \"route 10.32.0.0 255.255.0.0\"\n    push \"route 10.33.0.0 255.255.0.0\"\n\n    server {server_ip} 255.255.255.128\n\n    duplicate-cn\n    client-to-client\n    cipher AES-128-GCM\n    keepalive 15 60\n    connect-retry 5 30\n\n    # \"secure\" version\n    #user nobody\n    #group nogroup\n    #persist-tun\n\n    # version with up/down callbacks\n    up-restart\n\n    max-clients 63\n    persist-key\n    status /var/log/vpn/openvpn-cloud-status-team{team_id}.log\n\n    script-security 3\n    up \"{vpnroot}/on-device-up.sh {team_id}\"\n    down \"{run_sh} {vpnroot}/on-cloud-down.py {team_id}\"\n    client-connect \"{run_sh} {vpnroot}/on-cloud-connect.py {team_id}\"\n    client-disconnect \"{run_sh} {vpnroot}/on-cloud-disconnect.py {team_id}\"\n\n    verb 3\n    explicit-exit-notify 1\n    ",
@@ -113,7 +110,7 @@ fn build_vulnbox_server_config(
     }
 
     // write config
-    let root = vpn_dir();
+    let root = vpn_dir(cfg);
     let serverconfig = format!(
         "\n\t# OpenVPN Configuration for vulnbox of Team #{team_id} - \"{name}\"\n\ttopology p2p\n\tifconfig {gw} {vb}\n\tproto udp\n\tport {port}\n\tdev tun{dev}\n\tdev-type tun\n\n\t# route game network there\n\t#route {route}\n\t#push \"route {game_route}\"\n\t#TODO avoid loops\n\n\tcipher AES-128-CBC\n\t# ncp-ciphers AES-128-GCM\n\tauth SHA256\n\tkeepalive 15 60\n\tconnect-retry 5 30\n\n\t# \"secure\" version\n\t#user nobody\n\t#group nogroup\n\t#persist-tun\n\n\t# version with up/down callbacks\n\troute-delay\n\tup-restart\n\tup-delay\n\n\tmax-clients 1\n\tpersist-key\n\tstatus /var/log/vpn/openvpn-status-team{team_id}.log\n\n\tscript-security 3\n\tup \"{root}/on-connect.sh {team_id} cloudhosted\"\n\tdown \"{root}/on-disconnect.sh {team_id} cloudhosted\"\n\n\tverb 3\n\texplicit-exit-notify 1\n\n\t<secret>\n\t{secret}\n\t</secret>\n\t",
         name = team_name,

@@ -16,6 +16,19 @@ pub fn opt_path(s: Option<&str>) -> Option<String> {
     s.filter(|s| !s.is_empty()).map(str::to_owned)
 }
 
+/// Python tree root for subprocesses and generated scripts: `SAARCTF_PYTHON_DIR`
+/// env, defaulting to the config file's directory.
+pub fn python_dir(cfg: &Config) -> PathBuf {
+    std::env::var("SAARCTF_PYTHON_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            cfg.config_file
+                .parent()
+                .map(Path::to_path_buf)
+                .unwrap_or_default()
+        })
+}
+
 fn as_object<'a>(v: &'a Value, what: &str) -> Result<&'a Map<String, Value>, String> {
     v.as_object()
         .ok_or_else(|| format!("'{what}' must be a dict"))

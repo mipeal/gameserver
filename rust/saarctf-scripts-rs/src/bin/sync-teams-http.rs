@@ -72,9 +72,7 @@ async fn import_logo_from_bytes(
 
 async fn import_logo(db: &sqlx::PgPool, cfg: &saarctf_commons_rs::config::Config, team: &mut Team) {
     // profile_dummy.png from the repo root, like the Python default
-    let root = std::env::var("SAARCTF_PYTHON_DIR")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|_| std::path::PathBuf::from(".."));
+    let root = saarctf_commons_rs::config::python_dir(cfg);
     let dummy = root
         .join("controlserver")
         .join("static")
