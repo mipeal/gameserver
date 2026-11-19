@@ -202,7 +202,7 @@ pub struct TeamPoints {
 }
 
 /// `TeamPointsLite` — the projection scoring reads and writes.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default, FromRow)]
 pub struct TeamPointsLite {
     pub team_id: i16,
     pub service_id: i16,

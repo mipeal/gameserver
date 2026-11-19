@@ -33,3 +33,7 @@ path = "src/bin/controlserver.rs"
 [[bin]]
 name = "checker_runner"
 path = "src/bin/checker_runner.rs"
+
+[[bin]]
+name = "scoreboard"
+path = "src/bin/scoreboard.rs"

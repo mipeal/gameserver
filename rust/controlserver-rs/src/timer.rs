@@ -578,6 +578,43 @@ pub fn now_secs() -> i64 {
         .as_secs() as i64
 }
 
+/// Read the timing state straight from redis (slave-style snapshot, for
+/// processes that do not own the timer).
+pub async fn read_timing_state(cfg: &saarctf_commons_rs::config::Config) -> Result<TimingState, redis::RedisError> {
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&cfg.redis)
+        .await
+        .map_err(|_e| redis::RedisError::from((redis::ErrorKind::IoError, "redis connect")))?;
+    let mut pipe = redis::pipe();
+    for k in TIMING_KEYS {
+        pipe.get(k);
+    }
+    let keys: Vec<Option<String>> = pipe.query_async(&mut redis).await?;
+    if keys[0].is_none() {
+        return Ok(TimingState {
+            state: CtfState::Stopped,
+            desired_state: CtfState::Stopped,
+            current_tick: 0,
+            tick_start: None,
+            tick_end: None,
+            tick_time: 0,
+            stop_after_tick: None,
+            start_at: None,
+            open_vulnbox_access_at: None,
+        });
+    }
+    Ok(TimingState {
+        state: CtfState::from_name(keys[0].as_deref().unwrap_or("")).unwrap_or(CtfState::Stopped),
+        desired_state: CtfState::from_name(keys[1].as_deref().unwrap_or("")).unwrap_or(CtfState::Stopped),
+        current_tick: to_int(keys[2].as_deref()).unwrap_or(0),
+        tick_start: to_int(keys[3].as_deref()),
+        tick_end: to_int(keys[4].as_deref()),
+        tick_time: to_int(keys[5].as_deref()).filter(|t| *t != 0).unwrap_or(0),
+        stop_after_tick: to_int(keys[6].as_deref()),
+        start_at: to_int(keys[7].as_deref()),
+        open_vulnbox_access_at: to_int(keys[8].as_deref()),
+    })
+}
+
 trait TruncSubsecs {
     fn trunc_subsecs(self, digits: u32) -> DateTime<Utc>;
 }
