@@ -67,3 +67,26 @@ Python-side notes: celery `run_command`/`preload_packages` broadcast tasks not y
 modeled (TaskMessage has no kind field) — add when service-mgr endpoints arrive. eno
 runner_spec currently falls through to the saarctf subprocess runner (port eno.rs later).
 SAARCTF_PYTHON_DIR env sets the Python tree root for subprocess cwd (default ".").
+
+## Wave 1 complete (2026-11-19)
+
+Committed: controlserver core (timer/dispatcher/worker/runners/scoring/scoreboard/events),
+HTTP API (axum JSON endpoints, commit f201f82), /packages slice (DBFilesystem +
+ServiceRepoManager + worker control broadcasts, commit fff…), wireguard-sync-rs
+(e2c4dc3). ci/, flag-submission-server/scripts/, sample_files/ stay Python: ci scripts
+hit the HTTP endpoints (which now exist in Rust), fss scripts + demo checkers use the
+Python gamelib SDK (ADR-013).
+
+Deferred out of wave 1 (none block operation):
+- `/overview/vpn`, `/overview/set_vpn`, `/api/ctfroute/*` — need VPNControl (wave 2 vpn/)
+- HTML admin pages (`/teams`, `/flags`, `/services`, `/patches`, `/checker_status`, …) —
+  replaced by the Leptos SPA (ADR-002); requests get 501
+- `/services/eno_config_valid` — needs reqwest HTTP client (small, do with wave 2 eno runner)
+- `/overview/components` — redis CLIENT LIST parsing, skipped
+- `patch_utils` — only used by HTML /patches + wave-2 scripts
+- eno runner_spec falls through to the saarctf subprocess runner (port eno.rs wave 2)
+- SAARCTF_PYTHON_DIR default resolves to "." — should probably be the config file's dir
+
+Wireguard-sync note: netlink (pyroute2) → `ip`/`wg` CLI subprocesses, Linux-only at
+runtime; pubkey comparison derives the expected public key from the private key
+(wg never returns private keys). Untestable on macOS beyond unit tests.
