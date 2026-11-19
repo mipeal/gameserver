@@ -64,8 +64,14 @@ pub struct Service {
 impl Service {
     /// `parse_ports`: "tcp:123,udp:125" -> [("tcp", 123), ("udp", 125)]
     pub fn parse_ports(&self) -> Result<Vec<(String, i32)>, String> {
-        self.ports
-            .split(',')
+        parse_ports_str(&self.ports)
+    }
+}
+
+/// `Service.parse_ports` on a bare string (for queries that fetch only ports).
+pub fn parse_ports_str(ports: &str) -> Result<Vec<(String, i32)>, String> {
+    ports
+        .split(',')
             .filter_map(|x| {
                 let x = x.trim();
                 if x.is_empty() {
@@ -84,7 +90,6 @@ impl Service {
                 ))
             })
             .collect()
-    }
 }
 
 #[derive(Debug, Clone, FromRow)]

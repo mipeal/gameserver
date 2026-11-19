@@ -6,6 +6,8 @@ use controlserver_rs::load_config;
 use saarctf_commons_rs::config::Config;
 use sqlx::PgPool;
 
+pub mod vpnlib;
+
 /// Script bootstrap: logging, config, `set_clientname('script-<name>')`,
 /// DB pool, redis connection.
 pub async fn init(name: &str) -> Result<(Config, PgPool, redis::aio::ConnectionManager), String> {
