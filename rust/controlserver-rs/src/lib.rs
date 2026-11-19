@@ -1,6 +1,7 @@
 //! Wave-1 tangled core (ADR-009/012/015): controlserver + checker_runner as one
 //! axum/tokio crate with two binaries. Schema: migrations/0001_baseline.sql (ADR-005).
 
+pub mod db_filesystem;
 pub mod dispatcher;
 pub mod endpoints;
 pub mod events;
@@ -10,6 +11,7 @@ pub mod models;
 pub mod runners;
 pub mod scoreboard;
 pub mod scoring;
+pub mod service_mgr;
 pub mod timer;
 pub mod worker;
 

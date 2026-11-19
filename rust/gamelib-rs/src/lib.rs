@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 
 pub mod js;
 pub mod port;
+pub mod service_config;
 pub mod pyconv;
 pub mod pynum;
 

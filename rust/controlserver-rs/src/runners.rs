@@ -191,7 +191,9 @@ mod tests {
             hard_limit: 35,
             soft_limit: 30,
             deliver_at: None,
-        };
+            kind: None,
+        args: None,
+    };
         let out = run_checker(&task, std::path::Path::new(".")).await;
         assert_eq!(out.status, "CRASHED");
         assert!(out.output.unwrap().contains("Invalid script!"));

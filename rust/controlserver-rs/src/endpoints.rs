@@ -59,6 +59,11 @@ fn router(state: AppState) -> Router {
         .route("/checker_results/view/{id}", get(checker_results_view))
         .route("/services/checker_status", post(services_set_checker_status))
         .route("/scripts/recreate_scoreboard", post(scripts_recreate_scoreboard))
+        .route("/packages/update", post(packages_update))
+        .route("/packages/push", post(packages_push))
+        .route("/packages/run", post(packages_run))
+        .route("/packages/test", post(packages_test))
+        .route("/scripts/service_update", post(scripts_service_update))
         .route("/metrics/write", post(metrics_write))
         .with_state(shared)
 }
@@ -514,5 +519,277 @@ mod tests {
         assert_eq!(opt_i64(&json!(0)), None);
         assert_eq!(opt_i64(&json!(7)), Some(7));
         assert_eq!(opt_i64(&Value::Null), None);
+    }
+}
+
+// ---- /packages/* (needs ServiceRepoManager/DBFilesystem + worker broadcasts) ----
+
+use crate::dispatcher::{self, Dispatcher};
+use crate::service_mgr::ServiceRepoManager;
+
+async fn broadcast_preload(state: &AppState, packages: Vec<String>) -> Result<String, String> {
+    let task_id = uuid::Uuid::new_v4().to_string();
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        .await
+        .map_err(|e| e.to_string())?;
+    dispatcher::broadcast(&mut redis, "preload_packages", &task_id, json!(packages))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(task_id)
+}
+
+#[derive(Deserialize, Default)]
+struct PackagesUpdateBody {
+    #[serde(default)]
+    service: Option<Value>,
+    #[serde(default)]
+    service_file: Option<String>,
+}
+
+/// `packages_update` — re-upload every (matching) service's checker folder,
+/// notify workers to preload changed packages. Returns the message list.
+async fn packages_update(
+    State(state): State<Arc<AppState>>,
+    body: Option<Json<Value>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let Json(body) = body.unwrap_or(Json(Value::Null));
+    let body: PackagesUpdateBody = serde_json::from_value(body).unwrap_or_default();
+    let services: Vec<models::Service> = if let Some(id) = body.service.as_ref().and_then(Value::as_i64) {
+        sqlx::query_as("SELECT * FROM services WHERE id = $1")
+            .bind(id as i32)
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?
+    } else if let Some(file) = &body.service_file {
+        sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
+            .bind(file)
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?
+    } else {
+        sqlx::query_as("SELECT * FROM services")
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?
+    };
+
+    let mut messages: Vec<String> = Vec::new();
+    let mut changed_packages: Vec<String> = Vec::new();
+    let mut mgr = ServiceRepoManager::new();
+    for service in &services {
+        let Some(dir) = service.checker_script_dir.clone() else { continue };
+        if !std::path::Path::new(&dir).exists() {
+            messages.push(format!("[{}] Folder does not exist: \"{}\"", service.name, dir));
+            continue;
+        }
+        let (package, setup_package, is_new) = mgr
+            .upload_checker_scripts(&state.db, &dir)
+            .await
+            .map_err(internal)?;
+        if package != service.package.clone().unwrap_or_default() {
+            if is_new {
+                messages.push(format!("[{}] Created new package: {}", service.name, package));
+            } else {
+                messages.push(format!("[{}] Switching to package: {}", service.name, package));
+            }
+            sqlx::query("UPDATE services SET package = $1 WHERE id = $2")
+                .bind(&package)
+                .bind(service.id)
+                .execute(&state.db)
+                .await
+                .map_err(internal)?;
+            changed_packages.push(package);
+        } else {
+            messages.push(format!("[{}] No updates.", service.name));
+        }
+        let checker_script = service.checker_script.split(':').next().unwrap_or("");
+        if !std::path::Path::new(&dir).join(checker_script).exists() {
+            messages.push(format!(
+                "[{}] Checker script \"{}\" not found in path \"{}\"",
+                service.name, checker_script, dir
+            ));
+        }
+        if setup_package != service.setup_package {
+            sqlx::query("UPDATE services SET setup_package = $1 WHERE id = $2")
+                .bind(&setup_package)
+                .bind(service.id)
+                .execute(&state.db)
+                .await
+                .map_err(internal)?;
+            messages.push(format!(
+                "[{}] Init script from package: {}",
+                service.name,
+                setup_package.unwrap_or_default()
+            ));
+        }
+    }
+    if !changed_packages.is_empty() {
+        broadcast_preload(&state, changed_packages).await.map_err(internal)?;
+    }
+    messages.push("OK".to_string());
+    Ok(Json(json!(messages)))
+}
+
+/// `packages_push` — notify workers about every known package.
+async fn packages_push(State(state): State<Arc<AppState>>) -> Result<Json<Value>, (StatusCode, String)> {
+    let rows: Vec<(Option<String>,)> =
+        sqlx::query_as("SELECT package FROM services")
+            .fetch_all(&state.db)
+            .await
+            .map_err(internal)?;
+    let packages: Vec<String> = rows.into_iter().filter_map(|(p,)| p.filter(|p| !p.is_empty())).collect();
+    let n = packages.len();
+    broadcast_preload(&state, packages).await.map_err(internal)?;
+    Ok(Json(json!(format!("Workers notified about {n} packages"))))
+}
+
+/// `packages_run` — run a shell command on every worker (celery broadcast).
+async fn packages_run(
+    State(state): State<Arc<AppState>>,
+    body: Option<Json<Value>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let Some(command) = body
+        .as_ref()
+        .and_then(|Json(b)| b.get("command"))
+        .and_then(Value::as_str)
+        .map(str::to_owned)
+    else {
+        return Err((StatusCode::BAD_REQUEST, "No string".to_string()));
+    };
+    if command.is_empty() {
+        return Ok(Json(json!(false)));
+    }
+    let task_id = uuid::Uuid::new_v4().to_string();
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        .await
+        .map_err(internal)?;
+    dispatcher::broadcast(&mut redis, "run_command", &task_id, json!(command))
+        .await
+        .map_err(internal)?;
+    Ok(Json(json!(task_id)))
+}
+
+/// `packages_test` — dispatch one test check for (service, team), uploading
+/// the current checker folder first.
+async fn packages_test(
+    State(state): State<Arc<AppState>>,
+    body: Option<Json<Value>>,
+) -> Result<Json<Value>, (StatusCode, String)> {
+    let Json(body) = body.ok_or_else(|| internal("no body"))?;
+    let team_id: i64 = body
+        .get("team_id")
+        .and_then(Value::as_i64)
+        .unwrap_or_else(|| state.cfg.scoring.nop_team_id.as_i64().unwrap_or(1));
+    let team: Option<(i32, String)> =
+        sqlx::query_as("SELECT id, name FROM teams WHERE id = $1")
+            .bind(team_id as i32)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(internal)?;
+    let Some((_, team_name)) = team else {
+        return Err((StatusCode::NOT_FOUND, "team not found".to_string()));
+    };
+    let service: Option<models::Service> = if let Some(service_id) = body.get("service_id").and_then(Value::as_i64) {
+        sqlx::query_as("SELECT * FROM services WHERE id = $1")
+            .bind(service_id as i32)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(internal)?
+    } else if let Some(file) = body.get("service_file").and_then(Value::as_str) {
+        sqlx::query_as("SELECT * FROM services WHERE $1 LIKE checker_script_dir || '%'")
+            .bind(file)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(internal)?
+    } else {
+        None
+    };
+    let Some(service) = service else {
+        let file = body
+            .get("service_file")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        return Err((
+            StatusCode::BAD_REQUEST,
+            format!("File \"{file}\" does not belong to a known service"),
+        ));
+    };
+
+    let mut tick: i64 = body.get("round").and_then(Value::as_i64).unwrap_or(0);
+    if tick == 0 {
+        let min_round: Option<i16> = sqlx::query_scalar(
+            "SELECT MIN(tick) FROM checker_results WHERE team_id = $1 AND service_id = $2",
+        )
+        .bind(team_id as i16)
+        .bind(service.id as i16)
+        .fetch_one(&state.db)
+        .await
+        .map_err(internal)?;
+        tick = match min_round {
+            Some(m) if m < 0 => m as i64 - 1,
+            _ => -1,
+        };
+    }
+
+    // check for changed checker files
+    let (message, package) = match &service.checker_script_dir {
+        Some(dir) if !std::path::Path::new(dir).exists() => {
+            (format!("Folder \"{dir}\" does not exist."), None)
+        }
+        Some(dir) => {
+            let (pkg, is_new) =
+                crate::db_filesystem::move_folder_to_package(&state.db, std::path::Path::new(dir))
+                    .await
+                    .map_err(internal)?;
+            if Some(&pkg) == service.package.as_ref() {
+                ("CURRENT script".to_string(), Some(pkg))
+            } else if is_new {
+                (format!("NEW script \"{}\"", &pkg[..12.min(pkg.len())]), Some(pkg))
+            } else {
+                (format!("OLD script \"{}\"", &pkg[..12.min(pkg.len())]), Some(pkg))
+            }
+        }
+        None => ("not managed by package".to_string(), None),
+    };
+
+    let dispatcher = Dispatcher::from_config(&state.cfg);
+    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        .await
+        .map_err(internal)?;
+    let task = dispatcher
+        .dispatch_test_script(&state.db, &mut redis, team_id, &service, tick, package)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let result_id: Option<i32> = sqlx::query_scalar(
+        "SELECT id FROM checker_results WHERE celery_id = $1 ORDER BY id DESC LIMIT 1",
+    )
+    .bind(&task)
+    .fetch_optional(&state.db)
+    .await
+    .map_err(internal)?;
+    Ok(Json(json!({
+        "task": task,
+        "result_id": result_id,
+        "message": message,
+        "ident": format!("{}/{} ({})", service.name, team_name, tick),
+    })))
+}
+
+/// `service_update` — git pull every service remote and sync the DB.
+async fn scripts_service_update(
+    State(state): State<Arc<AppState>>,
+) -> (StatusCode, Json<Value>) {
+    let mut mgr = ServiceRepoManager::new();
+    match mgr.update_all_services(&state.cfg, &state.db).await {
+        Ok(()) => {
+            let mut messages = mgr.messages;
+            messages.push("OK".to_string());
+            (StatusCode::OK, Json(json!(messages)))
+        }
+        Err(e) => {
+            let mut messages = mgr.messages;
+            messages.push(format!("Error: {e}"));
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!(messages)))
+        }
     }
 }

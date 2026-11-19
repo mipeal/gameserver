@@ -40,6 +40,8 @@ pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<
         write_conn: tokio::sync::Mutex::new(write_conn),
         streams: tokio::sync::RwLock::new(Vec::new()),
         python_dir: python_dir(),
+        checker_packages_path: cfg.checker_packages_path.clone(),
+        checker_packages_lfs: cfg.checker_packages_lfs.clone(),
     });
 
     // stream discovery: every checker:* stream gets a consumer group
@@ -49,6 +51,16 @@ pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<
             loop {
                 discover_streams(&state).await;
                 tokio::time::sleep(std::time::Duration::from_secs(10)).await;
+            }
+        });
+    }
+
+    // control broadcasts (celery broadcast tasks): preload_packages, run_command
+    {
+        let state = state.clone();
+        tokio::spawn(async move {
+            if let Err(e) = control_loop(state).await {
+                tracing::error!("control loop failed: {e}");
             }
         });
     }
@@ -81,6 +93,8 @@ struct WorkerState {
     write_conn: tokio::sync::Mutex<ConnectionManager>,
     streams: tokio::sync::RwLock<Vec<String>>,
     python_dir: std::path::PathBuf,
+    checker_packages_path: String,
+    checker_packages_lfs: Option<String>,
 }
 
 /// SCAN for `checker:*` streams (type filter drops the `checker:running:*`
@@ -264,6 +278,104 @@ async fn ack(conn: &mut ConnectionManager, stream: &str, id: &str) {
         .arg(id)
         .query_async(conn)
         .await;
+}
+
+/// `checker:control` pubsub loop (Dispatcher::broadcast, celery broadcasts).
+async fn control_loop(state: Arc<WorkerState>) -> Result<(), String> {
+    use futures_util::StreamExt;
+    let mut pubsub = state
+        .client
+        .get_async_pubsub()
+        .await
+        .map_err(|e| e.to_string())?;
+    pubsub
+        .subscribe(crate::dispatcher::CONTROL_CHANNEL)
+        .await
+        .map_err(|e| e.to_string())?;
+    let mut stream = pubsub.into_on_message();
+    while let Some(msg) = stream.next().await {
+        let payload: String = match msg.get_payload() {
+            Ok(p) => p,
+            Err(_) => continue,
+        };
+        handle_control(&state, &payload).await;
+    }
+    Ok(())
+}
+
+/// One broadcast task on this worker: preload packages or run a command.
+async fn handle_control(state: &WorkerState, payload: &str) {
+    let Ok(task) = serde_json::from_str::<TaskMessage>(payload) else {
+        tracing::warn!("unparseable control message");
+        return;
+    };
+    match task.kind.as_deref() {
+        Some("preload_packages") => {
+            let Some(args) = task.args.as_ref().and_then(|a| a.as_array().cloned()) else {
+                return;
+            };
+            for p in args.iter().filter_map(|v| v.as_str()) {
+                println!("Preloading {p} ...");
+                let folder = std::path::Path::new(&state.checker_packages_path).join(p);
+                let lfs = state
+                    .checker_packages_lfs
+                    .as_ref()
+                    .map(std::path::PathBuf::from);
+                if let Err(e) =
+                    crate::db_filesystem::load_package_to_folder(&state.db, p, &folder, lfs.as_deref())
+                        .await
+                {
+                    tracing::error!("preload {p} failed: {e}");
+                }
+            }
+            println!("Done.");
+        }
+        Some("run_command") => {
+            let Some(cmd) = task.args.as_ref().and_then(|a| a.as_str()) else {
+                return;
+            };
+            // run_command: shell=True, cwd=repo root, timeout 90 — result goes to
+            // the celery redis result backend key so the SPA can poll it.
+            let out = tokio::time::timeout(
+                std::time::Duration::from_secs(90),
+                tokio::process::Command::new("sh")
+                    .arg("-c")
+                    .arg(cmd)
+                    .current_dir(&state.python_dir)
+                    .stdout(std::process::Stdio::piped())
+                    .stderr(std::process::Stdio::piped())
+                    .output(),
+            )
+            .await;
+            let (status, result) = match out {
+                Ok(Ok(out)) if out.status.success() => (
+                    "SUCCESS",
+                    String::from_utf8_lossy(&out.stdout).into_owned()
+                        + &String::from_utf8_lossy(&out.stderr),
+                ),
+                Ok(Ok(out)) => (
+                    "FAILURE",
+                    format!(
+                        "Process failed with code {}\n{}",
+                        out.status.code().unwrap_or(-1),
+                        String::from_utf8_lossy(&out.stdout)
+                    ) + &String::from_utf8_lossy(&out.stderr),
+                ),
+                Ok(Err(e)) => ("FAILURE", format!("ERROR: {e}")),
+                Err(_) => ("FAILURE", "TIMEOUT".to_string()),
+            };
+            let meta = serde_json::json!({"status": status, "result": result});
+            let mut wc = state.write_conn.lock().await;
+            let _: Result<(), _> = redis::AsyncCommands::set_ex(
+                &mut *wc,
+                format!("celery-task-meta-{}", task.task_id),
+                meta.to_string(),
+                86_400,
+            )
+            .await;
+        }
+        other => tracing::warn!("unknown control kind {other:?}"),
+    }
 }
 
 /// `run_checkerscript` body minus the DB write: delay, revoke check, marker, run.

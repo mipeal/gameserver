@@ -30,6 +30,14 @@ pub struct TaskMessage {
     /// like celery's broker-held ETA)
     #[serde(default)]
     pub deliver_at: Option<i64>,
+    /// Control message kind (None = checker task). Celery's broadcast tasks:
+    /// "preload_packages" (args: [package, ...]) and "run_command"
+    /// (args: command string) — carried over redis pubsub, not streams,
+    /// so every worker gets it.
+    #[serde(default)]
+    pub kind: Option<String>,
+    #[serde(default)]
+    pub args: Option<serde_json::Value>,
 }
 
 /// `dispatcher:ref:{tick}` value — per-stream segment covering this tick's tasks.
@@ -100,6 +108,8 @@ impl Dispatcher {
             hard_limit: hard,
             soft_limit: soft,
             deliver_at,
+            kind: None,
+            args: None,
         };
         // celery: route override, else service route, else default queue
         let route = route_override
@@ -523,4 +533,41 @@ struct Stats {
     success: usize,
     started: usize,
     revoked: usize,
+}
+
+/// Celery broadcast channel — pubsub so every worker receives it
+/// (a stream's consumer group delivers to exactly one consumer).
+pub const CONTROL_CHANNEL: &str = "checker:control";
+
+/// `celery_worker.<task>.apply_async(..., broadcast)` — publish a control
+/// message to all workers. `task_id` is chosen by the caller so it can be
+/// returned to the HTTP client before the workers answer.
+pub async fn broadcast(
+    redis: &mut ConnectionManager,
+    kind: &str,
+    task_id: &str,
+    args: serde_json::Value,
+) -> Result<(), redis::RedisError> {
+    let msg = TaskMessage {
+        task_id: task_id.to_string(),
+        runner_spec: String::new(),
+        package: None,
+        checker_script: String::new(),
+        service_id: 0,
+        team_id: 0,
+        tick: 0,
+        runner_config: None,
+        hard_limit: 0,
+        soft_limit: 0,
+        deliver_at: None,
+        kind: Some(kind.to_string()),
+        args: Some(args),
+    };
+    let payload = serde_json::to_string(&msg).expect("TaskMessage serializes");
+    let _: () = redis::cmd("PUBLISH")
+        .arg(CONTROL_CHANNEL)
+        .arg(payload)
+        .query_async(redis)
+        .await?;
+    Ok(())
 }
