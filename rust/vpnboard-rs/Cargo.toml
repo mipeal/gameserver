@@ -1,0 +1,24 @@
+[package]
+name = "vpnboard-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+controlserver-rs = { path = "../controlserver-rs" }
+saarctf-scripts-rs = { path = "../saarctf-scripts-rs" }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros"] }
+redis = { version = "0.32", features = ["connection-manager", "tokio-comp"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "process", "io-util", "sync"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+regex = "1"
+chrono = "0.4"
+futures-util = "0.3"
+tracing = "0.1"
+
+[workspace]
+
+[[bin]]
+name = "vpn-status-daemon"
+path = "src/bin/vpn_status_daemon.rs"
