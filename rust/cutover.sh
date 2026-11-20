@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# Switch the gameserver docker stack between the Python original and the Rust port.
-# Both stacks share the project name "gameserver" (named volumes: postgres, redis,
-# public/internal-scoreboard), so switching preserves all state.
+# Build and run the gameserver Rust stack (the Python stack was removed after
+# the cutover; the old docker-compose.yml/Dockerfile are recoverable from git
+# history).
 #
-# Usage: cutover.sh build | rust | python
+# Usage: cutover.sh build | rust
 #   build  - build the wasm SPA + multi-arch docker image (linux/amd64,linux/arm64)
-#   rust   - stop the Python stack, start the Rust stack
-#   python - stop the Rust stack, start the Python stack (rollback)
+#   rust   - start the Rust stack
 #
 # Image build: `docker buildx build --platform linux/amd64,linux/arm64` — the rust
 # bins are compiled inside docker per target platform, so no cross toolchain is
@@ -44,15 +43,10 @@ case "${1:-}" in
     build
     ;;
   rust)
-    docker compose -p gameserver -f docker-compose.yml down --remove-orphans || true
     docker compose -p gameserver -f "$COMPOSE_RUST" $OVERRIDE up -d --remove-orphans
     ;;
-  python)
-    docker compose -p gameserver -f "$COMPOSE_RUST" $OVERRIDE down --remove-orphans || true
-    docker compose -p gameserver -f docker-compose.yml up -d
-    ;;
   *)
-    echo "usage: $0 build|rust|python" >&2
+    echo "usage: $0 build|rust" >&2
     exit 1
     ;;
 esac

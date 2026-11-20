@@ -7,7 +7,9 @@ set -euxo pipefail
 # Configure database credentials for container setup
 cp ./ci-config.yaml ./config.yaml
 export FLASK_APP=controlserver/app.py
-alembic upgrade head
+# schema bootstrap: alembic migrations were replaced by the sqlx baseline (ADR-005)
+export PGPASSWORD=123456789
+psql -h postgres -Usaarsec -d saarctf -f rust/controlserver-rs/migrations/0001_baseline.sql
 flask run --host=0.0.0.0 &
 # Ensure flask is fully started by building something in the mean time
 

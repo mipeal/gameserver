@@ -21,9 +21,6 @@ packages = [
     "saarctf_commons",
     "scripts",
     "tests",
-    "vpn",
-    "vpnboard",
-    # "wireguard-sync/wireguard_sync",
 ]
 
 [[tool.mypy.overrides]]

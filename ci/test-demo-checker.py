@@ -182,8 +182,11 @@ def main() -> None:
     hook()
 
     # reset everything
-    logging.info('Run alembic ...')
-    subprocess.run(["alembic", "upgrade", "head"], check=True, timeout=20)
+    logging.info('Apply sqlx baseline schema (alembic removed, ADR-005) ...')
+    env = dict(os.environ, PGPASSWORD='123456789')
+    subprocess.run(["psql", "-h", "postgres", "-Usaarsec", "-d", "saarctf",
+                    "-f", "rust/controlserver-rs/migrations/0001_baseline.sql"],
+                   check=True, timeout=20, env=env)
     logging.info('Run reset_ctf.py ...')
     subprocess.run(["python3", "./scripts/reset_ctf.py"], input=b"y", check=True, timeout=20)
     handles = []

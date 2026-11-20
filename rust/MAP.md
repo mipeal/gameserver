@@ -3,6 +3,13 @@
 Goal: standalone Rust gameserver replacing all Python services and the Angular scoreboard SPA;
 C++ flag-submission-server stays (ADR-001). Original kept as reference until the user cuts over.
 
+**2026-11-20 post-cutover cleanup:** the Python sources of all `done` units were removed from
+the repo (`vpn/`, `vpnboard/`, `wireguard-sync/`, `scoreboard/` Angular, `migrations/`,
+`Dockerfile`, `docker-compose.yml`, `tests/test_vpnboard.py`) — recoverable from git history.
+`controlserver/` and `checker_runner/` Python stay: the checker subprocess wrapper
+(`checker_runner/runners/saarctf.py`) imports `controlserver.models`, ops scripts and the
+image's less build depend on them (ADR-013).
+
 Files: decisions in [DECISIONS.md](DECISIONS.md), terms in [GLOSSARY.md](GLOSSARY.md),
 session handoff in [HANDOFF.md](HANDOFF.md), dependency research in [research/](research/).
 

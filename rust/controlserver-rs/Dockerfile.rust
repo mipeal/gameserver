@@ -48,9 +48,6 @@ ADD controlserver /opt/controlserver
 ADD saarctf_commons /opt/saarctf_commons
 ADD sample_files /opt/sample_files
 ADD scripts /opt/scripts
-ADD vpn /opt/vpn
-ADD vpnboard /opt/vpnboard
-ADD wireguard-sync /opt/wireguard-sync
 
 COPY --from=css_build /build/controlserver/static/css/index.css /opt/controlserver/static/css/index.css
 
