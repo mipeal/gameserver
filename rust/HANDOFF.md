@@ -145,3 +145,26 @@ Known divergences (flagged, not silent): team-page infinite scroll is a
 load-all (the JSON is one file); CSS is hand-rolled, not Bootstrap/LESS
 pixel-match; window.debug hooks dropped; dashboard logo + scoretable team names
 may show before teams.json loads (first paint only).
+
+## Wave 7 complete (2026-11-20)
+
+Wrap-up: multi-arch image + final gate sweep. Port is feature-complete; MAP.md
+table refreshed to the real state (waves 1–5 rows were stale `open`).
+
+- Docker: rust bins now compile inside docker (builder stage `rust:1-bookworm`,
+  path deps copied in), so `docker buildx build --platform linux/amd64,linux/arm64`
+  works without host binaries or a cross toolchain. Trunk SPA dist is built on
+  the host and nested to `/opt/scoreboard/dist/scoreboard/` (Angular layout the
+  generator expects — first build put it flat, caught by image inspection).
+  `.dockerignore` at repo root keeps the context small. cutover.sh: `build`
+  runs trunk + buildx (multi-platform output requires `--push` with
+  IMAGE_REGISTRY; set PLATFORMS=linux/$(uname -m) for a local `--load` build).
+- Validated: arm64 image builds and runs (binary fails only on the missing
+  config.yaml mount, as expected outside compose); dist layout verified inside
+  the image.
+- Gate sweep: clippy -D warnings clean on all six crates (fixed
+  collapsible_if in saarctf-commons metrics.rs; added the missing serde
+  derive feature to gamelib-rs). Tests: commons 4, gamelib 9, controlserver 12,
+  scripts 1, vpnboard 2, wireguard-sync 5 — all green.
+- Remaining Python by design (ADR-013): ci/, flag-submission-server/scripts/,
+  sample_files/, demo checkers; C++ submitter stays (ADR-001).

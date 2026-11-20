@@ -225,7 +225,9 @@ static METRICS: std::sync::OnceLock<std::sync::Mutex<Option<Box<dyn MetricRecord
 /// `setup_default_metrics` — from the `METRICS_LOGFILE` env var (`-` = stdout).
 pub fn setup_default_metrics() {
     let recorder: Box<dyn MetricRecorder + Send> = match std::env::var("METRICS_LOGFILE") {
-        Ok(f) if f == "-" => Box::new(TelegrafBufferMetricsRecorder::new(Box::new(std::io::stdout()))),
+        Ok(f) if f == "-" => Box::new(TelegrafBufferMetricsRecorder::new(Box::new(
+            std::io::stdout(),
+        ))),
         Ok(f) => Box::new(TelegrafTailMetricsRecorder::new(f)),
         Err(_) => return,
     };
@@ -240,9 +242,9 @@ pub fn metrics_record_many(
     ts: Timestamp,
     attributes: Vec<(String, MetricValue)>,
 ) {
-    if let Some(cell) = METRICS.get() {
-        if let Some(recorder) = cell.lock().unwrap().as_mut() {
-            recorder.record_many(metric, values, ts, attributes);
-        }
+    if let Some(cell) = METRICS.get()
+        && let Some(recorder) = cell.lock().unwrap().as_mut()
+    {
+        recorder.record_many(metric, values, ts, attributes);
     }
 }

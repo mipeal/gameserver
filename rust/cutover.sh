@@ -4,33 +4,34 @@
 # public/internal-scoreboard), so switching preserves all state.
 #
 # Usage: cutover.sh build | rust | python
-#   build  - build the wasm SPA + rust binaries + docker image
+#   build  - build the wasm SPA + multi-arch docker image (linux/amd64,linux/arm64)
 #   rust   - stop the Python stack, start the Rust stack
 #   python - stop the Rust stack, start the Python stack (rollback)
 #
-# NOTE: `build` must run on the target host (linux/amd64) — the rust binaries
-# are copied into the image as host builds, not cross-compiled in docker.
+# Image build: `docker buildx build --platform linux/amd64,linux/arm64` — the rust
+# bins are compiled inside docker per target platform, so no cross toolchain is
+# needed on the host. A multi-platform image can only be pushed to a registry
+# (`--push`); for a purely local image set PLATFORMS to the host platform.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 COMPOSE_RUST=rust/docker-compose.rust.yml
-BIN_DIR=rust/controlserver-rs/bin
+PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
 IMAGE="${IMAGE_REGISTRY:-localhost}/gameserver-rust"
 
 build() {
   echo "== building scoreboard SPA (trunk) =="
   (cd rust/scoreboard-rs && trunk build --release)
 
-  echo "== building rust binaries (controlserver, checker_runner, scoreboard) =="
-  (cd rust/controlserver-rs && cargo build --release --bins)
-  mkdir -p "$BIN_DIR"
-  cp rust/controlserver-rs/target/release/controlserver \
-     rust/controlserver-rs/target/release/checker_runner \
-     rust/controlserver-rs/target/release/scoreboard \
-     "$BIN_DIR"/
-
-  echo "== building docker image $IMAGE =="
-  docker build -f rust/controlserver-rs/Dockerfile.rust -t "$IMAGE" .
+  echo "== building docker image $IMAGE ($PLATFORMS) =="
+  if [[ "$PLATFORMS" == *,* ]]; then
+    # multi-platform output requires a registry; localhost images are single-arch
+    docker buildx build --platform "$PLATFORMS" \
+      -f rust/controlserver-rs/Dockerfile.rust -t "$IMAGE" --push .
+  else
+    docker buildx build --platform "$PLATFORMS" \
+      -f rust/controlserver-rs/Dockerfile.rust -t "$IMAGE" --load .
+  fi
 }
 
 case "${1:-}" in

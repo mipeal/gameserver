@@ -1,2 +1,3 @@
 .rust-anything/
 python/gamelib_rs/_native.abi3.so
+/target

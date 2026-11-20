@@ -65,7 +65,11 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("svc-cfg2-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let f = dir.join("config.toml");
-        std::fs::write(&f, "name = 'demo'\ninterface_file = 'c.py'\ninterface_class = 'C'\nflag_ids = ['a,b']\n").unwrap();
+        std::fs::write(
+            &f,
+            "name = 'demo'\ninterface_file = 'c.py'\ninterface_class = 'C'\nflag_ids = ['a,b']\n",
+        )
+        .unwrap();
         assert!(ServiceConfig::from_file(&f).is_err());
     }
 }

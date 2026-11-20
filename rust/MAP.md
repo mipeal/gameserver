@@ -24,20 +24,21 @@ State: `open` | `claimed by <session> <date>` | `done (<gate>, <replay>)`
 | ---: | --- | --- | --- |
 | 0 | `gamelib` subset → `gamelib-rs` crate | done (gate, 878/878) | ADR-013. Flag encode/regex pattern, flag_ids + usernames wordlist, CPython-exact RNG. get_flag_regex/assert_*/OS-random generators stay Python (js_only). Hand patches listed in gamelib-rs/README.md. |
 | 0 | `saarctf_commons/` (746 ln) | done (cargo test, 4 goldens green) | ADR-014: plain Rust crate, golden-file equivalence (Config to_dict + env overrides, network math incl. negative ids, Influx lines byte-exact). Redis/retry ported directly, verified at wave 1. `logging_utils.py` still Python-side only (Rust services use `tracing` at wave 1). |
-| 0 | `migrations/versions/` (974 ln) | open | Superseded by ADR-005: becomes the sqlx baseline, not a ported unit. |
-| 0 | `controlserver/utils/` (28 ln) | open | Blocked on eval — becomes explicit registry inside tangled core. |
-| 0 | `sample_files/checker_ok/`, `checker_fnf/` | open | Demo checkers. |
-| 1 | tangled core: `checker_runner/` + `runners/`, `controlserver/` + `endpoints/` + `scoring/` + `scoring/algorithms/` (~6,530 ln) | open | ADR-009. Flask→axum, eval→registry. Biggest chunk. |
-| 1 | `wireguard-sync/wireguard_sync/` (505 ln) | open | Async-heavy. |
-| 1 | `ci/` (248 ln) | open | Test harness CLI. |
-| 1 | `flag-submission-server/scripts/` (85 ln) | open | generate_flag etc. C++ binary itself stays (ADR-001). |
-| 1 | `sample_files/checker_demoservice/` (132 ln) | open | |
-| 2 | `migrations/` (71 ln) | open | env.py — folds into ADR-005 tooling. |
-| 2 | `sample_files/` (240 ln) | open | demo exploits. |
-| 2 | `scripts/` (1,225 ln) | open | Ops CLIs. |
-| 2 | `vpn/` (1,663 ln) | open | No pyroute2 here (research finding): iptables via subprocess, eBPF maps via ctypes — port as-is. hcloud API only. |
-| 2 | `vpnboard/` (535 ln) | open | Status daemon + board. |
-| 6 | `scoreboard/src/app` (Angular) → Leptos SPA `rust/scoreboard-rs` | done (wasm build clean, trunk dist) | ADR-002. rust-anything front-door/app_lift superseded — see ADR-016. Cutover tooling: rust/docker-compose.rust.yml + rust/cutover.sh. |
+| 0 | `migrations/versions/` (974 ln) | closed | Superseded by ADR-005: the sqlx baseline lives in controlserver-rs/migrations. |
+| 0 | `controlserver/utils/` (28 ln) | done (wave 1) | eval registry folded into controlserver-rs (ADR-009). |
+| 0 | `sample_files/checker_ok/`, `checker_fnf/` | stays Python | Demo checkers, ADR-013. |
+| 1 | tangled core: `checker_runner/` + `runners/`, `controlserver/` + `endpoints/` + `scoring/` + `scoring/algorithms/` (~6,530 ln) | done (waves 1–5, clippy clean) | ADR-009. controlserver-rs (axum API + timer + scoring + scoreboard JSON) + checker_runner over Redis Streams (ADR-012/015). |
+| 1 | `wireguard-sync/wireguard_sync/` (505 ln) | done (`wireguard-sync-rs`, clippy clean) | |
+| 1 | `ci/` (248 ln) | stays Python | Test harness CLI, ADR-013. |
+| 1 | `flag-submission-server/scripts/` (85 ln) | stays Python | ADR-013; C++ binary stays (ADR-001). |
+| 1 | `sample_files/checker_demoservice/` (132 ln) | stays Python | ADR-013. |
+| 2 | `migrations/` (71 ln) | closed | env.py — superseded by ADR-005. |
+| 2 | `sample_files/` (240 ln) | stays Python | demo exploits, ADR-013. |
+| 2 | `scripts/` (1,225 ln) | done (`saarctf-scripts-rs`, 30 bins, clippy clean) | Ops CLIs incl. scoreboard exports (wave 3). |
+| 2 | `vpn/` (1,663 ln) | done (wave 2) | iptables via subprocess, eBPF maps via libc, hcloud API only. Bins + daemons in saarctf-scripts-rs. |
+| 2 | `vpnboard/` (535 ln) | done (`vpnboard-rs`, clippy clean) | Status daemon + board. |
+| 5 | `controlserver` admin HTML → Leptos SPA `rust/admin-gui-rs` | done (wave 5) | 15 JSON admin endpoints + SPA, served by controlserver-rs. |
+| 6 | `scoreboard/src/app` (Angular) → Leptos SPA `rust/scoreboard-rs` | done (wasm build clean, trunk dist) | ADR-002. rust-anything front-door/app_lift superseded — see ADR-016. Cutover tooling: rust/docker-compose.rust.yml + rust/cutover.sh (multi-arch buildx, amd64+arm64). |
 
 ## Out of scope
 - `flag-submission-server/src` (C++) — stays as-is (ADR-001).

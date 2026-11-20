@@ -1,8 +1,20 @@
 # Rust gameserver image (see rust/cutover.sh). Base is the same python:3.13
 # as the original Dockerfile, because the checker subprocesses still run the
-# Python checker scripts (ADR-013). The rust binaries are built on the host
-# by cutover.sh and copied in — docker builds of the rust crates are not
-# portable across the build host's architecture.
+# Python checker scripts (ADR-013). The rust bins are compiled inside docker
+# so `docker buildx build --platform linux/amd64,linux/arm64` works (the rust
+# builder stage runs per target platform, natively or under QEMU).
+
+# syntax=docker/dockerfile:1
+FROM rust:1-bookworm AS rust_build
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
+COPY rust/saarctf-commons-rs ./saarctf-commons-rs
+COPY rust/gamelib-rs ./gamelib-rs
+COPY rust/controlserver-rs ./controlserver-rs
+WORKDIR /build/controlserver-rs
+RUN cargo build --release --bins
 
 FROM python:3.13
 WORKDIR /opt
@@ -23,11 +35,16 @@ ADD vpnboard /opt/vpnboard
 ADD wireguard-sync /opt/wireguard-sync
 
 # Leptos scoreboard SPA where the scoreboard generator expects it
-# (python_dir/scoreboard/dist/scoreboard).
-COPY rust/scoreboard-rs/dist/ /opt/scoreboard/dist/
+# (python_dir/scoreboard/dist/scoreboard — the Angular build layout). Trunk
+# outputs flat, so nest it one level. Built on the host by cutover.sh — the
+# wasm output is platform-independent.
+COPY rust/scoreboard-rs/dist/ /opt/scoreboard/dist/scoreboard/
 
-# Prebuilt linux binaries: controlserver, checker_runner, scoreboard
-COPY rust/controlserver-rs/bin/ /usr/local/bin/
+COPY --from=rust_build \
+    /build/controlserver-rs/target/release/controlserver \
+    /build/controlserver-rs/target/release/checker_runner \
+    /build/controlserver-rs/target/release/scoreboard \
+    /usr/local/bin/
 
 ENV SAARCTF_PYTHON_DIR=/opt
 # checker subprocesses run `python3` — resolve to the venv python with deps
