@@ -110,22 +110,24 @@ type TeamRow = (
     Option<String>,
     Option<String>,
     Option<String>,
-    Option<String>,
 );
 
 async fn api_teams(State(state): State<Arc<AppState>>) -> Json<Value> {
     let rows: Vec<TeamRow> = sqlx::query_as(
-        "SELECT id, name, website, affiliation, vulnbox_ip, logo FROM teams ORDER BY id",
+        "SELECT id, name, website, affiliation, logo FROM teams ORDER BY id",
     )
     .fetch_all(&state.db)
     .await
     .unwrap_or_default();
     Json(Value::Array(
         rows.iter()
-            .map(|(id, name, website, affiliation, ip, logo)| {
+            .map(|(id, name, website, affiliation, logo)| {
                 json!({
                     "id": id, "name": name, "website": website,
-                    "affiliation": affiliation, "ip": ip, "logo": logo,
+                    "affiliation": affiliation,
+                    // Python Team.vulnbox_ip property: computed, not a column
+                    "ip": state.cfg.network.team_id_to_vulnbox_ip(i64::from(*id)),
+                    "logo": logo,
                 })
             })
             .collect(),
@@ -1643,7 +1645,6 @@ type TeamDetailRow = (
     Option<String>,
     Option<String>,
     Option<String>,
-    Option<String>,
     bool,
     bool,
     bool,
@@ -1687,7 +1688,7 @@ async fn api_teams_view(
     Path(id): Path<i32>,
 ) -> Result<Json<Value>, (StatusCode, String)> {
     let team: Option<TeamDetailRow> = sqlx::query_as(
-        "SELECT id, name, website, affiliation, vulnbox_ip, logo, vpn_connected, vpn2_connected, \
+        "SELECT id, name, website, affiliation, logo, vpn_connected, vpn2_connected, \
              wg_vulnbox_connected, vpn_last_connect, vpn_last_disconnect FROM teams WHERE id = $1",
     )
     .bind(id)
@@ -1720,7 +1721,6 @@ async fn api_teams_view(
         name,
         website,
         affiliation,
-        ip,
         logo,
         vpn_connected,
         vpn2_connected,
@@ -1731,6 +1731,7 @@ async fn api_teams_view(
     else {
         return Err((StatusCode::NOT_FOUND, "Team not found".to_string()));
     };
+    let ip = state.cfg.network.team_id_to_vulnbox_ip(i64::from(id));
     Ok(Json(json!({
         "id": id, "name": name, "website": website, "affiliation": affiliation,
         "ip": ip, "logo": logo, "vpn_connected": vpn_connected, "vpn2_connected": vpn2_connected,

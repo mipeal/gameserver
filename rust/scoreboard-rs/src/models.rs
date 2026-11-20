@@ -25,7 +25,7 @@ pub struct FirstBlood {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
-    pub ts: i64,
+    pub ts: f64, // the live generator writes fractional seconds
     #[serde(default)]
     pub confirmed: bool,
     #[serde(default)]
@@ -113,7 +113,7 @@ pub struct RoundInformation {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct TeamHistoryInformation {
     #[serde(default)]
-    pub services: Vec<Service>,
+    pub services: Vec<String>, // the generator writes service names here
     #[serde(default)]
     pub points: Vec<Vec<f64>>, // [service][tick]
 }
@@ -127,18 +127,20 @@ pub struct ServiceStat {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct ServiceStatsInformation {
     #[serde(default)]
-    pub services: Vec<Service>,
+    pub services: Vec<String>, // the generator writes service names here
     #[serde(default)]
     pub stats: Vec<Vec<ServiceStat>>, // [service][tick]
 }
 
-/// `CurrentStateJson` — `state` is Python's CTFState IntEnum (1/2/3).
+/// `CurrentStateJson` — `state` is an IntEnum (1/2/3) in the Python generator
+/// but a string ("STOPPED"/"SUSPENDED"/"RUNNING") on the live deployment:
+/// accept both.
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct CurrentState {
     #[serde(default)]
     pub current_tick: i64,
-    #[serde(default = "default_state")]
-    pub state: u8, // 1 STOPPED / 2 SUSPENDED / 3 RUNNING
+    #[serde(default = "default_state", deserialize_with = "deserialize_state")]
+    pub state: String,
     #[serde(default)]
     pub current_tick_until: i64,
     #[serde(default)]
@@ -149,15 +151,34 @@ pub struct CurrentState {
     pub frozen: bool,
 }
 
-fn default_state() -> u8 {
-    1
+fn default_state() -> String {
+    "STOPPED".into()
+}
+
+fn deserialize_state<'de, D>(d: D) -> Result<String, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(serde::Deserialize)]
+    #[serde(untagged)]
+    enum Raw {
+        S(String),
+        N(i64),
+    }
+    Ok(match Raw::deserialize(d)? {
+        Raw::S(s) => s,
+        // controlserver.timer.TimerState
+        Raw::N(2) => STATE_SUSPENDED.into(),
+        Raw::N(3) => STATE_RUNNING.into(),
+        Raw::N(_) => STATE_STOPPED.into(),
+    })
 }
 
 impl Default for CurrentState {
     fn default() -> Self {
         CurrentState {
             current_tick: -1,
-            state: 1,
+            state: "STOPPED".into(),
             current_tick_until: 0,
             scoreboard_tick: -1,
             banned_teams: vec![],
@@ -166,9 +187,9 @@ impl Default for CurrentState {
     }
 }
 
-pub const STATE_STOPPED: u8 = 1;
-pub const STATE_SUSPENDED: u8 = 2;
-pub const STATE_RUNNING: u8 = 3;
+pub const STATE_STOPPED: &str = "STOPPED";
+pub const STATE_SUSPENDED: &str = "SUSPENDED";
+pub const STATE_RUNNING: &str = "RUNNING";
 
 /// StatusUtils.
 pub fn status_to_class(status: &str) -> &'static str {

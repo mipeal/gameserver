@@ -1,0 +1,269 @@
+/*
+ * Component-scoped styles of the original Angular app (each component's
+ * .less), converted to plain CSS. The global styles live in scoreboard.css
+ * (the live platform's compiled styles.less); everything here was scoped by
+ * Angular and is therefore not in that file.
+ */
+
+/* ===== app.component.less ===== */
+.flexible-container { display: inline-block; }
+.header-inner { position: sticky; left: 0; width: 100%; max-width: 100%; }
+a.backlink { color: white; }
+.credits {
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 100%;
+	max-width: 100%;
+	position: sticky;
+	left: 0;
+}
+/* routerLinkActive="hidden" */
+a.backlink.hidden { display: none; }
+
+/* ===== current-tick.component.less ===== */
+.current-tick { display: inline-block; }
+.current-tick .tick { margin-top: 9px; font-size: 24px; text-align: right; }
+.current-tick .time { text-align: right; font-size: 18px; margin-top: 15px; }
+.current-tick .time span { margin-left: 5px; }
+
+/* ===== settings.component.less ===== */
+/* keep the gear on the Japandi palette in dark mode (the original used blue) */
+html.dark #settings-button { color: #9a9184; }
+html.dark #settings-button:hover,
+html.dark #settings-button:focus { color: #eae5db; }
+
+/* ===== table-service-header-cell.component.less ===== */
+td.servicecell { text-align: center; }
+td.servicecell p { margin: 5px 0; }
+/* attackers/victims/first-blood lines share one icon column so the thead
+   stats align across lines */
+td.servicecell .attacker-victim-count {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	text-align: left;
+}
+.attacker-victim-count .av-line {
+	display: inline-flex;
+	align-items: baseline;
+	column-gap: 4px;
+	flex-wrap: wrap;
+}
+.attacker-victim-count .av-line > i { flex: none; width: 15px; text-align: center; }
+td.servicecell .fa-tint { padding-left: 1px; padding-right: 1px; }
+.firstblood:before { content: " "; }
+.firstblood:after { content: ","; }
+.firstblood:last-child:after { content: ""; }
+.firstblood.unconfirmed { font-style: italic; font-stretch: condensed; }
+
+/* ===== table-line-cells.component.less ===== */
+/* @line-height-computed = 18px, @result-grid-gap = 3px, gap-large = 12px */
+.sum-container, .result-container {
+	display: grid;
+	grid-template-columns: 33% 33% 33%;
+	grid-column-gap: 3px;
+	grid-row-gap: 1px;
+}
+.sum-container > i.fas, .result-container > i.fas { color: #222; justify-self: center; align-self: center; }
+.sum-container > .delta, .result-container > .delta { justify-self: center; }
+.sum-container > .points, .result-container > .points { justify-self: end; align-self: center; }
+.sum-container { grid-template-columns: 18px max-content; }
+.result-container { grid-template-columns: 18px max-content max-content calc(18px + 12px) max-content max-content; }
+.result-container > .offset-left { margin-left: 12px; }
+.result-container > .delta { align-self: end; }
+.result-container > .sla-col {
+	grid-column: 4 / span 3;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.result-container > .sla-col > .status.label {
+	padding: 0.3em 0.6em;
+	border-radius: 0.35em;
+	display: inline-block;
+	vertical-align: middle;
+	user-select: none;
+}
+.result-container > .sla-col > .info-link { margin-left: 5px; float: right; }
+.result-container .history-3, .result-container .history-2, .result-container .history-1 {
+	display: inline-block;
+	border-radius: 50%;
+	margin-right: 4px;
+	padding: 0;
+	vertical-align: middle;
+}
+.result-container .history-3 { width: 8px; height: 8px; opacity: 0.7; }
+.result-container .history-2 { width: 10px; height: 10px; opacity: 0.8; }
+.result-container .history-1 { width: 12px; height: 12px; opacity: 0.9; margin-right: 6px; }
+
+/* ===== scoretable.component.less ===== */
+table.table-stickyhead td, table.table-stickyhead th { vertical-align: middle; }
+table.table-stickyhead p { margin: 5px 0; }
+table.table-stickyhead .headercell .fa-spin { margin-left: 10px; }
+table.table-stickyhead .rankcell { padding-right: 0; border-right: none; }
+table.table-stickyhead .teamcell { border-left: none; }
+.team-logo-media { padding-right: 15px; }
+.team-logo-media > img, .team-logo-media > a > img { width: 64px; max-width: 64px; max-height: 64px; }
+.team-name { margin-top: 3px; margin-bottom: 1px; display: flex; max-width: 200px; }
+.team-name a { color: #212529; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+html.dark .team-name a { color: #d9d9d9; }
+.team-name.blocked a { color: #a94442; text-decoration: line-through; }
+html.dark .team-name.blocked a { color: #ff304f; }
+.team-vulnbox { font-size: 75%; }
+.team-total-points { font-size: 16px; }
+
+/* ===== page-dashboard.component.less ===== */
+.page-dashboard .loading { position: absolute; padding: 8px; right: 0; }
+table.table-fixed { table-layout: fixed; }
+table.table-fixed td, table.table-fixed th { vertical-align: middle; }
+table.table-fixed p { margin: 5px 0; }
+.teamgrid {
+	display: grid;
+	column-gap: 0px;
+	row-gap: 0px;
+	grid-template-columns: 1fr;
+	border-left: 1px solid #e9ecef;
+	border-top: 1px solid #e9ecef;
+}
+@media (min-width: 671px) and (max-width: 1000px) { .teamgrid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1001px) and (max-width: 1330px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr; } }
+@media (min-width: 1331px) and (max-width: 1660px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+@media (min-width: 1661px) and (max-width: 1990px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; } }
+@media (min-width: 1991px) and (max-width: 2320px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; } }
+@media (min-width: 2321px) and (max-width: 2650px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; } }
+@media (min-width: 2651px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; } }
+.teamgrid > * { border-right: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; }
+html.dark .teamgrid, html.dark .teamgrid > * { border-color: #868e96; }
+html.dark .page-dashboard .loading { background-color: #121212; }
+.team { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: stretch; }
+.team .rank {
+	padding-left: 8px;
+	min-width: 30px;
+	margin: 0 5px 0 0;
+	display: flex;
+	align-items: center;
+}
+.team .teamcell { padding: 8px 8px 8px 0; }
+.rank.rank1 { background-color: #d4af37; }
+.rank.rank2 { background-color: #c0c0c0; }
+.rank.rank3 { background-color: #c79b56; }
+html.dark .rank.rank1 { background-color: #8C730C; }
+html.dark .rank.rank2 { background-color: #606266; }
+html.dark .rank.rank3 { background-color: #6A3805; }
+.team-status-row .label {
+	display: inline-block;
+	border-radius: 8px;
+	padding: 0;
+	vertical-align: middle;
+	text-align: center;
+	width: 20px;
+	height: 16px;
+	line-height: 16px;
+	font-size: 8px;
+	margin-right: 4px;
+}
+.team-status-row .label.fresh > * { animation: blinker 3s linear infinite; }
+@keyframes blinker { 50% { opacity: 0.2; } }
+
+/* ===== page-team.component.less ===== */
+.page-team .team-total-points { white-space: nowrap; }
+.page-team .chart-container { position: sticky; left: 15px; height: 280px; width: calc(100% - 28px); }
+.fa-spinner[hidden] { display: none; }
+
+/* ===== page-graphs.component.less ===== */
+.page-graphs .chart-container { left: 15px; height: 420px; width: calc(100% - 28px); }
+.chart-group { margin-bottom: 4rem; }
+
+/* ===== notification-overlay.component.less ===== */
+.backdrop {
+	position: fixed;
+	left: 0; right: 0; top: 0; bottom: 0;
+	z-index: 1000;
+	background-color: rgba(0, 0, 0, 0.8);
+}
+.msgcontainer {
+	position: fixed;
+	z-index: 1200;
+	left: 0; right: 0;
+	top: 50%;
+	margin-top: -32vh;
+	height: 64vh;
+	text-align: center;
+	padding: 2vh 0;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: #fff;
+	font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-variant: petite-caps;
+	user-select: none;
+}
+.msgcontainer .bigicon { font-weight: 900; font-size: 30vh; height: 32vh; margin-top: -12vh; color: #b22222; }
+.msgcontainer .message-what { font-weight: 900; font-size: 12vh; height: 40vh; word-spacing: .5em; margin: 0; }
+.msgcontainer .message-service, .msgcontainer .message-team { font-size: 8vh; font-weight: 500; height: 10vh; margin: 0; }
+.msgcontainer strong { font-weight: 900; }
+.msgcontainer small { color: #b22222; }
+/* coalesced first-blood overlay: several service/team pairs shrink to fit */
+.msgcontainer.many .message-what { font-size: 6vh; height: 8vh; }
+.msgcontainer.many .bigicon { display: none; }
+.msgcontainer.many .message-service, .msgcontainer.many .message-team { font-size: 4.5vh; height: 6vh; }
+.pyrocontainer {
+	position: fixed;
+	z-index: 1200;
+	left: 0; right: 0; top: 0; bottom: 0;
+	padding: 0; margin: 0;
+	background-color: rgba(0, 0, 0, 0.85);
+	overflow: hidden;
+	text-align: center;
+	color: #fff;
+	font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-variant: petite-caps;
+	user-select: none;
+}
+.pyrocontainer .message-what { font-weight: 900; font-size: 12vmin; height: 24vmin; word-spacing: .5em; margin: 0; margin-top: 10vmin; }
+.pyrocontainer .teams { font-size: 6vmin; font-weight: 500; margin: 0; }
+.pyrocontainer strong { font-weight: 900; }
+.pyrocontainer small { font-size: 50%; white-space: nowrap; }
+table.finaltable { margin: 0 auto; border-collapse: collapse; border-spacing: 0; }
+table.finaltable td { padding: 10px 15px; border-bottom: 1px solid #666; }
+table.finaltable tr:first-child td { font-size: 110%; }
+table.finaltable tr:last-child td { border-bottom: none; font-size: 90%; }
+table.finaltable img { width: 64px; max-width: 64px; max-height: 64px; }
+.pyrocontainer .message-sub { margin-top: 7vmin; font-size: 4vmin; }
+.pyrocontainer .message-sub small { font-size: 2.7vmin; }
+
+/* ===== focus popovers (ngx-bootstrap popover, triggers="focus") ===== */
+.pop-host { position: relative; }
+.pop-host > .popover { display: none; }
+.pop-host:focus-within > .popover { display: block; }
+/* scoreboard.css is Bootstrap-3 era: .fade{opacity:0} is only lifted by
+   .fade.in, but the markup hardcodes "show" — force opacity on focus. */
+.pop-host:focus-within > .popover { opacity: 1; }
+.pop-host > .popover {
+	position: absolute;
+	left: 100%;
+	top: 0;
+	width: 280px;
+	max-width: 280px;
+	z-index: 1060;
+	text-align: left;
+}
+
+/* frozen-value (template is a bare span) */
+span.frozen { cursor: help; }
+
+/* ===== accessibility layer (additive; not in the original) ===== */
+a.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 2000;
+	background: #fff;
+	color: #212529;
+	padding: 8px 16px;
+	border-radius: 0 0 6px 0;
+}
+a.skip-link:focus { left: 0; }
+:focus-visible { outline: 2px solid #025b95; outline-offset: 1px; }
+html.dark :focus-visible { outline-color: #3d7a9e; }
+@media (prefers-reduced-motion: reduce) {
+	* { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

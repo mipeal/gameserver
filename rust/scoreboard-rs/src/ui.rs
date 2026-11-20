@@ -1,5 +1,6 @@
-//! Port of `ui.service.ts` — user preferences in localStorage, plus the
-//! dark-mode flag mirroring to `html.dark`.
+//! Port of `ui.service.ts` — user preferences in sessionStorage (like the
+//! original's @SessionStorage), plus the dark-mode flag mirroring to
+//! `html.dark`.
 
 use leptos::prelude::*;
 
@@ -9,18 +10,19 @@ pub struct Ui {
     pub show_only_sums: RwSignal<bool>,
     pub show_images: RwSignal<bool>,
     pub show_notifications: RwSignal<bool>,
+    pub sound: RwSignal<bool>,
     pub darkmode: RwSignal<bool>,
 }
 
-fn ls_get(key: &str) -> Option<bool> {
+fn ss_get(key: &str) -> Option<bool> {
     let w = web_sys::window()?;
-    let s = w.local_storage().ok().flatten()?;
+    let s = w.session_storage().ok().flatten()?;
     s.get_item(key).ok().flatten()?.parse().ok()
 }
 
-fn ls_set(key: &str, v: bool) {
+fn ss_set(key: &str, v: bool) {
     if let Some(w) = web_sys::window() {
-        if let Ok(Some(s)) = w.local_storage() {
+        if let Ok(Some(s)) = w.session_storage() {
             let _ = s.set_item(key, &v.to_string());
         }
     }
@@ -28,12 +30,19 @@ fn ls_set(key: &str, v: bool) {
 
 impl Ui {
     pub fn new() -> Ui {
+        // darkmode default: prefers-color-scheme, like the original
+        let prefers_dark = web_sys::window()
+            .map(|w| w.match_media("(prefers-color-scheme: dark)").ok().flatten())
+            .flatten()
+            .map(|m| m.matches())
+            .unwrap_or(false);
         let ui = Ui {
-            show_history: RwSignal::new(ls_get("showHistory").unwrap_or(true)),
-            show_only_sums: RwSignal::new(ls_get("showOnlySums").unwrap_or(false)),
-            show_images: RwSignal::new(ls_get("showImages").unwrap_or(true)),
-            show_notifications: RwSignal::new(ls_get("showNotifications").unwrap_or(true)),
-            darkmode: RwSignal::new(ls_get("darkmode").unwrap_or(false)),
+            show_history: RwSignal::new(ss_get("showHistory").unwrap_or(true)),
+            show_only_sums: RwSignal::new(ss_get("showOnlySums").unwrap_or(false)),
+            show_images: RwSignal::new(ss_get("showImages").unwrap_or(true)),
+            show_notifications: RwSignal::new(ss_get("showNotifications").unwrap_or(true)),
+            sound: RwSignal::new(ss_get("sound").unwrap_or(true)),
+            darkmode: RwSignal::new(ss_get("darkmode").unwrap_or(prefers_dark)),
         };
         let this = ui;
         Effect::new(move || {
@@ -46,15 +55,17 @@ impl Ui {
             }
         });
         let this = ui;
-        Effect::new(move || ls_set("showHistory", this.show_history.get()));
+        Effect::new(move || ss_set("showHistory", this.show_history.get()));
         let this = ui;
-        Effect::new(move || ls_set("showOnlySums", this.show_only_sums.get()));
+        Effect::new(move || ss_set("showOnlySums", this.show_only_sums.get()));
         let this = ui;
-        Effect::new(move || ls_set("showImages", this.show_images.get()));
+        Effect::new(move || ss_set("showImages", this.show_images.get()));
         let this = ui;
-        Effect::new(move || ls_set("showNotifications", this.show_notifications.get()));
+        Effect::new(move || ss_set("showNotifications", this.show_notifications.get()));
         let this = ui;
-        Effect::new(move || ls_set("darkmode", this.darkmode.get()));
+        Effect::new(move || ss_set("sound", this.sound.get()));
+        let this = ui;
+        Effect::new(move || ss_set("darkmode", this.darkmode.get()));
         ui
     }
 }

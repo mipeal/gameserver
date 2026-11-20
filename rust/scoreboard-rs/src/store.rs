@@ -136,10 +136,12 @@ impl Store {
                     let now = (js_sys::Date::now() / 1000.0) as i64;
                     let mut wait_time = new.current_tick_until - now;
                     if wait_time < 2 || new.scoreboard_tick < new.current_tick - 1 {
-                        wait_time = match new.state {
-                            STATE_RUNNING => 1,
-                            STATE_SUSPENDED => 5,
-                            _ => 10,
+                        wait_time = if new.state == STATE_RUNNING {
+                            1
+                        } else if new.state == STATE_SUSPENDED {
+                            5
+                        } else {
+                            10
                         };
                     } else if wait_time > 10 {
                         wait_time = 10;
@@ -253,17 +255,18 @@ impl Store {
     }
 
     /// `getTeamPointHistory`: [service][tick] point sums of one team, as a
-    /// tracked read that fetches on miss.
+    /// tracked read that fetches on miss. Like the original, the completeness
+    /// check only skips the fetch — incomplete data is served as-is.
     pub fn team_history(&self, team_id: i64) -> Option<Vec<Vec<f64>>> {
         let hist = self.team_point_history.get(); // tracked
-        if let Some(points) = hist.get(&team_id) {
-            if points.first().map(|p| p.len()).unwrap_or(0)
-                >= (self.state.get_untracked().current_tick.max(0) + 1) as usize
-            {
-                return Some(points.clone());
-            }
-        }
-        if !self.history_inflight.get_untracked().contains(&team_id) {
+        let cached = hist.get(&team_id).cloned();
+        let complete = cached
+            .as_ref()
+            .and_then(|p| p.first())
+            .map(|p| p.len())
+            .unwrap_or(0)
+            >= (self.state.get_untracked().current_tick.max(0) + 1) as usize;
+        if !complete && !self.history_inflight.get_untracked().contains(&team_id) {
             self.history_inflight.update(|s| { s.insert(team_id); });
             let this = *self;
             leptos::task::spawn_local(async move {
@@ -285,7 +288,7 @@ impl Store {
                 }
             });
         }
-        None
+        cached
     }
 
     /// `getTeamPointHistorySimple`: [tick] total points of one team.
