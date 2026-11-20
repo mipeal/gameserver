@@ -32,6 +32,23 @@ pub async fn post_json(url: &str, body: Value) -> Result<String, String> {
     }
 }
 
+/// POST as x-www-form-urlencoded (for axum `Form` handlers, e.g. /services/checker_status).
+pub async fn post_form(url: &str, body: &str) -> Result<String, String> {
+    let resp = gloo_net::http::Request::post(url)
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .body(body.to_string())
+        .map_err(|e| format!("POST {url}: {e}"))?
+        .send()
+        .await
+        .map_err(|e| format!("POST {url}: {e}"))?;
+    let text = resp.text().await.map_err(|e| e.to_string())?;
+    if resp.ok() {
+        Ok(text)
+    } else {
+        Err(format!("{}: {}", resp.status(), text))
+    }
+}
+
 pub async fn post_raw(url: &str, body: Vec<u8>) -> Result<String, String> {
     let resp = gloo_net::http::Request::post(url)
         .body(body)

@@ -104,32 +104,50 @@ pub fn TeamView() -> impl IntoView {
 
 // ---- Services ----------------------------------------------------------------
 
+fn set_checker<F: Fn() + 'static>(set_op_msg: WriteSignal<String>, id: String, enable: bool, reload: F) {
+    leptos::task::spawn_local(async move {
+        set_op_msg.set(match crate::api::post_form("/services/checker_status",
+            &format!("id={}&status={}", urlencoding(&id), if enable { 1 } else { 0 })).await {
+            Ok(t) => t, Err(e) => e,
+        });
+        reload();
+    });
+}
+
 #[component]
 pub fn Services() -> impl IntoView {
     let services = LocalResource::new(|| async { get_json("/api/services/list").await });
+    let (op_msg, set_op_msg) = signal(String::new());
     view! {
         <h1>"Services"</h1>
+        {move || if !op_msg.get().is_empty() { view! { <p class="warn">{op_msg.get()}</p> }.into_any() } else { "".into_any() }}
         {move || match services.get() {
             None => "Loading…".into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
+                let reload = move || services.refetch();
                 let rows = v["services"].as_array().cloned().unwrap_or_default().iter().map(|svc| {
                     let fbs = svc["first_bloods"].as_array().cloned().unwrap_or_default();
                     let fb_names = fbs.iter().filter_map(|fb| {
                         let tid = fb["team_id"].as_i64()?;
                         let team = v["teams"].as_array()?.iter().find(|t| t["id"].as_i64() == Some(tid))?;
-                        Some(format!("#{} {} (tick {})", tid, s(team), s(&fb["tick_submitted"])))
+                        Some(format!("#{} {} (tick {})", tid, s(&team["name"]), s(&fb["tick_submitted"])))
                     }).collect::<Vec<_>>().join(", ");
+                    let id = s(&svc["id"]);
+                    let enabled = svc["checker_enabled"].as_bool().unwrap_or(false);
+                    let toggle_id = id.clone();
                     vec![
                         s(&svc["id"]).into_any(),
                         s(&svc["name"]).into_any(),
-                        {if svc["checker_enabled"].as_bool().unwrap_or(false) { view! { <span class="ok">"enabled"</span> }.into_any() } else { view! { <span class="err">"disabled"</span> }.into_any() }},
+                        {if enabled { view! { <span class="ok">"enabled"</span> }.into_any() } else { view! { <span class="err">"disabled"</span> }.into_any() }},
+                        {let rid = toggle_id.clone();
+                         view! { <button type="button" on:click=move |_| set_checker(set_op_msg, rid.clone(), !enabled, reload)>{if enabled { "Disable" } else { "Enable" }}</button> }.into_any()},
                         s(&svc["checker_runner"]).into_any(),
                         s_opt(&svc["package"]).into_any(),
                         fb_names.into_any(),
                     ]
                 }).collect();
-                table(&["ID", "Name", "Checker", "Runner", "Package", "First bloods"], rows).into_any()
+                table(&["ID", "Name", "Checker", "", "Runner", "Package", "First bloods"], rows).into_any()
             }
         }}
     }

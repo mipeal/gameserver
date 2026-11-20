@@ -85,8 +85,19 @@ fn Overview() -> impl IntoView {
         async { get_json("/overview/logs").await }
     });
     let (log_limit, set_log_limit) = signal(50.0f64);
-    let timing_reload = move || timing.refetch();
+    let (roundtime, set_roundtime) = signal(String::new());
+    let (lastround, set_lastround) = signal(String::new());
+    let (op_msg, set_op_msg) = signal(String::new());
     let vpn_reload = move || vpn.refetch();
+    let set_timing = move |body: serde_json::Value, reload: bool| {
+        leptos::task::spawn_local(async move {
+            set_op_msg.set(match crate::api::post_json("/overview/set_timing", body).await {
+                Ok(t) => t,
+                Err(e) => e,
+            });
+            if reload { timing.refetch(); }
+        });
+    }; // captures `timing` — defined above, Copy resource handle
     let set_vpn = move |state: &'static str| {
         leptos::task::spawn_local(async move {
             let _ = crate::api::post_json("/overview/set_vpn", serde_json::json!({"state": state})).await;
@@ -143,8 +154,29 @@ fn Overview() -> impl IntoView {
                 <p>"Tick " {s(&v["currentRound"])} " — start " {api::ts(&v["roundStart"])} " / end " {api::ts(&v["roundEnd"])}
                    " (" {s(&v["roundTime"])} "s), last round " {s_opt(&v["lastRound"])}
                    ", master timers: " {s(&v["masterTimers"])}</p>
-                <p><button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"state": 3})).await; timing_reload(); }); }>"Start"</button>" "
-                   <button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"state": 1})).await; timing_reload(); }); }>"Stop"</button></p>
+                <p><button on:click=move |_| set_timing(serde_json::json!({"state": 3}), true)>"Start"</button>" "
+                   <button on:click=move |_| set_timing(serde_json::json!({"state": 1}), true)>"Stop after tick"</button>" "
+                   <button on:click=move |_| set_timing(serde_json::json!({"state": 2}), true)>"Pause after tick"</button>" "
+                   <button on:click=move |_| {
+                       leptos::task::spawn_local(async move {
+                           set_op_msg.set(match crate::api::post_json("/scripts/recreate_scoreboard", serde_json::json!({})).await {
+                               Ok(t) => t, Err(e) => e,
+                           });
+                       });
+                   }>"Recreate scoreboard"</button></p>
+                <p>{move || if !op_msg.get().is_empty() { view! { <span class="warn">{op_msg.get()}</span> }.into_any() } else { "".into_any() }}</p>
+                <form class="inline" on:submit=|e| e.prevent_default()>
+                    <label>"Tick time (s): "</label>
+                    <input type="number" min=5 max=999 style="width: 80px" placeholder="30" prop:value=roundtime on:input=move |e| set_roundtime.set(event_target_value(&e)) />
+                    <label>" Stop after round: "</label>
+                    <input type="number" min=1 style="width: 80px" placeholder="—" prop:value=lastround on:input=move |e| set_lastround.set(event_target_value(&e)) />
+                    <button type="button" on:click=move |_| {
+                        let mut body = serde_json::Map::new();
+                        if let Ok(v) = roundtime.get_untracked().parse::<i64>() { body.insert("roundtime".into(), serde_json::json!(v)); }
+                        if let Ok(v) = lastround.get_untracked().parse::<i64>() { body.insert("lastround".into(), serde_json::json!(v)); }
+                        if !body.is_empty() { set_timing(serde_json::Value::Object(body), true); }
+                    }>"Apply"</button>
+                </form>
             }.into_any(),
         }}
         <h2>"Logs"</h2>
