@@ -92,43 +92,53 @@ pub async fn get_wireguard_status(team_id: i32) -> Result<WgStatus, String> {
     };
     let now = Utc::now();
     for line in String::from_utf8_lossy(&out.stdout).lines().skip(1) {
-        let f: Vec<&str> = line.split('\t').collect();
-        // KeyError/IndexError peers are skipped with an eprint
-        let (Some(handshake), Some(allowed)) = (f.get(2), f.get(7)) else {
-            eprintln!("short wg dump line for {ifname}: {line:?}");
+        let Some(peer) = parse_dump_peer(line, &ifname, now) else {
             continue;
         };
-        let ts: i64 = handshake.parse().unwrap_or(0);
-        let last_handshake = if ts > 0 {
-            Utc.timestamp_opt(ts, 0).single()
-        } else {
-            None
-        };
-        // handshake happens every 120sec roughly. We consider a team offline iff it misses two handshakes
-        let connected = last_handshake
-            .map(|h| h > now - chrono::Duration::seconds(245))
-            .unwrap_or(false);
-        let (remote_addr, remote_port) = f
-            .get(6)
-            .filter(|e| **e != "(none)")
-            .and_then(|e| e.rsplit_once(':'))
-            .map(|(a, p)| {
-                (
-                    Some(a.trim_matches(['[', ']']).to_string()),
-                    p.parse::<u16>().ok(),
-                )
-            })
-            .unwrap_or((None, None));
-        result.peers.push(WgPeerStatus {
-            // first allowed-ips entry (Python: allowed_ips[0]["addr"])
-            address: allowed.split_whitespace().next().unwrap_or("").to_string(),
-            connected,
-            last_handshake,
-            remote_addr,
-            remote_port,
-        });
+        result.peers.push(peer);
     }
     Ok(result)
+}
+
+/// One peer line of `wg show <if> dump`: pubkey | preshared | endpoint |
+/// allowed-ips | handshake (unix ts) | rx | tx | keepalive. None = short line
+/// (the KeyError/IndexError peers the Python netlink reader skipped).
+fn parse_dump_peer(line: &str, ifname: &str, now: DateTime<Utc>) -> Option<WgPeerStatus> {
+    let f: Vec<&str> = line.split('\t').collect();
+    // KeyError/IndexError peers are skipped with an eprint
+    let (Some(handshake), Some(allowed)) = (f.get(4), f.get(3)) else {
+        eprintln!("short wg dump line for {ifname}: {line:?}");
+        return None;
+    };
+    let ts: i64 = handshake.parse().unwrap_or(0);
+    let last_handshake = if ts > 0 {
+        Utc.timestamp_opt(ts, 0).single()
+    } else {
+        None
+    };
+    // handshake happens every 120sec roughly. We consider a team offline iff it misses two handshakes
+    let connected = last_handshake
+        .map(|h| h > now - chrono::Duration::seconds(245))
+        .unwrap_or(false);
+    let (remote_addr, remote_port) = f
+        .get(2)
+        .filter(|e| **e != "(none)")
+        .and_then(|e| e.rsplit_once(':'))
+        .map(|(a, p)| {
+            (
+                Some(a.trim_matches(['[', ']']).to_string()),
+                p.parse::<u16>().ok(),
+            )
+        })
+        .unwrap_or((None, None));
+    Some(WgPeerStatus {
+        // first allowed-ips entry (Python: allowed_ips[0]["addr"])
+        address: allowed.split_whitespace().next().unwrap_or("").to_string(),
+        connected,
+        last_handshake,
+        remote_addr,
+        remote_port,
+    })
 }
 
 #[cfg(test)]
@@ -159,5 +169,39 @@ mod tests {
         assert!(ws.get_peer_for("10.32.11.5").is_some());
         assert!(ws.get_peer_for("10.32.12.5").is_none());
         assert_eq!(ws.connection_count(), 1);
+    }
+
+    #[test]
+    fn dump_peer_line_columns() {
+        // `wg show tt-N dump` peer columns:
+        // pubkey | preshared | endpoint | allowed-ips | handshake | rx | tx | keepalive
+        // (regression: endpoint was read as the handshake and keepalive as
+        // allowed-ips, so no peer was ever "connected")
+        let now = Utc::now();
+        let ts = now - chrono::Duration::seconds(10);
+        let line = format!(
+            "nEouNUwCRb8xRsNFr3UlqXfbTPXkl/rYQHi1wOS7WXQ=\t(none)\t10.33.1.2:38895\t10.32.1.2/32\t{}\t372\t716\t15",
+            ts.timestamp()
+        );
+        let peer = parse_dump_peer(&line, "tt-1", now).expect("peer parsed");
+        assert_eq!(peer.address, "10.32.1.2/32");
+        assert!(peer.connected, "handshake 10s ago is within 245s");
+        assert_eq!(peer.remote_addr.as_deref(), Some("10.33.1.2"));
+        assert_eq!(peer.remote_port, Some(38895));
+        assert_eq!(
+            peer.last_handshake.unwrap().timestamp(),
+            ts.timestamp().min(peer.last_handshake.unwrap().timestamp())
+        );
+
+        // no handshake yet: ts 0 -> not connected
+        let line0 =
+            "nEouNUwCRb8xRsNFr3UlqXfbTPXkl/rYQHi1wOS7WXQ=\t(none)\t(none)\t10.32.1.2/32\t0\t0\t0\toff";
+        let peer0 = parse_dump_peer(line0, "tt-1", now).expect("peer parsed");
+        assert_eq!(peer0.address, "10.32.1.2/32");
+        assert!(!peer0.connected);
+        assert!(peer0.remote_addr.is_none());
+
+        // short line: skipped
+        assert!(parse_dump_peer("only\tthree", "tt-1", now).is_none());
     }
 }

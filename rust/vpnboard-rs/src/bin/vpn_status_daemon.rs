@@ -208,40 +208,44 @@ impl TeamCols {
     }
 }
 
-async fn write_team_changes(db: &PgPool, old: &TeamCols, team: &Team) -> Result<(), sqlx::Error> {
+/// None when no tracked column changed. (QueryBuilders `separated(", ")`
+/// emits the separator BEFORE each element, so the dynamic SET is built with
+/// explicit commas instead.)
+fn build_team_update_query(
+    old: &TeamCols,
+    team: &Team,
+) -> Option<sqlx::QueryBuilder<'static, sqlx::Postgres>> {
     let mut q = sqlx::QueryBuilder::new("UPDATE teams SET ");
-    let mut sep = q.separated(", ");
     let mut any = false;
-    if team.wg_vulnbox_connected != old.wg_vulnbox_connected {
-        sep.push("wg_vulnbox_connected = ");
-        sep.push_bind(team.wg_vulnbox_connected);
-        any = true;
+    macro_rules! set_col {
+        ($field:ident) => {
+            if team.$field != old.$field {
+                if any {
+                    q.push(", ");
+                }
+                q.push(concat!(stringify!($field), " = "))
+                    .push_bind(team.$field.clone());
+                any = true;
+            }
+        };
     }
-    if team.wg_boxes_connected != old.wg_boxes_connected {
-        sep.push("wg_boxes_connected = ");
-        sep.push_bind(team.wg_boxes_connected);
-        any = true;
-    }
-    if team.vpn_connection_count != old.vpn_connection_count {
-        sep.push("vpn_connection_count = ");
-        sep.push_bind(team.vpn_connection_count);
-        any = true;
-    }
-    if team.vpn_last_connect != old.vpn_last_connect {
-        sep.push("vpn_last_connect = ");
-        sep.push_bind(team.vpn_last_connect);
-        any = true;
-    }
-    if team.vpn_last_disconnect != old.vpn_last_disconnect {
-        sep.push("vpn_last_disconnect = ");
-        sep.push_bind(team.vpn_last_disconnect);
-        any = true;
-    }
+    set_col!(wg_vulnbox_connected);
+    set_col!(wg_boxes_connected);
+    set_col!(vpn_connection_count);
+    set_col!(vpn_last_connect);
+    set_col!(vpn_last_disconnect);
     if !any {
-        return Ok(());
+        return None;
     }
     q.push(" WHERE id = ").push_bind(team.id);
-    q.build().execute(db).await.map(|_| ())
+    Some(q)
+}
+
+async fn write_team_changes(db: &PgPool, old: &TeamCols, team: &Team) -> Result<(), sqlx::Error> {
+    match build_team_update_query(old, team) {
+        Some(mut q) => q.build().execute(db).await.map(|_| ()),
+        None => Ok(()),
+    }
 }
 
 /// `ping_teams_threadpool` — in-process "threadpool" with a 24-permit semaphore.
@@ -547,5 +551,56 @@ async fn main() -> Result<(), String> {
         run_once(&db, &cfg, &shared, complete, check_wg, use_nping)
             .await
             .map_err(|e| e.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn team(cols: TeamCols) -> Team {
+        Team {
+            id: 2,
+            name: "t".into(),
+            affiliation: None,
+            website: None,
+            logo: None,
+            vpn_connected: false,
+            vpn2_connected: false,
+            vpn_connection_count: cols.vpn_connection_count,
+            vpn_last_connect: cols.vpn_last_connect,
+            vpn_last_disconnect: cols.vpn_last_disconnect,
+            wg_vulnbox_connected: cols.wg_vulnbox_connected,
+            wg_boxes_connected: cols.wg_boxes_connected,
+        }
+    }
+
+    #[test]
+    fn team_update_sql_has_no_leading_comma() {
+        // regression: QueryBuilder::separated emits ", " BEFORE the first
+        // field, producing `SET , col = $1` (syntax error, daemon exit-loop)
+        let old = TeamCols {
+            wg_vulnbox_connected: false,
+            wg_boxes_connected: false,
+            vpn_connection_count: 0,
+            vpn_last_connect: None,
+            vpn_last_disconnect: None,
+        };
+        let mut t = team(old);
+        t.wg_vulnbox_connected = true;
+        t.vpn_last_connect = Some(Utc::now());
+        let q = build_team_update_query(&old, &t).expect("has changes");
+        assert!(
+            q.sql()
+                .starts_with("UPDATE teams SET wg_vulnbox_connected = "),
+            "{}",
+            q.sql()
+        );
+        assert!(!q.sql().contains("SET ,"), "{}", q.sql());
+        assert!(q.sql().contains(", vpn_last_connect = "), "{}", q.sql());
+        assert!(q.sql().contains("WHERE id = "), "{}", q.sql());
+
+        let same = build_team_update_query(&old, &team(old));
+        assert!(same.is_none(), "no changes -> no query");
     }
 }
