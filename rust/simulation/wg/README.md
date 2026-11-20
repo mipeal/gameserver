@@ -81,8 +81,10 @@ docker exec <postgres> psql -U saarctf -d saarctf -tAc \
 
 Down/up cycle: `wg-quick down wg0 && wg-quick up wg0` on a vulnbox, or just
 restart the container — vpnboard marks the team offline after two missed
-~120 s handshakes (allow up to 5 min), and back online just as slowly after
-reconnect.
+~120 s handshakes (measured: **~4 min** down → `wg_vulnbox_connected=f`),
+and back online quickly after reconnect (measured: **~35 s** — the 15 s
+keepalive rekeys the tunnel immediately, then the next vpnboard cycle
+flips the flag).
 
 ## Ops gotchas (recreating a running controlserver)
 
