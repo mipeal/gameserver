@@ -1,5 +1,5 @@
 name = 'cloud-api'
-interface_file = 'checker'
+interface_file = 'checker.py'
 interface_class = 'CloudApiService'
 ports = ['8080']
 flags_per_tick = 4

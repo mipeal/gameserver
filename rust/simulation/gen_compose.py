@@ -27,26 +27,35 @@ def parse_env(path):
     return env
 
 
-def gen_vulnboxes(teams):
+def gen_vulnboxes(teams, vpn=False):
+    # SIM_VPN=1: the wg tunnel owns 10.32.0.0/16 (team.vpn = 10.32.N.2 must
+    # route into wg0), so the bridge moves to 10.33.0.0/16
+    base = "10.33" if vpn else "10.32"
     out = [HEADER, "services:\n"]
     for n in range(1, teams + 1):
         out.append(f"""  vulnbox-{n}:
     image: sim-vulnbox
-    build: ./vulnbox
+    build:
+      context: ./simulation/vulnbox
+      dockerfile: Dockerfile.vulnbox
     environment:
       TEAM_ID: "{n}"
       SIM_PORTS: "1337,8080,31337"
+      TEAMS: "{teams}"
+      SIM_ATTACK_RATE: "${{SIM_ATTACK_RATE:-0.25}}"
+      SUBMITTER_ADDR: submitter:31337
+      SCOREBOARD_ADDR: scoreboard:80
     networks:
       simnet:
-        ipv4_address: 10.32.{n}.2
+        ipv4_address: {base}.{n}.2
     restart: unless-stopped
 """)
-    out.append("""networks:
+    out.append(f"""networks:
   simnet:
     ipam:
       config:
-        - subnet: 10.32.0.0/16
-          gateway: 10.32.0.1
+        - subnet: {base}.0.0/16
+          gateway: {base}.0.1
 """)
     return "".join(out)
 
@@ -61,6 +70,7 @@ def gen_sim_vpn(teams):
       - /dev/net/tun
     volumes:
       - keys:/run/sim/keys:ro
+      - ./simulation/wg:/sim/wg:ro
 """)
     out = [HEADER, "services:\n"]
     out.extend(vpn_entries)
@@ -72,11 +82,13 @@ def gen_sim_vpn(teams):
     volumes:
       - wg-keystore:/run/sim/wg
       - keys:/run/sim/keys
-      - ./wg:/opt/sim/wg:ro
+      - ./simulation/wg:/opt/sim/wg:ro
     command:
       - sh
       - -c
-      - wireguard-sync generate -a $((TEAMS + 1)) && python3 /opt/sim/wg/split-keystore.py
+      # wireguard-sync has no CONFIG env here, so it writes ./keystore.json
+      # (cwd /opt) — copy it into the keystore volume for split-keystore.py
+      - wireguard-sync generate -a $((TEAMS + 1)) && cp /opt/keystore.json /run/sim/wg/ && python3 /opt/sim/wg/split-keystore.py
     networks: [simnet]
 
   controlserver:
@@ -84,9 +96,11 @@ def gen_sim_vpn(teams):
       - NET_ADMIN
     devices:
       - /dev/net/tun
+    environment:
+      TEAMS: "{teams}"  # server-setup.sh: one wg peer per team
     volumes:
       - keys:/run/sim/keys:ro
-      - ./wg:/opt/sim/wg:ro
+      - ./simulation/wg:/opt/sim/wg:ro
     command:
       - sh
       - -c
@@ -108,8 +122,9 @@ def gen_sim_vpn(teams):
       SCOREBOARD_PATH: /var/scoreboard
       VPNBOARD_PATH: /tmp/vpnboard
     volumes:
-      - ./config.sim.yaml:/opt/sim/config.sim.yaml:ro
-    command: ["/usr/local/bin/vpn_status_daemon"]
+      - ./simulation/config.sim.yaml:/opt/sim/config.sim.yaml:ro
+    # --daemon: default is run-once-and-exit; --complete --check-wg: single router sees all
+    command: ["/usr/local/bin/vpn-status-daemon", "--daemon", "--complete", "--check-wg"]
     network_mode: "service:controlserver"
     restart: unless-stopped
     depends_on:
@@ -135,7 +150,7 @@ def main(argv=None):
     teams = int(env.get("TEAMS", "8"))
     sim_vpn = env.get("SIM_VPN", "1") == "1"
 
-    vulnboxes = gen_vulnboxes(teams)
+    vulnboxes = gen_vulnboxes(teams, vpn=sim_vpn)
     if args.check:
         print(vulnboxes)
         if sim_vpn:

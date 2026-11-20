@@ -1,5 +1,5 @@
 name = 'flagboard'
-interface_file = 'checker'
+interface_file = 'checker.py'
 interface_class = 'FlagboardService'
 ports = ['31337']
 flags_per_tick = 2

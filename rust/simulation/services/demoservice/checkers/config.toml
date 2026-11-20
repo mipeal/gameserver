@@ -1,5 +1,5 @@
 name = 'demoservice'
-interface_file = 'checker'
+interface_file = 'checker.py'
 interface_class = 'DemoServiceService'
 ports = ['1337']
 flags_per_tick = 4

@@ -16,6 +16,17 @@ COPY rust/controlserver-rs ./controlserver-rs
 WORKDIR /build/controlserver-rs
 RUN cargo build --release --bins
 
+# index.css is a build artifact (npm run less: static/less/index.less ->
+# static/css/index.css); the scoreboard generator copies it into its output
+# and crashes like the Python one when it is missing.
+FROM node:20-bookworm AS css_build
+WORKDIR /build
+COPY package.json ./
+RUN npm install --omit=dev --no-audit --no-fund
+COPY controlserver/static/less ./controlserver/static/less
+RUN npx lessc --include-path=node_modules --modify-var='@env-name="None"' \
+    controlserver/static/less/index.less controlserver/static/css/index.css
+
 FROM python:3.13
 WORKDIR /opt
 
@@ -24,9 +35,10 @@ ADD Makefile /opt/
 ADD gamelib /opt/gamelib
 
 RUN --mount=type=cache,target=/root/.cache \
-    make deps && pip install gunicorn && mkdir -p scoreboard
+    make deps && . venv/bin/activate && pip install gunicorn pwntools && mkdir -p scoreboard
 
 ADD checker_runner /opt/checker_runner
+ADD controlserver /opt/controlserver
 ADD saarctf_commons /opt/saarctf_commons
 ADD sample_files /opt/sample_files
 ADD scripts /opt/scripts
@@ -34,11 +46,17 @@ ADD vpn /opt/vpn
 ADD vpnboard /opt/vpnboard
 ADD wireguard-sync /opt/wireguard-sync
 
+COPY --from=css_build /build/controlserver/static/css/index.css /opt/controlserver/static/css/index.css
+
 # Leptos scoreboard SPA where the scoreboard generator expects it
 # (python_dir/scoreboard/dist/scoreboard — the Angular build layout). Trunk
 # outputs flat, so nest it one level. Built on the host by cutover.sh — the
 # wasm output is platform-independent.
 COPY rust/scoreboard-rs/dist/ /opt/scoreboard/dist/scoreboard/
+
+# Leptos admin GUI SPA, served by the controlserver on its HTTP port
+COPY rust/admin-gui-rs/dist/ /opt/admin-gui/dist/
+ENV ADMIN_GUI_DIST=/opt/admin-gui/dist
 
 COPY --from=rust_build \
     /build/controlserver-rs/target/release/controlserver \

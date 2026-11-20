@@ -3,6 +3,6 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends python3 wireguard-tools iproute2 \
 	&& rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/vulnbox
-COPY services.py entrypoint.sh ./
+COPY services.py attack.py entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]

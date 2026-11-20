@@ -2,87 +2,55 @@
 services:
   vulnbox-1:
     image: sim-vulnbox
-    build: ./vulnbox
+    build:
+      context: ./simulation/vulnbox
+      dockerfile: Dockerfile.vulnbox
     environment:
       TEAM_ID: "1"
       SIM_PORTS: "1337,8080,31337"
+      TEAMS: "3"
+      SIM_ATTACK_RATE: "${SIM_ATTACK_RATE:-0.25}"
+      SUBMITTER_ADDR: submitter:31337
+      SCOREBOARD_ADDR: scoreboard:80
     networks:
       simnet:
-        ipv4_address: 10.32.1.2
+        ipv4_address: 10.33.1.2
     restart: unless-stopped
   vulnbox-2:
     image: sim-vulnbox
-    build: ./vulnbox
+    build:
+      context: ./simulation/vulnbox
+      dockerfile: Dockerfile.vulnbox
     environment:
       TEAM_ID: "2"
       SIM_PORTS: "1337,8080,31337"
+      TEAMS: "3"
+      SIM_ATTACK_RATE: "${SIM_ATTACK_RATE:-0.25}"
+      SUBMITTER_ADDR: submitter:31337
+      SCOREBOARD_ADDR: scoreboard:80
     networks:
       simnet:
-        ipv4_address: 10.32.2.2
+        ipv4_address: 10.33.2.2
     restart: unless-stopped
   vulnbox-3:
     image: sim-vulnbox
-    build: ./vulnbox
+    build:
+      context: ./simulation/vulnbox
+      dockerfile: Dockerfile.vulnbox
     environment:
       TEAM_ID: "3"
       SIM_PORTS: "1337,8080,31337"
+      TEAMS: "3"
+      SIM_ATTACK_RATE: "${SIM_ATTACK_RATE:-0.25}"
+      SUBMITTER_ADDR: submitter:31337
+      SCOREBOARD_ADDR: scoreboard:80
     networks:
       simnet:
-        ipv4_address: 10.32.3.2
-    restart: unless-stopped
-  vulnbox-4:
-    image: sim-vulnbox
-    build: ./vulnbox
-    environment:
-      TEAM_ID: "4"
-      SIM_PORTS: "1337,8080,31337"
-    networks:
-      simnet:
-        ipv4_address: 10.32.4.2
-    restart: unless-stopped
-  vulnbox-5:
-    image: sim-vulnbox
-    build: ./vulnbox
-    environment:
-      TEAM_ID: "5"
-      SIM_PORTS: "1337,8080,31337"
-    networks:
-      simnet:
-        ipv4_address: 10.32.5.2
-    restart: unless-stopped
-  vulnbox-6:
-    image: sim-vulnbox
-    build: ./vulnbox
-    environment:
-      TEAM_ID: "6"
-      SIM_PORTS: "1337,8080,31337"
-    networks:
-      simnet:
-        ipv4_address: 10.32.6.2
-    restart: unless-stopped
-  vulnbox-7:
-    image: sim-vulnbox
-    build: ./vulnbox
-    environment:
-      TEAM_ID: "7"
-      SIM_PORTS: "1337,8080,31337"
-    networks:
-      simnet:
-        ipv4_address: 10.32.7.2
-    restart: unless-stopped
-  vulnbox-8:
-    image: sim-vulnbox
-    build: ./vulnbox
-    environment:
-      TEAM_ID: "8"
-      SIM_PORTS: "1337,8080,31337"
-    networks:
-      simnet:
-        ipv4_address: 10.32.8.2
+        ipv4_address: 10.33.3.2
     restart: unless-stopped
 networks:
   simnet:
     ipam:
       config:
-        - subnet: 10.32.0.0/16
-          gateway: 10.32.0.1
+        - subnet: 10.33.0.0/16
+          gateway: 10.33.0.1

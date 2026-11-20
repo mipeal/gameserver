@@ -61,6 +61,8 @@ def main():
     for t in threads:
         t.start()
     print(f"vulnbox services up on {PORTS}", flush=True)
+    from attack import start_from_env
+    start_from_env(services_started=True)
     threads[0].join()
 
 

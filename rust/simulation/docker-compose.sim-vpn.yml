@@ -7,6 +7,7 @@ services:
       - /dev/net/tun
     volumes:
       - keys:/run/sim/keys:ro
+      - ./simulation/wg:/sim/wg:ro
   vulnbox-2:
     cap_add:
       - NET_ADMIN
@@ -14,6 +15,7 @@ services:
       - /dev/net/tun
     volumes:
       - keys:/run/sim/keys:ro
+      - ./simulation/wg:/sim/wg:ro
   vulnbox-3:
     cap_add:
       - NET_ADMIN
@@ -21,54 +23,22 @@ services:
       - /dev/net/tun
     volumes:
       - keys:/run/sim/keys:ro
-  vulnbox-4:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    volumes:
-      - keys:/run/sim/keys:ro
-  vulnbox-5:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    volumes:
-      - keys:/run/sim/keys:ro
-  vulnbox-6:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    volumes:
-      - keys:/run/sim/keys:ro
-  vulnbox-7:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    volumes:
-      - keys:/run/sim/keys:ro
-  vulnbox-8:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    volumes:
-      - keys:/run/sim/keys:ro
+      - ./simulation/wg:/sim/wg:ro
   sim-init:
     image: gameserver-sim
     restart: "no"
     environment:
-      TEAMS: "8"
+      TEAMS: "3"
     volumes:
       - wg-keystore:/run/sim/wg
       - keys:/run/sim/keys
-      - ./wg:/opt/sim/wg:ro
+      - ./simulation/wg:/opt/sim/wg:ro
     command:
       - sh
       - -c
-      - wireguard-sync generate -a $((TEAMS + 1)) && python3 /opt/sim/wg/split-keystore.py
+      # wireguard-sync has no CONFIG env here, so it writes ./keystore.json
+      # (cwd /opt) — copy it into the keystore volume for split-keystore.py
+      - wireguard-sync generate -a $((TEAMS + 1)) && cp /opt/keystore.json /run/sim/wg/ && python3 /opt/sim/wg/split-keystore.py
     networks: [simnet]
 
   controlserver:
@@ -76,9 +46,11 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
+    environment:
+      TEAMS: "3"  # server-setup.sh: one wg peer per team
     volumes:
       - keys:/run/sim/keys:ro
-      - ./wg:/opt/sim/wg:ro
+      - ./simulation/wg:/opt/sim/wg:ro
     command:
       - sh
       - -c
@@ -100,8 +72,9 @@ services:
       SCOREBOARD_PATH: /var/scoreboard
       VPNBOARD_PATH: /tmp/vpnboard
     volumes:
-      - ./config.sim.yaml:/opt/sim/config.sim.yaml:ro
-    command: ["/usr/local/bin/vpn_status_daemon"]
+      - ./simulation/config.sim.yaml:/opt/sim/config.sim.yaml:ro
+    # --daemon: default is run-once-and-exit; --complete --check-wg: single router sees all
+    command: ["/usr/local/bin/vpn-status-daemon", "--daemon", "--complete", "--check-wg"]
     network_mode: "service:controlserver"
     restart: unless-stopped
     depends_on:

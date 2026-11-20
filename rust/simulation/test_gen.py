@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         self.assertIn("NET_ADMIN", out)
         self.assertIn("sim-init", out)
         self.assertIn("wireguard-sync generate -a $((TEAMS + 1))", out)  # TEAMS + 1 (server key), resolved in-container
-        self.assertIn("vpn_status_daemon", out)
+        self.assertIn("vpn-status-daemon", out)
         self.assertIn("server-setup.sh", out)
 
     def test_written_files(self):
