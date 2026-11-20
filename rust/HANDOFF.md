@@ -108,3 +108,40 @@ controlserver-rs via `tower-http` ServeDir fallback (`ADMIN_GUI_DIST` env, defau
   shared `python_dir()` helper in commons (`SAARCTF_PYTHON_DIR` env).
 - Patches upload uses raw body + `?filename=` (internal contract with our SPA, not
   Python multipart) — flagged divergence.
+
+## Wave 6 complete (2026-11-20)
+
+Public scoreboard ported to a Leptos CSR SPA (`rust/scoreboard-rs`) — the last open
+GUI unit. Data layer was already native (wave-3 `scoreboard.rs` writes the
+`api/scoreboard_*.json` files); this wave replaces the Angular app.
+
+- SPA: scoretable ("/"), teamgrid dashboard ("/dashboard"), team page
+  ("/team/:teamid"), graphs ("/graphs"), settings menu (localStorage prefs:
+  showHistory/showOnlySums/showImages/showNotifications/darkmode), current-tick
+  countdown with Date-header client/server delta, notification overlay
+  (firstblood 10 s + final top-3, upstream 12 s rate limiter, Escape dismiss).
+- Store (`src/store.rs`) ports backend.service.ts: adaptive current-state polling,
+  retryWithBackoff(teams 2000/20, rankings 1500/10, history 1500/3), firstblood
+  detection vs tick-1 confirmed counts, final event on RUNNING→STOPPED, the
+  upstream `tick % 60 == 7` page-reload quirk, service-change cache eviction,
+  team-history appends. Charts via a thin chart.js wasm-bindgen shim
+  (`src/charts.rs`) over the vendored 4.5.1 UMD build.
+- Parity fix in controlserver-rs/src/scoreboard.rs: `state` in
+  scoreboard_current.json must be Python's CTFState IntEnum (1/2/3), not the
+  enum name — was written as strings.
+- Cutover tooling: `rust/docker-compose.rust.yml` (postgres/redis/submitter/nginx
+  unchanged; controlserver+timer+migrate collapse into the `controlserver`
+  binary; celery checker → `checker_runner` on Redis Streams, no RabbitMQ;
+  `scoreboard-daemon` runs the native scoreboard bin; Leptos dist copied to
+  /opt/scoreboard/dist) + `rust/cutover.sh build|rust|python` (build on the
+  target host; binaries copied in, not cross-compiled in docker).
+- ADR-016: rust-anything front-door/app_lift superseded for the whole-app flow
+  (multi-binary ADR-007, original not runnable for recording here); per-unit
+  record/diff/gate was still used where runnable.
+- rust-anything gate on controlserver-rs re-run after the parity fix: clean
+  (fmt, clippy -D warnings, 12 tests).
+
+Known divergences (flagged, not silent): team-page infinite scroll is a
+load-all (the JSON is one file); CSS is hand-rolled, not Bootstrap/LESS
+pixel-match; window.debug hooks dropped; dashboard logo + scoretable team names
+may show before teams.json loads (first paint only).

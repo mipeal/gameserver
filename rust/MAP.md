@@ -11,7 +11,10 @@ ADR-001 scope (all but C++ fss) · ADR-002 Leptos GUI · ADR-003 rusty-celery (S
 ADR-004 semantic equivalence · ADR-005 sqlx baseline migration · ADR-006 staged cutover ·
 ADR-007 multiple binaries · ADR-008 checkpoints per wave · ADR-009 tangled core one piece ·
 ADR-010 axum + tokio · ADR-011 no sessions/no tornado corrections · ADR-012 no Celery in Rust,
-atomic pipeline cutover (checker pipeline switches together with controlserver)
+atomic pipeline cutover (checker pipeline switches together with controlserver) ·
+ADR-016 rust-anything front-door/app_lift superseded: multi-binary port (ADR-007) with
+standalone ports per unit and an original that cannot run for recording on this machine —
+per-unit record/diff/gate still applied where the original is runnable (gamelib, commons).
 
 ## Units
 
@@ -34,7 +37,7 @@ State: `open` | `claimed by <session> <date>` | `done (<gate>, <replay>)`
 | 2 | `scripts/` (1,225 ln) | open | Ops CLIs. |
 | 2 | `vpn/` (1,663 ln) | open | No pyroute2 here (research finding): iptables via subprocess, eBPF maps via ctypes — port as-is. hcloud API only. |
 | 2 | `vpnboard/` (535 ln) | open | Status daemon + board. |
-| GUI | `scoreboard/src/app` (Angular) → Leptos SPA | open | ADR-002. After backend APIs are proven. |
+| 6 | `scoreboard/src/app` (Angular) → Leptos SPA `rust/scoreboard-rs` | done (wasm build clean, trunk dist) | ADR-002. rust-anything front-door/app_lift superseded — see ADR-016. Cutover tooling: rust/docker-compose.rust.yml + rust/cutover.sh. |
 
 ## Out of scope
 - `flag-submission-server/src` (C++) — stays as-is (ADR-001).

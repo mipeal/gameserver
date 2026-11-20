@@ -1,0 +1,37 @@
+# Rust gameserver image (see rust/cutover.sh). Base is the same python:3.13
+# as the original Dockerfile, because the checker subprocesses still run the
+# Python checker scripts (ADR-013). The rust binaries are built on the host
+# by cutover.sh and copied in — docker builds of the rust crates are not
+# portable across the build host's architecture.
+
+FROM python:3.13
+WORKDIR /opt
+
+ADD requirements* /opt/
+ADD Makefile /opt/
+ADD gamelib /opt/gamelib
+
+RUN --mount=type=cache,target=/root/.cache \
+    make deps && pip install gunicorn && mkdir -p scoreboard
+
+ADD checker_runner /opt/checker_runner
+ADD saarctf_commons /opt/saarctf_commons
+ADD sample_files /opt/sample_files
+ADD scripts /opt/scripts
+ADD vpn /opt/vpn
+ADD vpnboard /opt/vpnboard
+ADD wireguard-sync /opt/wireguard-sync
+
+# Leptos scoreboard SPA where the scoreboard generator expects it
+# (python_dir/scoreboard/dist/scoreboard).
+COPY rust/scoreboard-rs/dist/ /opt/scoreboard/dist/
+
+# Prebuilt linux binaries: controlserver, checker_runner, scoreboard
+COPY rust/controlserver-rs/bin/ /usr/local/bin/
+
+ENV SAARCTF_PYTHON_DIR=/opt
+# checker subprocesses run `python3` — resolve to the venv python with deps
+ENV PATH="/opt/venv/bin:${PATH}"
+ENV FLASK_APP=controlserver/app.py
+STOPSIGNAL SIGINT
+ENTRYPOINT []

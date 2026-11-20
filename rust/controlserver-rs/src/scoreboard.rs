@@ -267,7 +267,12 @@ impl Scoreboard {
         // Timer state comes from redis (this process may not own the timer)
         if let Ok(state) = crate::timer::read_timing_state(&self.cfg).await {
             data["current_tick"] = json!(state.current_tick);
-            data["state"] = json!(state.state.name());
+            // Python's CTFState is an IntEnum: the JSON field is the number 1/2/3
+            data["state"] = json!(match state.state {
+                CtfState::Stopped => 1,
+                CtfState::Suspended => 2,
+                CtfState::Running => 3,
+            });
             data["current_tick_start"] = json!(state.tick_start);
             data["current_tick_until"] = json!(state.tick_end);
         }

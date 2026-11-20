@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="saarCTF scoreboard">
+	<title>Scoreboard</title>
+	<link rel="icon" type="image/png" href="favicon.png">
+	<script data-trunk src="js/chart.umd.js"></script>
+	<style>
+		:root {
+			--bg: #fff; --fg: #212529; --muted: #6c757d; --border: #dee2e6;
+			--head-bg: #343a40; --head-fg: #f8f9fa; --card-bg: #f8f9fa;
+			--link: #0d6efd;
+			--ok: #198754; --warn: #b8860b; --err: #b02a37; --info: #0dcaf0; --def: #adb5bd;
+			--rank1: #ffd700; --rank2: #c0c0c0; --rank3: #cd7f32;
+		}
+		html.dark {
+			--bg: #1a1d21; --fg: #ddd; --muted: #8a9199; --border: #3a3f44;
+			--head-bg: #101214; --head-fg: #ddd; --card-bg: #22262a;
+			--link: #6ea8fe;
+			--ok: #479f76; --warn: #c9a227; --err: #d9534f; --info: #5bc0de; --def: #55595d;
+		}
+		body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.4 system-ui, sans-serif; }
+		a { color: var(--link); text-decoration: none; }
+		a:hover { text-decoration: underline; }
+		header.sb { background: var(--head-bg); color: var(--head-fg); padding: 8px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+		header.sb h1 { font-size: 22px; margin: 0; }
+		header.sb nav a { color: var(--head-fg); margin-right: 10px; opacity: .8; }
+		header.sb nav a:hover { opacity: 1; text-decoration: none; }
+		.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+		.current-tick { text-align: right; line-height: 1.2; }
+		.current-tick .tick { font-size: 18px; font-weight: 600; margin: 0; }
+		.current-tick .time { margin: 0; font-variant-numeric: tabular-nums; }
+		.label { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; color: #fff; }
+		.label-success { background: var(--ok); } .label-warning { background: var(--warn); }
+		.label-danger { background: var(--err); } .label-info { background: var(--info); color: #111; }
+		.label-default { background: var(--def); }
+		.settings-btn { background: none; border: 1px solid var(--border); color: inherit; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+		.settings-menu { position: absolute; right: 16px; top: 52px; background: var(--card-bg); color: var(--fg); border: 1px solid var(--border); border-radius: 6px; min-width: 240px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+		.settings-menu a { display: block; padding: 8px 14px; color: inherit; }
+		.settings-menu a:hover { background: var(--border); text-decoration: none; cursor: pointer; }
+		main { padding: 12px 16px; max-width: 1600px; margin: 0 auto; }
+		.credits { text-align: center; padding: 10px; color: var(--muted); }
+		/* team grid (dashboard) */
+		.teamgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 10px; }
+		.team { display: flex; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px; gap: 8px; }
+		.team .rank { min-width: 34px; text-align: center; font-size: 20px; margin: 4px 0; font-weight: 700; }
+		.team .rank.rank1 { color: var(--rank1); } .team .rank.rank2 { color: var(--rank2); } .team .rank.rank3 { color: var(--rank3); }
+		.team h4.team-name { margin: 0; font-size: 16px; }
+		.team h4.team-name.blocked a { color: var(--err); text-decoration: line-through; }
+		.team-total-points { color: var(--muted); font-size: 13px; }
+		.team-total-points .delta small { color: var(--ok); }
+		.team-logo-media img { width: 42px; height: 42px; object-fit: contain; }
+		.team-status-row { margin-top: 4px; }
+		.team-status-row .label { width: 12px; height: 12px; padding: 0; border-radius: 3px; margin-right: 3px; }
+		/* score table (index) */
+		table.score { border-collapse: collapse; width: 100%; margin-top: 10px; }
+		table.score th, table.score td { border: 1px solid var(--border); padding: 4px 6px; text-align: center; }
+		table.score thead th { background: var(--card-bg); }
+		table.score td.teamcell { text-align: left; min-width: 200px; }
+		table.score td.rankcell h4 { margin: 0; }
+		.result-container .points { display: inline-block; min-width: 48px; font-variant-numeric: tabular-nums; }
+		.delta { color: var(--ok); font-size: 11px; }
+		.delta .neg { color: var(--err); }
+		.sla-col .label { margin-left: 2px; }
+		.history-1, .history-2, .history-3 { opacity: .85; }
+		.history-2 { opacity: .55; } .history-3 { opacity: .3; }
+		.loading { text-align: center; padding: 10px; color: var(--muted); }
+		/* charts */
+		.chart-group { margin: 18px 0; }
+		.chart-group h3 { margin: 0 0 6px; }
+		.chart-container { position: relative; height: 320px; }
+		/* notifications */
+		.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 900; }
+		.msgcontainer { position: fixed; inset: 0; z-index: 901; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; }
+		.message-what { font-size: 56px; font-weight: 800; letter-spacing: 2px; }
+		.message-what .bigicon { font-size: 90px; color: #d62728; }
+		.message-service, .message-team { font-size: 30px; margin: 6px; }
+		.finaltable td { padding: 4px 14px; font-size: 20px; }
+		.finaltable img { width: 40px; height: 40px; object-fit: contain; }
+	</style>
+</head>
+<body></body>
+</html>
