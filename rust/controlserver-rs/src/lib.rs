@@ -12,6 +12,7 @@ pub mod models;
 pub mod runners;
 pub mod scoreboard;
 pub mod scoring;
+pub mod sim_boot;
 pub mod service_mgr;
 pub mod timer;
 pub mod vpncontrol;

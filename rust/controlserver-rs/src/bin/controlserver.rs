@@ -1,7 +1,7 @@
 //! `controlserver/app.py` (wave 1): timer + events + dispatcher wiring.
 //! The HTTP endpoints are the next wave-1 piece (pages, teams, flags, ...).
 use controlserver_rs::timer;
-use controlserver_rs::{connect_db, endpoints, events, load_config};
+use controlserver_rs::{connect_db, endpoints, events, load_config, sim_boot};
 
 #[tokio::main]
 async fn main() {
@@ -11,6 +11,18 @@ async fn main() {
     saarctf_commons_rs::metrics::setup_default_metrics();
     let db = connect_db(&cfg).await.expect("database");
     sqlx::migrate!().run(&db).await.expect("migrations");
+
+    // Simulation mode (SAARCTF_SIMULATION=1): seed, import sim checkers, enable.
+    if sim_boot::simulation_enabled() {
+        sim_boot::run(
+            &cfg,
+            &db,
+            std::env::var("SAARCTF_SIM_SEED").ok().as_deref(),
+        )
+        .await
+        .expect("simulation boot steps");
+        tracing::info!("simulation mode: boot steps applied");
+    }
 
     let events_impl = events::DeferredCtfEvents::new(&cfg, db.clone())
         .await
@@ -29,6 +41,13 @@ async fn main() {
     .expect("timer");
     if master {
         tracing::info!("Master timer initialized");
+    }
+    if sim_boot::simulation_enabled() {
+        let mut t = shared_timer.lock().await;
+        if t.state != timer::CtfState::Running {
+            t.start_ctf().await.expect("simulation start_ctf");
+            tracing::info!("simulation mode: CTF started");
+        }
     }
 
     // HTTP API (endpoints/*.py JSON routes; HTML admin pages become the Leptos SPA)

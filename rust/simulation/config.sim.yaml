@@ -1,0 +1,93 @@
+# Simulation deployment config (SAARCTF_SIMULATION=1). Base shape = demo
+# config; databases point at compose service names, all fixture IPs use the
+# 10.32 team math (10.32.<team>.N). secrets are zero placeholders — real
+# secrets come from env/compose, never committed.
+checker_packages_path: /tmp/packages
+coder_url: ''
+ctfroute_namespace: cte25
+databases:
+  postgres:
+    database: saarctf
+    password: demo
+    port: 5432
+    server: postgres
+    username: saarctf
+  redis:
+    db: 0
+    host: redis
+    port: 6379
+dispatcher_check_vpn_status: true
+environment: dev
+external_timer: false
+flag_prefix: SAAR
+flower_url: http://localhost:5555/
+grafana_url: ''
+network:
+  game: 10.32.0.0/15
+  gameserver_ip: 10.32.250.2
+  gameserver_range: 10.32.250.0/24
+  gateway_ip:
+  - 10
+  - 32
+  - - 1
+    - 256
+    - 0
+  - 1
+  team_range:
+  - 10
+  - 32
+  - - 1
+    - 256
+    - 0
+  - 0
+  - 24
+  testbox_ip:
+  - 10
+  - 32
+  - - 1
+    - 256
+    - 0
+  - 3
+  vpn_host: 10.32.250.1
+  vpn_peer_ips:
+  - 10
+  - - 200
+    - 256
+    - 48
+  - - 1
+    - 200
+    - 0
+  - 1
+  vulnbox_ip:
+  - 10
+  - 32
+  - - 1
+    - 256
+    - 0
+  - 2
+patches_path: /tmp/packages/patches
+patches_public_path: /tmp/packages/patches-webroot
+runner:
+  dispatcher: dispatcher:CeleryDispatcher
+  eno:
+    check_past_ticks: 5
+    timeout: 15
+scoreboard_path: /var/scoreboard
+scoreboard_url: ''
+scoring:
+  def_factor: 1
+  flags_rounds_valid: 10
+  nop_team_id: 1
+  off_factor: 1
+  sla_factor: 1
+secret_flags: '0000000000000000000000000000000000000000000000000000000000000000'
+services_path: /opt/services
+service_remotes: []
+tick_duration_default: 30
+vpnboard_path: /tmp/vpnboard
+website_logo_url: ''
+website_team_url: ''
+wireguard_sync:
+  api_server: http://controlserver:8080
+  api_token: sim
+  api_base: /api/router/
