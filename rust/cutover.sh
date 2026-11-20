@@ -34,16 +34,21 @@ build() {
   fi
 }
 
+# Local port overrides (host 5000/6379 busy on some machines) — explicit -f
+# suppresses auto-loading, so append it when present.
+OVERRIDE=""
+[ -f rust/docker-compose.override.yml ] && OVERRIDE="-f rust/docker-compose.override.yml"
+
 case "${1:-}" in
   build)
     build
     ;;
   rust)
     docker compose -p gameserver -f docker-compose.yml down --remove-orphans || true
-    docker compose -p gameserver -f "$COMPOSE_RUST" up -d --remove-orphans
+    docker compose -p gameserver -f "$COMPOSE_RUST" $OVERRIDE up -d --remove-orphans
     ;;
   python)
-    docker compose -p gameserver -f "$COMPOSE_RUST" down --remove-orphans || true
+    docker compose -p gameserver -f "$COMPOSE_RUST" $OVERRIDE down --remove-orphans || true
     docker compose -p gameserver -f docker-compose.yml up -d
     ;;
   *)

@@ -24,6 +24,8 @@ x-gameserver-common-env: &gameserver-common-env
   REDIS_PASSWORD: ${REDIS_PASSWORD}
   SECRET_FLAG_KEY: ${SECRET_FLAG_KEY}
   CONFIG_FILE: ${CONFIG_FILE}
+  CONFIG: ${CONFIG_FILE}  # rust binaries read CONFIG
+  SAARCTF_CONFIG: ${CONFIG_FILE}  # python checker subprocesses (saarctf_commons)
   SCOREBOARD_PATH: ${PUBLIC_SCOREBOARD_PATH}
   SCOREBOARD_PATH_INTERNAL: ${INTERNAL_SCOREBOARD_PATH}
   SAARCTF_PYTHON_DIR: /opt
