@@ -5,7 +5,6 @@ import sys  # isort:skip
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # NOQA
 
-import re
 import subprocess
 import tempfile
 import time
@@ -85,50 +84,43 @@ def create_services(conn: t.Any) -> None:
 
 
 def spawn_gamseserver_components() -> t.List[process]:
-    # The readuntil blocks until the process is sucessfully spawned
-    # The timout is necessary, it stderr is redirected to ensure that the readuntil does not block forever
+    # Build and run the Rust gameserver bins: controlserver (timer/scoring/API)
+    # and checker_runner (Redis Streams worker, ADR-015). checker-exec must be
+    # on PATH for the checker subprocess, and PYTHONPATH must point at the repo
+    # root so the shim imports gamelib/checker_runner (ADR-017).
+    logging.info('Building rust bins ...')
+    subprocess.run(
+        ["cargo", "build", "--release", "--quiet",
+         "-p", "controlserver-rs", "--bin", "controlserver", "--bin", "checker_runner",
+         "-p", "checker-exec"],
+        check=True)
+    env = dict(
+        os.environ,
+        CONFIG=os.path.abspath("./config.yaml"),
+        SAARCTF_PYTHON_DIR=os.getcwd(),
+        PATH=os.getcwd() + "/target/release:" + os.environ.get("PATH", ""),
+    )
 
     stderr = subprocess.STDOUT
     # Make output visible for debugging
     # stderr = 2
 
-    flask = process(["flask", "run", "--host=0.0.0.0"], stderr=stderr)
-    time.sleep(0.1)
-    celery = process(
-        ["celery", "-A", "checker_runner.celery_cmd", "flower", "--port=5555"], stderr=stderr
-    )
-    celery_worker = process(
-        [
-            "celery",
-            "-A",
-            "checker_runner.celery_cmd",
-            "worker",
-            "-Ofair",
-            "-E",
-            "-Q",
-            "celery,broadcast",
-            "--concurrency=8",
-            "--hostname=ident@%h",
-        ],
-        stderr=stderr,
-        # stdout must be a pipe, not a pty. but stderr must also be captured. pwntools can't do this, so we work around:
-        stdout=subprocess.PIPE,
-        preexec_fn=lambda: os.dup2(1, 2)
-    )
+    controlserver = process(["./target/release/controlserver"], env=env, stderr=stderr)
+    checker_runner = process(["./target/release/checker_runner"], env=env, stderr=stderr)
 
-    # Ensure all processes are started
+    # Ensure the controlserver is started (wait for its HTTP API)
     logging.info('Processes starting')
-    if stderr == subprocess.STDOUT:
-        flask.readuntil(b"Running on", timeout=10)
+    for _ in range(120):
+        try:
+            requests.get("http://127.0.0.1:5000/", timeout=1)
+            break
+        except requests.RequestException:
+            time.sleep(0.5)
     else:
-        flask.readuntil(b'Master timer', timeout=10)
-    logging.info('Flask is running')
-    celery.readuntil(b"Registered tasks", timeout=10)
-    logging.info('Flower is running')
-    celery_worker.readuntil(b"[queues]", timeout=10)
-    logging.info('Celery worker is running')
+        raise Exception('Controlserver did not come up on port 5000')
+    logging.info('Controlserver is running')
 
-    return [flask, celery, celery_worker]
+    return [controlserver, checker_runner]
 
 
 def check_log_messages(logs: t.List[t.Dict[str, t.Any]]) -> None:
@@ -187,8 +179,9 @@ def main() -> None:
     subprocess.run(["psql", "-h", "postgres", "-Usaarsec", "-d", "saarctf",
                     "-f", "rust/controlserver-rs/migrations/0001_baseline.sql"],
                    check=True, timeout=20, env=env)
-    logging.info('Run reset_ctf.py ...')
-    subprocess.run(["python3", "./scripts/reset_ctf.py"], input=b"y", check=True, timeout=20)
+    logging.info('Run reset-ctf (rust bin) ...')
+    subprocess.run(["./target/release/reset-ctf"], input=b"y", check=True, timeout=20,
+                   env=dict(os.environ, CONFIG=os.path.abspath("./config.yaml")))
     handles = []
 
     logs = None
@@ -202,7 +195,8 @@ def main() -> None:
         handles = spawn_gamseserver_components()
 
         # Recreate scoreboard
-        subprocess.run(["python3", "./scripts/recreate_scoreboard.py"], check=True, timeout=15)
+        subprocess.run(["./target/release/recreate-scoreboard"], check=True, timeout=15,
+                       env=dict(os.environ, CONFIG=os.path.abspath("./config.yaml")))
         logging.info('Retrieving logs ...')
         get_logs()
         logging.info('Starting CTF ...')
@@ -220,13 +214,16 @@ def main() -> None:
         logs = get_logs()
         check_log_messages(logs)
 
-        # check output of celery worker
-        output = handles[2].recvall(timeout=1)
-        # The ] is important, as there are also "stderr-Test-2" messages, which otherwise would also match
-        count = len(re.findall(br"\] stderr-Test", output))
+        # The Rust worker captures checker subprocess output into checker_results
+        # (no longer streamed to its own console), so count the executions there
+        conn = psycopg2.connect(config.postgres_psycopg2())
+        cur = conn.cursor()
+        cur.execute("SELECT count(*) FROM checker_results WHERE status = 'SUCCESS'")
+        count = cur.fetchone()[0]
+        conn.close()
         if TICK_COUNT != count:
             raise Exception(
-                f"The celery worker executed the demo_checker {count} times, but we expect {TICK_COUNT}"
+                f"The checker worker executed the demo_checker {count} times, but we expect {TICK_COUNT}"
             )
 
     except Exception as e:
@@ -258,7 +255,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    os.environ['FLASK_APP'] = 'controlserver/app.py'
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
     main()
     logging.info('TEST DEMO CHECKER FINISHED')

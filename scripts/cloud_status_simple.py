@@ -9,8 +9,9 @@ from typing import List, Iterable, Dict
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import psycopg2
+
 from saarctf_commons.config import config, load_default_config
-from controlserver.models import Team
 
 """
 Generates a status json file for all teams registered.
@@ -37,11 +38,20 @@ def generate_team_password(team_id: int) -> str:
     return password
 
 
+def load_team_ids() -> List[int]:
+    conn = psycopg2.connect(config.postgres_psycopg2())
+    with conn.cursor() as cur:
+        cur.execute('SELECT id FROM teams ORDER BY id')
+        ids = [row[0] for row in cur.fetchall()]
+    conn.close()
+    return ids
+
+
 def simple_cloud_status(kinds: List[str], reset: bool, running: bool) -> None:
     if len(kinds) == 0:
         print(f'USAGE: {sys.argv[0]} [--create-only] [--reset] kind ...')
         sys.exit(1)
-    import controlserver.app
+    team_ids = load_team_ids()
 
     # load old status
     status: Dict[str, List[Dict]] = {'vms': []}
@@ -53,15 +63,14 @@ def simple_cloud_status(kinds: List[str], reset: bool, running: bool) -> None:
             print(f'[!] Could not load {config.CLOUDCONFIG_FILE}')
 
     for kind in kinds:
-        teams = Team.query.order_by(Team.id).all()
-        for team in teams:
-            with open(os.path.join(config.VPN_BASE_DIR, 'config-client', f'client-team{team.id}-vulnbox.conf'), 'r') as f:
+        for team_id in team_ids:
+            with open(os.path.join(config.VPN_BASE_DIR, 'config-client', f'client-team{team_id}-vulnbox.conf'), 'r') as f:
                 vpnconfig = f.read()
-            vm = first(vm for vm in status['vms'] if vm['kind'] == kind and vm['team'] == team.id)
+            vm = first(vm for vm in status['vms'] if vm['kind'] == kind and vm['team'] == team_id)
             if not vm:
-                vm = {"team": team.id, "kind": kind}
+                vm = {"team": team_id, "kind": kind}
                 status['vms'].append(vm)
-            vm['root_password'] = generate_team_password(team.id)
+            vm['root_password'] = generate_team_password(team_id)
             vm['files'] = {"/etc/openvpn/vulnbox.conf": {"content": vpnconfig, "permission": "0600", "owner": "root:root"}}
             vm['status'] = 'RUNNING' if running else 'STOPPED'
 
