@@ -6,9 +6,7 @@ C++ flag-submission-server stays (ADR-001). Original kept as reference until the
 **2026-11-20 post-cutover cleanup:** the Python sources of all `done` units were removed from
 the repo (`vpn/`, `vpnboard/`, `wireguard-sync/`, `scoreboard/` Angular, `migrations/`,
 `Dockerfile`, `docker-compose.yml`, `tests/test_vpnboard.py`) — recoverable from git history.
-`controlserver/` and `checker_runner/` Python stay: the checker subprocess wrapper
-(`checker_runner/runners/saarctf.py`) imports `controlserver.models`, ops scripts and the
-image's less build depend on them (ADR-013).
+`checker-exec` (ADR-017) later replaced the wrapper and both Python trees were deleted.
 
 Files: decisions in [DECISIONS.md](DECISIONS.md), terms in [GLOSSARY.md](GLOSSARY.md),
 session handoff in [HANDOFF.md](HANDOFF.md), dependency research in [research/](research/).
@@ -46,6 +44,7 @@ State: `open` | `claimed by <session> <date>` | `done (<gate>, <replay>)`
 | 2 | `vpnboard/` (535 ln) | done (`vpnboard-rs`, clippy clean) | Status daemon + board. |
 | 5 | `controlserver` admin HTML → Leptos SPA `rust/admin-gui-rs` | done (wave 5) | 15 JSON admin endpoints + SPA, served by controlserver-rs. |
 | 6 | `scoreboard/src/app` (Angular) → Leptos SPA `rust/scoreboard-rs` | done (wasm build clean, trunk dist) | ADR-002. rust-anything front-door/app_lift superseded — see ADR-016. Cutover tooling: rust/docker-compose.rust.yml + rust/cutover.sh (multi-arch buildx, amd64+arm64). |
+| 7 | `checker_runner/` bootstrap + `controlserver/` Python → `checker-exec` (PyO3 embed) | done (gate, 10/10 recorded cases match) | ADR-017. Rust launcher + embedded Python shim; service config via argv; packages from disk. controlserver/ deleted (less → rust/controlserver-rs/less), checker_runner keeps demo_checker.py. |
 
 ## Out of scope
 - `flag-submission-server/src` (C++) — stays as-is (ADR-001).

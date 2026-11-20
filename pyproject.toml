@@ -9,14 +9,12 @@ authors = ["saarCTF maintainers <saarctf@saarsec.rocks>"]
 [tool.mypy]
 exclude = [
     "gamelib/ci",
-    "checker_runner/runners/eno.py"  # remove when ECSC upstreamed their enochecker_core changes
 ]
 plugins = ["sqlalchemy.ext.mypy.plugin"]
 python_version = "3.12"
 
 packages = [
     "checker_runner",
-    "controlserver",
     "gamelib",
     "saarctf_commons",
     "scripts",

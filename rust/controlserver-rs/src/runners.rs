@@ -6,8 +6,101 @@
 
 use crate::dispatcher::TaskMessage;
 use serde_json::Value;
+use sqlx::Row;
+use std::path::Path;
 use std::process::Stdio;
 use tokio::process::Command;
+
+/// `PackageLoader.ensure_package_exists` + `DBFilesystem.load_package_to_folder`
+/// (the checker subprocess is disk-only now, ADR-017): materialize a package
+/// from `checker_filesystem`/`checker_files` into `<packages_path>/<package>`,
+/// large files (>500 KB) symlinked from the LFS dir. Returns true if it was
+/// freshly loaded, false if the folder already existed.
+pub async fn ensure_package_exists(
+    db: &sqlx::PgPool,
+    package: &str,
+    packages_path: &str,
+    lfs_path: Option<&str>,
+) -> Result<bool, String> {
+    use std::path::PathBuf;
+    let folder = Path::new(packages_path).join(package);
+    if folder.exists() {
+        return Ok(false);
+    }
+    let base = PathBuf::from(format!("{}.tmp", folder.display()));
+    std::fs::create_dir_all(&base).map_err(|e| e.to_string())?;
+    if let Some(lfs) = lfs_path {
+        std::fs::create_dir_all(lfs).map_err(|e| e.to_string())?;
+    }
+    let rows = sqlx::query(
+        "SELECT path, file_hash FROM checker_filesystem WHERE package = $1 ORDER BY path",
+    )
+    .bind(package)
+    .fetch_all(db)
+    .await
+    .map_err(|e| e.to_string())?;
+    for row in rows {
+        let path: String = row.try_get("path").map_err(|e| e.to_string())?;
+        let file_hash: Option<String> = row.try_get("file_hash").map_err(|e| e.to_string())?;
+        let res: Result<(), String> = match file_hash {
+            Some(hash) => {
+                let lfs_file = lfs_path.map(|l| Path::new(l).join(&hash));
+                if lfs_file.as_deref().is_some_and(|p| p.exists()) {
+                    #[cfg(unix)]
+                    return_link(lfs_file.as_deref().unwrap(), &base, &path);
+                    Ok(())
+                } else {
+                    let content: Vec<u8> =
+                        sqlx::query("SELECT content FROM checker_files WHERE file_hash = $1")
+                            .bind(&hash)
+                            .fetch_one(db)
+                            .await
+                            .map_err(|e| e.to_string())?
+                            .try_get("content")
+                            .map_err(|e| e.to_string())?;
+                    match lfs_path {
+                        Some(lfs) if content.len() > 500_000 => {
+                            let lfs_file = Path::new(lfs).join(&hash);
+                            if !lfs_file.exists() {
+                                std::fs::write(&lfs_file, &content).map_err(|e| e.to_string())?;
+                                #[cfg(unix)]
+                                std::fs::set_permissions(
+                                    &lfs_file,
+                                    std::os::unix::fs::PermissionsExt::from_mode(0o400),
+                                )
+                                .map_err(|e| e.to_string())?;
+                            }
+                            #[cfg(unix)]
+                            return_link(&lfs_file, &base, &path);
+                            #[cfg(not(unix))]
+                            std::fs::write(base.join(&path), &content)
+                                .map_err(|e| e.to_string())?;
+                            Ok(())
+                        }
+                        _ => std::fs::write(base.join(&path), &content).map_err(|e| e.to_string()),
+                    }
+                }
+            }
+            None => std::fs::create_dir_all(base.join(&path)).map_err(|e| e.to_string()),
+        };
+        if let Err(e) = res {
+            // a concurrent worker renamed the .tmp dir away mid-write
+            return if folder.exists() { Ok(false) } else { Err(e) };
+        }
+    }
+    // os.rename(base, folder); a concurrent worker may have won the race (the
+    // original held a FileLock here — second locker returns False untouched)
+    match std::fs::rename(&base, &folder) {
+        Ok(()) => Ok(true),
+        Err(_) if folder.exists() => Ok(false),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+#[cfg(unix)]
+fn return_link(target: &Path, base: &Path, rel: &str) {
+    let _ = std::os::unix::fs::symlink(target, base.join(rel));
+}
 
 /// `CheckerRunOutput` (checker_execution.py).
 #[derive(Debug, Clone)]
@@ -52,29 +145,24 @@ pub async fn run_checker(task: &TaskMessage, python_dir: &std::path::Path) -> Ch
     run_saarctf_subprocess(task, &script, python_dir).await
 }
 
-/// `SaarctfServiceRunner.execute_checker_subprocess`.
+/// `SaarctfServiceRunner.execute_checker_subprocess` — now spawns the Rust
+/// `checker-exec` binary (embedded CPython shim, ADR-017) instead of
+/// `python3 checker_runner/runners/saarctf.py`. Service config comes via argv.
 async fn run_saarctf_subprocess(
     task: &TaskMessage,
     script: &str,
     python_dir: &std::path::Path,
 ) -> CheckerRunOutput {
-    let script_path = python_dir
-        .join("checker_runner")
-        .join("runners")
-        .join("saarctf.py");
-    let mut cmd = Command::new("python3");
-    cmd.arg(script_path)
-        .arg(task.package.as_deref().unwrap_or(""))
+    let mut cmd = Command::new("checker-exec");
+    cmd.arg(task.package.as_deref().unwrap_or(""))
         .arg(script)
         .arg(task.service_id.to_string())
         .arg(task.team_id.to_string())
         .arg(task.tick.to_string())
-        .current_dir(python_dir)
-        // saarctf.py imports `checker_runner` before its own sys.path fixup
+        .arg(&task.service_name)
+        .arg(&task.flag_ids)
+        // shim imports gamelib/saarctf_commons from here (as the original did)
         .env("PYTHONPATH", python_dir)
-        // set at saarctf.py import for pwntools
-        .env("TERM", "xterm")
-        .env("PWNLIB_NOTERM", "1")
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .kill_on_drop(true);
@@ -197,6 +285,8 @@ mod tests {
             deliver_at: None,
             kind: None,
             args: None,
+            service_name: "demoservice".into(),
+            flag_ids: String::new(),
         };
         let out = run_checker(&task, std::path::Path::new(".")).await;
         assert_eq!(out.status, "CRASHED");

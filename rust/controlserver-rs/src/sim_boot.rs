@@ -3,8 +3,8 @@
 //! and auto-start the CTF. With the env unset nothing here runs — the real
 //! pipeline is byte-identical (ADR-006).
 
-use sqlx::PgPool;
 use saarctf_commons_rs::config::Config;
+use sqlx::PgPool;
 
 use crate::service_mgr::ServiceRepoManager;
 
@@ -30,9 +30,7 @@ pub async fn run(cfg: &Config, db: &PgPool, seed_path: Option<&str>) -> Result<(
             .map_err(|e| format!("sim seed failed: {e}"))?;
         tracing::info!("simulation mode: seed applied from {path}");
     }
-    ServiceRepoManager::new()
-        .import_services(cfg, db)
-        .await?;
+    ServiceRepoManager::new().import_services(cfg, db).await?;
     sqlx::query("UPDATE services SET checker_enabled = TRUE")
         .execute(db)
         .await

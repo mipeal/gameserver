@@ -38,6 +38,13 @@ pub struct TaskMessage {
     pub kind: Option<String>,
     #[serde(default)]
     pub args: Option<serde_json::Value>,
+    /// Service config for checker-exec's argv (ADR-017: config via message
+    /// instead of the subprocess's DB read). Defaults keep old messages
+    /// deserializable during a rolling cutover.
+    #[serde(default)]
+    pub service_name: String,
+    #[serde(default)]
+    pub flag_ids: String,
 }
 
 /// `dispatcher:ref:{tick}` value — per-stream segment covering this tick's tasks.
@@ -110,6 +117,8 @@ impl Dispatcher {
             deliver_at,
             kind: None,
             args: None,
+            service_name: service.name.clone(),
+            flag_ids: service.flag_ids.clone().unwrap_or_default(),
         };
         // celery: route override, else service route, else default queue
         let route = route_override
@@ -562,6 +571,8 @@ pub async fn broadcast(
         deliver_at: None,
         kind: Some(kind.to_string()),
         args: Some(args),
+        service_name: String::new(),
+        flag_ids: String::new(),
     };
     let payload = serde_json::to_string(&msg).expect("TaskMessage serializes");
     let _: () = redis::cmd("PUBLISH")

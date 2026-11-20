@@ -1,0 +1,14 @@
+[package]
+name = "checker-exec"
+version = "0.1.0"
+edition = "2021"
+
+# Embedded CPython runner for checker subprocesses (ADR-017): the Rust worker
+# spawns this binary instead of `python3 checker_runner/runners/saarctf.py`.
+# `auto-initialize` (embedding), not `extension-module` (we are the host).
+[dependencies]
+pyo3 = { version = "0.30", features = ["auto-initialize", "abi3-py39"] }
+
+[[bin]]
+name = "checker-exec"
+path = "src/main.rs"

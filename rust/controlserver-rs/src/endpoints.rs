@@ -104,21 +104,14 @@ fn router(state: AppState) -> Router {
 
 // ---- /api/teams, /api/services -----------------------------------------------
 
-type TeamRow = (
-    i32,
-    String,
-    Option<String>,
-    Option<String>,
-    Option<String>,
-);
+type TeamRow = (i32, String, Option<String>, Option<String>, Option<String>);
 
 async fn api_teams(State(state): State<Arc<AppState>>) -> Json<Value> {
-    let rows: Vec<TeamRow> = sqlx::query_as(
-        "SELECT id, name, website, affiliation, logo FROM teams ORDER BY id",
-    )
-    .fetch_all(&state.db)
-    .await
-    .unwrap_or_default();
+    let rows: Vec<TeamRow> =
+        sqlx::query_as("SELECT id, name, website, affiliation, logo FROM teams ORDER BY id")
+            .fetch_all(&state.db)
+            .await
+            .unwrap_or_default();
     Json(Value::Array(
         rows.iter()
             .map(|(id, name, website, affiliation, logo)| {

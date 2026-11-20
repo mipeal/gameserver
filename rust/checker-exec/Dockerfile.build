@@ -1,0 +1,14 @@
+# Build image for checker-exec: Rust + python3.13 headers/libpython (PyO3 embed, ADR-017).
+# Build the binary with:
+#   docker build -t checker-exec-builder -f rust/checker-exec/Dockerfile.build rust/checker-exec
+#   docker run --rm -v "$PWD/rust/checker-exec":/src -w /src \
+#     -v checker-exec-cargo:/usr/local/cargo checker-exec-builder cargo build --release
+FROM python:3.13-bookworm
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable

@@ -429,6 +429,27 @@ async fn execute_task(state: &WorkerState, task: &TaskMessage) -> TaskResult {
     let result = if task.runner_spec.starts_with("eno:") {
         crate::eno::run_eno_checker(task, &state.cfg).await
     } else {
+        // PackageLoader.ensure_package_exists — the subprocess loads packages
+        // from disk only (ADR-017), so materialize before spawning. A failure
+        // here is what the original's subprocess crashed with.
+        if let Some(package) = task.package.as_deref().filter(|p| !p.is_empty()) {
+            if let Err(e) = runners::ensure_package_exists(
+                &state.db,
+                package,
+                &state.checker_packages_path,
+                state.checker_packages_lfs.as_deref(),
+            )
+            .await
+            {
+                return TaskResult {
+                    status: "CRASHED".into(),
+                    message: None,
+                    output: Some(e),
+                    data: None,
+                    runtime: start.elapsed().as_secs_f64(),
+                };
+            }
+        }
         runners::run_checker(task, &state.python_dir).await
     };
 

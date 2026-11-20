@@ -20,16 +20,32 @@ COPY rust/vpnboard-rs /build/vpnboard-rs
 WORKDIR /build/vpnboard-rs
 RUN cargo build --release --bins
 
-# index.css is a build artifact (npm run less: static/less/index.less ->
-# static/css/index.css); the scoreboard generator copies it into its output
-# and crashes like the Python one when it is missing.
+# index.css is a build artifact (npm run less: less/index.less ->
+# controlserver/static/css/index.css); the scoreboard generator copies it into
+# its output and the scoreboard is unstyled when it is missing. The less
+# sources moved to rust/controlserver-rs/less (controlserver/ Python deleted,
+# ADR-017).
 FROM node:20-bookworm AS css_build
 WORKDIR /build
 COPY package.json ./
 RUN npm install --omit=dev --no-audit --no-fund
-COPY controlserver/static/less ./controlserver/static/less
+COPY rust/controlserver-rs/less ./rust/controlserver-rs/less
 RUN npx lessc --include-path=node_modules --modify-var='@env-name="None"' \
-    controlserver/static/less/index.less controlserver/static/css/index.css
+    rust/controlserver-rs/less/index.less /build/index.css
+
+# checker-exec embeds CPython (PyO3) and needs python3.13 headers + libpython
+# (ADR-017); the other rust bins stay on rust:1-bookworm above.
+FROM python:3.13-bookworm AS checker_build
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+COPY rust/checker-exec /build/checker-exec
+WORKDIR /build/checker-exec
+RUN cargo build --release
 
 FROM python:3.13
 WORKDIR /opt
@@ -44,12 +60,16 @@ RUN --mount=type=cache,target=/root/.cache \
     && rm -rf /var/lib/apt/lists/*
 
 ADD checker_runner /opt/checker_runner
-ADD controlserver /opt/controlserver
 ADD saarctf_commons /opt/saarctf_commons
 ADD sample_files /opt/sample_files
-ADD scripts /opt/scripts
 
-COPY --from=css_build /build/controlserver/static/css/index.css /opt/controlserver/static/css/index.css
+COPY --from=css_build /build/index.css /opt/controlserver/static/css/index.css
+
+# Runtime assets the vpnboard daemon copies into its output dir
+# (vpnboard-rs/board.rs copy_static_files); moved out of the deleted
+# controlserver/ tree (ADR-017).
+COPY rust/vpnboard-rs/static/css/vpnboard.css /opt/controlserver/static/css/vpnboard.css
+COPY rust/vpnboard-rs/static/img/favicon.png /opt/controlserver/static/img/favicon.png
 
 # Leptos scoreboard SPA where the scoreboard generator expects it
 # (python_dir/scoreboard/dist/scoreboard — the Angular build layout). Trunk
@@ -69,10 +89,13 @@ COPY --from=rust_build \
 COPY --from=rust_build \
     /build/vpnboard-rs/target/release/vpn-status-daemon \
     /usr/local/bin/vpn-status-daemon
+COPY --from=checker_build \
+    /build/checker-exec/target/release/checker-exec \
+    /usr/local/bin/checker-exec
 
 ENV SAARCTF_PYTHON_DIR=/opt
-# checker subprocesses run `python3` — resolve to the venv python with deps
+# checker-exec embeds CPython; /opt/venv first so the shim's imports (and the
+# demo_checker special) resolve against the venv with deps
 ENV PATH="/opt/venv/bin:${PATH}"
-ENV FLASK_APP=controlserver/app.py
 STOPSIGNAL SIGINT
 ENTRYPOINT []

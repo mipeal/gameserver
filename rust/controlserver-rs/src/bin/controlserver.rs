@@ -14,13 +14,9 @@ async fn main() {
 
     // Simulation mode (SAARCTF_SIMULATION=1): seed, import sim checkers, enable.
     if sim_boot::simulation_enabled() {
-        sim_boot::run(
-            &cfg,
-            &db,
-            std::env::var("SAARCTF_SIM_SEED").ok().as_deref(),
-        )
-        .await
-        .expect("simulation boot steps");
+        sim_boot::run(&cfg, &db, std::env::var("SAARCTF_SIM_SEED").ok().as_deref())
+            .await
+            .expect("simulation boot steps");
         tracing::info!("simulation mode: boot steps applied");
     }
 
