@@ -12,7 +12,7 @@ fn pager(name: &'static str, cur: impl Fn() -> usize + Send + Copy + 'static, pa
             <button type="button" on:click=move |_| { if cur() > 1 { nav(-1) } }>{"‹ prev"}</button>
             {move || format!(" page {} / {} ", cur(), pages())}
             <button type="button" on:click=move |_| { if cur() < pages() { nav(1) } }>{"next ›"}</button>
-            <a href=name style="margin-left: 12px">{"back to "}{name}</a>
+            <a href=name style="margin-left: 12px">{"back to "}{name.replace('_', " ")}</a>
         </p>
     }
 }

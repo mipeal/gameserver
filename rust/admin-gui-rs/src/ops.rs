@@ -126,7 +126,7 @@ pub fn Packages() -> impl IntoView {
     };
     view! {
         <h1>"Checker packages"</h1>
-        <p>"These operations broadcast to all running celery workers (may take a while)."</p>
+        <p>"These operations broadcast to all running checker workers (may take a while)."</p>
         <form class="inline">
             <button type="button" disabled=busy on:click=move |_| do_call("/packages/update", json!({}))>"Update packages"</button>
             <button type="button" disabled=busy on:click=move |_| do_call("/packages/push", json!({}))>"Push packages"</button>

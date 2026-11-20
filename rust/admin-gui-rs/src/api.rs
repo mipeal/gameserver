@@ -63,7 +63,16 @@ pub fn ts(v: &Value) -> String {
     // unix seconds → local-ish display (UTC)
     v.as_f64()
         .and_then(|t| chrono_dash(t as i64))
-        .unwrap_or_else(|| s_opt(v))
+        .unwrap_or_else(|| {
+            // ISO strings (e.g. checker_results.finished): "2026-11-20T20:06:36.095611+00:00"
+            // → "2026-11-20 20:06:36"
+            let raw = s_opt(v);
+            if raw.len() >= 19 && raw.as_bytes().get(10) == Some(&b'T') {
+                format!("{} {}", &raw[..10], &raw[11..19])
+            } else {
+                raw
+            }
+        })
 }
 
 fn chrono_dash(unix: i64) -> Option<String> {

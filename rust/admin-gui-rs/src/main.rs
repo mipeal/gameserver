@@ -159,10 +159,10 @@ fn Overview() -> impl IntoView {
             Some(Ok(v)) => {
                 let arr = v.as_array().cloned().unwrap_or_default()
                     .into_iter().take(log_limit.get() as usize).collect::<Vec<_>>();
-                table(&["ID", "Time", "Type", "Importance", "Message", "Data"],
+                table(&["ID", "Time", "Component", "Level", "Title", "Text"],
                     arr.iter().map(|l| vec![
-                        s(&l["id"]).into_any(), ts(&l["created"]).into_any(), s(&l["type_"]).into_any(),
-                        s(&l["importance"]).into_any(), s(&l["message"]).into_any(), s_opt(&l["data"]).into_any(),
+                        s(&l["id"]).into_any(), ts(&l["created"]).into_any(), s(&l["component"]).into_any(),
+                        s(&l["level"]).into_any(), s(&l["title"]).into_any(), s_opt(&l["text"]).into_any(),
                     ]).collect()).into_any()
             }
         }}
