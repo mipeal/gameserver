@@ -2329,7 +2329,9 @@ async fn api_checker_status_overview(
     let results_error = count_by_status(&state.db, first_tick, current_tick, "CRASHED").await?;
     let results_revoked = count_by_status(&state.db, first_tick, current_tick, "REVOKED").await?;
     let last_finished: std::collections::HashMap<i32, chrono::DateTime<chrono::Utc>> =
-        sqlx::query_as(
+        sqlx::query_as::<_, (i32, Option<chrono::DateTime<chrono::Utc>>)>(
+            // collect() writes REVOKED rows with finished NULL (like Python);
+            // a tick whose rows are all REVOKED has max(finished) = NULL
             "SELECT tick, max(finished) FROM checker_results WHERE tick >= $1 AND tick <= $2 GROUP BY tick",
         )
         .bind(first_tick as i32)
@@ -2338,6 +2340,7 @@ async fn api_checker_status_overview(
         .await
         .map_err(internal)?
         .into_iter()
+        .filter_map(|(t, ts)| ts.map(|ts| (t, ts)))
         .collect();
     let mut ticks: Vec<Value> = Vec::new();
     for tick in first_tick..=current_tick {
