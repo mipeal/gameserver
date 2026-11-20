@@ -1674,7 +1674,7 @@ type FirstbloodRow = (
     i32,
     i16,
     i16,
-    i16,
+    i32, // id — submitted_flags.id is INTEGER (INT4)
     chrono::DateTime<chrono::Utc>,
 );
 type CheckerResultRow = (
@@ -2294,16 +2294,16 @@ async fn api_checker_status_overview(
         .map_err(internal)?;
     #[derive(sqlx::FromRow)]
     struct OkRow {
-        tick: i16,
+        tick: i32, // checker_results.tick is INTEGER (INT4)
         count: i64,
         over_time: Option<i64>,
     }
     let results_ok: Vec<OkRow> = sqlx::query_as::<_, OkRow>(
-        "SELECT tick, count(id), sum(run_over_time::int) FROM checker_results \
+        "SELECT tick, count(id), sum(run_over_time::int) AS over_time FROM checker_results \
          WHERE tick >= $1 AND tick <= $2 AND status IN ('SUCCESS','FLAGMISSING','MUMBLE','OFFLINE','RECOVERING') GROUP BY tick",
     )
-    .bind(first_tick as i16)
-    .bind(current_tick as i16)
+    .bind(first_tick as i32)
+    .bind(current_tick as i32)
     .fetch_all(&state.db)
     .await
     .map_err(internal)?;
@@ -2312,12 +2312,12 @@ async fn api_checker_status_overview(
         first_tick: i64,
         current_tick: i64,
         status: &str,
-    ) -> Result<std::collections::HashMap<i16, i64>, (StatusCode, String)> {
-        Ok(sqlx::query_as::<_, (i16, i64)>(
+    ) -> Result<std::collections::HashMap<i32, i64>, (StatusCode, String)> {
+        Ok(sqlx::query_as::<_, (i32, i64)>(
             "SELECT tick, count(id) FROM checker_results WHERE tick >= $1 AND tick <= $2 AND status = $3 GROUP BY tick",
         )
-        .bind(first_tick as i16)
-        .bind(current_tick as i16)
+        .bind(first_tick as i32)
+        .bind(current_tick as i32)
         .bind(status)
         .fetch_all(db)
         .await
@@ -2328,12 +2328,12 @@ async fn api_checker_status_overview(
     let results_warn = count_by_status(&state.db, first_tick, current_tick, "TIMEOUT").await?;
     let results_error = count_by_status(&state.db, first_tick, current_tick, "CRASHED").await?;
     let results_revoked = count_by_status(&state.db, first_tick, current_tick, "REVOKED").await?;
-    let last_finished: std::collections::HashMap<i16, chrono::DateTime<chrono::Utc>> =
+    let last_finished: std::collections::HashMap<i32, chrono::DateTime<chrono::Utc>> =
         sqlx::query_as(
             "SELECT tick, max(finished) FROM checker_results WHERE tick >= $1 AND tick <= $2 GROUP BY tick",
         )
-        .bind(first_tick as i16)
-        .bind(current_tick as i16)
+        .bind(first_tick as i32)
+        .bind(current_tick as i32)
         .fetch_all(&state.db)
         .await
         .map_err(internal)?
@@ -2373,11 +2373,11 @@ async fn api_checker_status_overview(
             "time": time,
             "dispatched": dispatched,
             "tasks_ok": tasks_ok,
-            "tasks_warn": results_warn.get(&(tick as i16)).copied().unwrap_or(0),
-            "tasks_error": results_error.get(&(tick as i16)).copied().unwrap_or(0),
-            "tasks_revoked": results_revoked.get(&(tick as i16)).copied().unwrap_or(0),
+            "tasks_warn": results_warn.get(&(tick as i32)).copied().unwrap_or(0),
+            "tasks_error": results_error.get(&(tick as i32)).copied().unwrap_or(0),
+            "tasks_revoked": results_revoked.get(&(tick as i32)).copied().unwrap_or(0),
             "tasks_toolate": tasks_toolate,
-            "last_finished": last_finished.get(&(tick as i16)).map(|d| d.timestamp()),
+            "last_finished": last_finished.get(&(tick as i32)).map(|d| d.timestamp()),
         }));
     }
     Ok(Json(json!({"first_tick": first_tick, "ticks": ticks})))

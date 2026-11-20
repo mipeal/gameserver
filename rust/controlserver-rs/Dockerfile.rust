@@ -15,6 +15,10 @@ COPY rust/gamelib-rs ./gamelib-rs
 COPY rust/controlserver-rs ./controlserver-rs
 WORKDIR /build/controlserver-rs
 RUN cargo build --release --bins
+COPY rust/saarctf-scripts-rs /build/saarctf-scripts-rs
+COPY rust/vpnboard-rs /build/vpnboard-rs
+WORKDIR /build/vpnboard-rs
+RUN cargo build --release --bins
 
 # index.css is a build artifact (npm run less: static/less/index.less ->
 # static/css/index.css); the scoreboard generator copies it into its output
@@ -35,7 +39,9 @@ ADD Makefile /opt/
 ADD gamelib /opt/gamelib
 
 RUN --mount=type=cache,target=/root/.cache \
-    make deps && . venv/bin/activate && pip install gunicorn pwntools && mkdir -p scoreboard
+    make deps && . venv/bin/activate && pip install gunicorn pwntools && mkdir -p scoreboard \
+    && apt-get update && apt-get install -y --no-install-recommends iproute2 wireguard-tools \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD checker_runner /opt/checker_runner
 ADD controlserver /opt/controlserver
@@ -63,6 +69,9 @@ COPY --from=rust_build \
     /build/controlserver-rs/target/release/checker_runner \
     /build/controlserver-rs/target/release/scoreboard \
     /usr/local/bin/
+COPY --from=rust_build \
+    /build/vpnboard-rs/target/release/vpn-status-daemon \
+    /usr/local/bin/vpn-status-daemon
 
 ENV SAARCTF_PYTHON_DIR=/opt
 # checker subprocesses run `python3` — resolve to the venv python with deps
