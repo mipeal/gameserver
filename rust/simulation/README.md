@@ -13,6 +13,7 @@ containers) for demoing and testing the Rust gameserver end to end. Gated by
 | `Dockerfile.sim` | `gameserver-rust` + wg tooling + `wireguard-sync`/`vpnboard` binaries |
 | `config.sim.yaml` | sim config: compose hostnames, 10.32 team math, `dispatcher_check_vpn_status: true`, tick 30s |
 | `seed.sql` | 8 fixture teams (idempotent), applied by the boot gate |
+| `seed_admin_data.sh` | one-shot, idempotent admin-data backfill: sample patches + 60 min of `team_traffic_stats` (TeamView graphs, VPN overview) |
 | `services/` | checker sources for the 3 fixture services (demoservice :1337, cloud-api :8080, flagboard :31337); imported + enabled by the boot gate |
 | `vulnbox/` | vulnbox image: HTTP shims that store/retrieve flags per (service, tick) + a per-team attack loop (`attack.py`) |
 | `wg/` | WireGuard plumbing for SIM_VPN=1 (see `wg/README.md`) |

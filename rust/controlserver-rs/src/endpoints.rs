@@ -465,8 +465,9 @@ async fn overview_vpn(
     #[allow(clippy::type_complexity)]
     let rows: Vec<(chrono::DateTime<chrono::Utc>, i64, i64, i64, i64, i64, i64, i64, i64)> =
         sqlx::query_as(
-            "SELECT time, sum(down_teams_bytes), sum(down_teams_syns), sum(down_game_bytes), sum(down_game_syns), \
-             sum(up_teams_bytes), sum(up_teams_syns), sum(up_game_bytes), sum(up_game_syns) \
+            // sum(BIGINT) yields NUMERIC, which sqlx cannot decode into i64 — cast back.
+            "SELECT time, sum(down_teams_bytes)::bigint, sum(down_teams_syns)::bigint, sum(down_game_bytes)::bigint, sum(down_game_syns)::bigint, \
+             sum(up_teams_bytes)::bigint, sum(up_teams_syns)::bigint, sum(up_game_bytes)::bigint, sum(up_game_syns)::bigint \
              FROM team_traffic_stats \
              WHERE time > $1 AND time <= NOW() AND time >= NOW() - interval '12 hours' \
              GROUP BY time ORDER BY time DESC LIMIT 60",
