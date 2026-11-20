@@ -1,0 +1,6 @@
+name = 'demoservice'
+interface_file = 'checker'
+interface_class = 'DemoServiceService'
+ports = ['1337']
+flags_per_tick = 4
+num_payloads = 2

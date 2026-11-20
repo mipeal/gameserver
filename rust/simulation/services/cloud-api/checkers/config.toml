@@ -1,0 +1,6 @@
+name = 'cloud-api'
+interface_file = 'checker'
+interface_class = 'CloudApiService'
+ports = ['8080']
+flags_per_tick = 4
+num_payloads = 2

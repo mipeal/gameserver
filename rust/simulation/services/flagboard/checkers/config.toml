@@ -1,0 +1,6 @@
+name = 'flagboard'
+interface_file = 'checker'
+interface_class = 'FlagboardService'
+ports = ['31337']
+flags_per_tick = 2
+num_payloads = 1
