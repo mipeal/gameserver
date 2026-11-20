@@ -1,0 +1,57 @@
+#!/bin/sh
+# simctl — drive the simulation deployment (see rust/simulation/README.md).
+#   simctl up            generate compose files + bring the whole stack up
+#   simctl down          tear it down (volumes kept; pass -v to wipe)
+#   simctl demo-commands print one-liners for operating the demo
+# Sim settings come from ./.env.sim (copy .env.sim.example if missing).
+set -e
+cd "$(dirname "$0")"
+ROOT="$(cd .. && pwd)"   # rust/
+ENV_FILE=".env.sim"
+if [ ! -f "$ENV_FILE" ]; then
+    cp .env.sim.example "$ENV_FILE"
+    echo "created $ENV_FILE from .env.sim.example"
+fi
+
+COMPOSE="docker compose --env-file $ENV_FILE \
+  -f $ROOT/docker-compose.simulation.yml \
+  -f ./docker-compose.vulnboxes.yml"
+if grep -q '^SIM_VPN=1' "$ENV_FILE"; then
+    COMPOSE="$COMPOSE -f ./docker-compose.sim-vpn.yml"
+fi
+
+case "${1:-}" in
+  up)
+    python3 gen_compose.py --env "$ENV_FILE"
+    $COMPOSE up -d --build
+    $COMPOSE ps
+    ;;
+  down)
+    shift
+    $COMPOSE down "$@"
+    ;;
+  demo-commands)
+    cat <<'EOF'
+# tick / game state
+docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simulation.yml \
+    exec controlserver redis-cli -h redis XLEN events:checker_results   # checker output flowing
+curl -s localhost:5000/overview/services | head -c 400; echo
+# scoreboard
+curl -s localhost:8080/api/scoreboard | head -c 300; echo
+# submit a flag manually (SAAR{...} from a checker run / attack-simulator log)
+printf 'SAAR{...}\n' | nc localhost 1337
+# attack simulator output
+docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simulation.yml \
+    logs attack-simulator --tail 20
+# VPN (SIM_VPN=1): handshake + team-2 tunnel
+docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simulation.yml \
+    exec controlserver wg show wg0 latest-handshakes
+docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simulation.yml \
+    exec vulnbox-2 wg-quick down wg0   # team 2 goes offline, wg-quick up wg0 restores
+EOF
+    ;;
+  *)
+    echo "usage: simctl up | down [-v] | demo-commands" >&2
+    exit 2
+    ;;
+esac

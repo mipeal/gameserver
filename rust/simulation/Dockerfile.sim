@@ -1,0 +1,23 @@
+# Sim deployment image: gameserver-rust + wg tooling + wireguard-sync/vpnboard
+# binaries. Built from the rust/ context (see simctl):
+#   docker build -f simulation/Dockerfile.sim -t gameserver-sim .
+# syntax=docker/dockerfile:1
+ARG BASE_IMAGE=gameserver-rust
+
+FROM rust:1-bookworm AS wg_build
+WORKDIR /build
+COPY saarctf-commons-rs ./saarctf-commons-rs
+COPY gamelib-rs ./gamelib-rs
+COPY controlserver-rs ./controlserver-rs
+COPY saarctf-scripts-rs ./saarctf-scripts-rs
+COPY wireguard-sync-rs ./wireguard-sync-rs
+COPY vpnboard-rs ./vpnboard-rs
+RUN cd wireguard-sync-rs && cargo build --release --bin wireguard-sync \
+    && cd ../vpnboard-rs && cargo build --release --bin vpn-status-daemon
+
+FROM ${BASE_IMAGE}
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends wireguard-tools iproute2 iptables \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=wg_build /build/wireguard-sync-rs/target/release/wireguard-sync /usr/local/bin/
+COPY --from=wg_build /build/vpnboard-rs/target/release/vpn-status-daemon /usr/local/bin/

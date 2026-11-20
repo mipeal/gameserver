@@ -1,0 +1,5 @@
+# Context root for rust/ builds (Dockerfile.sim). Mirrors the root file's
+# rust rules — build outputs never belong in the context.
+**/target
+**/.idea
+**/__pycache__
