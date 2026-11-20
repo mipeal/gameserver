@@ -86,18 +86,24 @@ def gen_sim_vpn(teams):
     command:
       - sh
       - -c
-      # wireguard-sync has no CONFIG env here, so it writes ./keystore.json
-      # (cwd /opt) — copy it into the keystore volume for split-keystore.py
-      - wireguard-sync generate -a $((TEAMS + 1)) && cp /opt/keystore.json /run/sim/wg/ && python3 /opt/sim/wg/split-keystore.py
+      # idempotent: regenerating on every `up -d` would rotate all keys and
+      # break the tunnels of a non-recreated controlserver. wireguard-sync has
+      # no CONFIG env here, so it writes ./keystore.json (cwd /opt) — copy it
+      # into the keystore volume for split-keystore.py
+      - >-
+        if [ ! -f /run/sim/keys/server.json ]; then
+        wireguard-sync generate -a $((TEAMS + 1)) &&
+        cp /opt/keystore.json /run/sim/wg/ &&
+        python3 /opt/sim/wg/split-keystore.py;
+        fi
     networks: [simnet]
 
   controlserver:
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
+    # privileged: it is the sim's router (ip_forward is not namespaced —
+    # NET_ADMIN alone cannot enable it inside the container)
+    privileged: true
     environment:
-      TEAMS: "{teams}"  # server-setup.sh: one wg peer per team
+      TEAMS: "{teams}"  # server-setup.sh: one tt-<team> interface per team
     volumes:
       - keys:/run/sim/keys:ro
       - ./simulation/wg:/opt/sim/wg:ro
@@ -105,11 +111,40 @@ def gen_sim_vpn(teams):
       - sh
       - -c
       - /opt/sim/wg/server-setup.sh; exec /usr/local/bin/controlserver
-    ports:
-      - "51820/udp"
+    networks:
+      simnet:
+        # static: checker runners route 10.32.0.0/16 here (tunnels own it)
+        ipv4_address: 10.33.0.250
+
+  checker_runner:
+    # runners reach team.ip (10.32.N.2) through the tunnels; the
+    # controlserver forwards between the bridge and tt-<team>
+    cap_add:
+      - NET_ADMIN
+    command:
+      - sh
+      - -c
+      - ip route add 10.32.0.0/16 via 10.33.0.250 2>/dev/null || true; exec /usr/local/bin/checker_runner
+
+  host-route:
+    # team IPs (10.32.N.2) live in the tunnels, so simnet services that reply
+    # to them (submitter, scoreboard) need the docker host to route 10.32/16
+    # to the controlserver's static bridge IP — one privileged one-shot covers
+    # every container's default-gw path; re-applied on each `simctl up`
+    image: gameserver-sim
+    privileged: true
+    network_mode: host
+    restart: "no"
+    command: ["ip", "route", "replace", "10.32.0.0/16", "via", "10.33.0.250"]
+    depends_on:
+      controlserver:
+        condition: service_started
 
   vpnboard:
     image: gameserver-sim
+    # it runs `wg show tt-<team>` inside the shared netns — needs NET_ADMIN
+    cap_add:
+      - NET_ADMIN
     environment:
       CONFIG: /opt/sim/config.sim.yaml
       POSTGRES_SERVER: postgres

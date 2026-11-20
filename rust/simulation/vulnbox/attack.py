@@ -52,7 +52,8 @@ class AttackThread(threading.Thread):
 
     def __init__(self, team_id, teams, rate, tick_seconds=30,
                  submitter=("submitter", 31337), vulnbox_prefix="10.32",
-                 vulnbox_port=None, nop_team_id=1, scoreboard_addr=("scoreboard", 80)):
+                 vulnbox_port=None, nop_team_id=1, scoreboard_addr=("scoreboard", 80),
+                 source_ip=None):
         super().__init__(name=f"attack-{team_id}")
         self.team_id = team_id
         self.rate = rate
@@ -62,6 +63,9 @@ class AttackThread(threading.Thread):
         self.vulnbox_port = vulnbox_port  # None -> per-service port
         self.nop_team_id = nop_team_id
         self.scoreboard_addr = scoreboard_addr
+        # submissions/tick reads must carry the team IP (10.32.<team>.2 — the
+        # wg address) or the submitter's getTeamIdFromIp attributes to nobody
+        self.source_ip = source_ip
         # NOP never attacks; nobody attacks the NOP team
         self.opponents = [t for t in teams if t not in (team_id, nop_team_id)]
         self.stolen_log = []  # (service_id, victim, tick, flag)
@@ -72,7 +76,9 @@ class AttackThread(threading.Thread):
         if self.scoreboard_addr is None:
             return fallback
         try:
-            conn = http.client.HTTPConnection(*self.scoreboard_addr, timeout=3)
+            src = (self.source_ip, 0) if self.source_ip else None
+            conn = http.client.HTTPConnection(*self.scoreboard_addr, timeout=3,
+                                              source_address=src)
             conn.request("GET", "/api/scoreboard_current.json")
             body = conn.getresponse().read()
             conn.close()
@@ -100,7 +106,9 @@ class AttackThread(threading.Thread):
     def _submit(self, flags):
         ok = 0
         try:
-            with socket.create_connection(self.submitter, timeout=5) as s:
+            src = (self.source_ip, 0) if self.source_ip else None
+            with socket.create_connection(self.submitter, timeout=5,
+                                          source_address=src) as s:
                 for flag in flags:
                     s.sendall((flag + "\n").encode())
                     data = s.recv(64)
@@ -156,6 +164,9 @@ def start_from_env(services_started):
         submitter=parse_addr(os.environ.get("SUBMITTER_ADDR", "submitter:31337"), 31337),
         vulnbox_prefix=os.environ.get("VULNBOX_IP_PREFIX", "10.32"),
         nop_team_id=nop,
+        # this vulnbox's team IP: the wg address (SIM_VPN=1) or the bridge IP
+        # (SIM_VPN=0 — same value, binding to it is a no-op there)
+        source_ip=f"{os.environ.get('VULNBOX_IP_PREFIX', '10.32')}.{team_id}.2",
         scoreboard_addr=parse_addr(os.environ.get("SCOREBOARD_ADDR", "scoreboard:80"), 80),
     )
     if services_started:

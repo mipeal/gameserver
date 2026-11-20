@@ -178,6 +178,70 @@ class Test(unittest.TestCase):
         a.scoreboard_addr = ("127.0.0.1", 1)  # nothing listens here
         self.assertEqual(a.current_tick(fallback=5), 5)
 
+    def test_submit_and_tick_bind_team_ip(self):
+        # SIM_VPN=1: the vulnbox's bridge IP (10.33.N.2) attributes to no team
+        # — submissions and scoreboard reads must be sent from the team's wg
+        # IP (10.32.<team>.2) so the submitter's getTeamIdFromIp sees the team
+        captured = {}
+
+        def fake_create_connection(addr, timeout=None, source_address=None):
+            captured["submit_src"] = source_address
+            raise OSError("stop here")
+
+        orig_cc = socket.create_connection
+        socket.create_connection = fake_create_connection
+        try:
+            a = self.attack(2, 1.0)
+            a.source_ip = "10.32.2.2"
+            a._submit(["SAAR{X}"])
+            self.assertEqual(captured["submit_src"], ("10.32.2.2", 0))
+        finally:
+            socket.create_connection = orig_cc
+
+        import attack
+
+        captured2 = {}
+        orig_http = attack.http.client.HTTPConnection
+
+        class FakeHTTPConnection:
+            def __init__(self, *a, source_address=None, **kw):
+                captured2["tick_src"] = source_address
+
+            def request(self, *a):
+                pass
+
+            def getresponse(self):
+                raise OSError("stop here")
+
+            def close(self):
+                pass
+
+        attack.http.client.HTTPConnection = FakeHTTPConnection
+        try:
+            a = self.attack(2, 1.0)
+            a.source_ip = "10.32.2.2"
+            a.current_tick(fallback=5)
+            self.assertEqual(captured2["tick_src"], ("10.32.2.2", 0))
+        finally:
+            attack.http.client.HTTPConnection = orig_http
+
+    def test_no_source_ip_binds_nothing(self):
+        # default (no source_ip): unchanged behavior — no source_address arg
+        captured = {}
+
+        def fake_create_connection(addr, timeout=None, source_address=None):
+            captured["src"] = source_address
+            raise OSError("stop here")
+
+        orig = socket.create_connection
+        socket.create_connection = fake_create_connection
+        try:
+            a = self.attack(2, 1.0)  # source_ip unset
+            a._submit(["SAAR{X}"])
+            self.assertIsNone(captured["src"])
+        finally:
+            socket.create_connection = orig
+
 
 if __name__ == "__main__":
     unittest.main()

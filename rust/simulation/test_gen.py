@@ -47,6 +47,40 @@ class Test(unittest.TestCase):
         self.assertIn("vpn-status-daemon", out)
         self.assertIn("server-setup.sh", out)
 
+    def test_vpn_on_routes_runners_via_controlserver(self):
+        # vpnboard reads one wg interface per team (tt-<id>) on the server
+        # side; the controlserver is the sim's router, so checker runners
+        # need a route to 10.32.0.0/16 via its static bridge IP
+        out = self.gen(3, 1)
+        runner = out.split("checker_runner:")[1]
+        self.assertIn("NET_ADMIN", runner)
+        self.assertIn("10.32.0.0/16 via 10.33.0.250", runner)
+        self.assertIn("ipv4_address: 10.33.0.250", out)
+
+    def test_vpn_on_host_route_for_team_ip_replies(self):
+        # team IPs (10.32.N.2) live in the tunnels; simnet services that reply
+        # to them (submitter, scoreboard) send via the default gw, so the
+        # docker host needs a route to the controlserver's static bridge IP —
+        # one privileged one-shot covers every container
+        out = self.gen(3, 1)
+        self.assertIn("host-route:", out)
+        self.assertIn("network_mode: host", out)
+        self.assertIn('"10.32.0.0/16", "via", "10.33.0.250"', out)
+
+    def test_sim_init_keygen_idempotent(self):
+        # sim-init runs on every `up -d`; regenerating keys would break the
+        # tunnels of a non-recreated controlserver (peer keys no longer match)
+        out = self.gen(3, 1)
+        self.assertIn("[ ! -f /run/sim/keys/server.json ]", out)
+
+    def test_vpnboard_needs_net_admin_for_wg_show(self):
+        # vpnboard shares the controlserver's netns and runs `wg show tt-<id>`;
+        # without NET_ADMIN that fails with "Operation not permitted" and no
+        # team ever reports connected
+        out = self.gen(3, 1)
+        vpnboard = out.split("vpnboard:")[1]
+        self.assertIn("NET_ADMIN", vpnboard)
+
     def test_written_files(self):
         env = self.tmp / "e.env"
         env.write_text("TEAMS=2\nSIM_VPN=1\n")
