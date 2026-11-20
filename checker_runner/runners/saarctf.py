@@ -8,7 +8,7 @@ from typing import Type, ClassVar
 from celery.exceptions import SoftTimeLimitExceeded
 
 from checker_runner.checker_execution import CheckerRunner, CheckerRunOutput, set_process_needs_restart
-from controlserver.models import db_session_2, Service
+from controlserver.models import db_session_2, init_database, Service
 from gamelib.exceptions import handle_checker_exceptions
 from saarctf_commons.db_utils import retry_on_sql_error
 from saarctf_commons.redis import NamedRedisConnection
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from gamelib import gamelib, gamelogger, ServiceConfig
-from saarctf_commons.config import config
+from saarctf_commons.config import config, load_default_config
 
 SEPARATOR = "\n\n" + "-" * 72
 
@@ -148,6 +148,8 @@ if __name__ == "__main__":
     if len(sys.argv) <= 5:
         raise Exception("Not enough arguments!")
     NamedRedisConnection.set_clientname("worker-process")
+    load_default_config()
+    init_database()
 
     service_id = int(sys.argv[3])
     run = SaarctfServiceRunner(service_id, sys.argv[1], sys.argv[2], None)  # TODO None

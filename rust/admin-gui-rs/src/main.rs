@@ -143,8 +143,8 @@ fn Overview() -> impl IntoView {
                 <p>"Tick " {s(&v["currentRound"])} " — start " {api::ts(&v["roundStart"])} " / end " {api::ts(&v["roundEnd"])}
                    " (" {s(&v["roundTime"])} "s), last round " {s_opt(&v["lastRound"])}
                    ", master timers: " {s(&v["masterTimers"])}</p>
-                <p><button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"cmd": "start"})).await; timing_reload(); }); }>"Start"</button>" "
-                   <button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"cmd": "stop"})).await; timing_reload(); }); }>"Stop"</button></p>
+                <p><button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"state": 3})).await; timing_reload(); }); }>"Start"</button>" "
+                   <button on:click=move |_| { leptos::task::spawn_local(async move { let _ = crate::api::post_json("/overview/set_timing", serde_json::json!({"state": 1})).await; timing_reload(); }); }>"Stop"</button></p>
             }.into_any(),
         }}
         <h2>"Logs"</h2>

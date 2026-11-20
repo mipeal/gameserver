@@ -244,7 +244,7 @@ async fn handle_message(
             time: Some(result.runtime),
             celery_id: task.task_id.clone(),
             output: result.output.clone(),
-            run_over_time: None,
+            run_over_time: Some(false),
             finished: Some(Utc::now()),
             data: result.data.clone().or_else(|| Some(serde_json::json!({}))),
         };

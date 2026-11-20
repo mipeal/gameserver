@@ -135,7 +135,9 @@ async fn api_teams(State(state): State<Arc<AppState>>) -> Json<Value> {
 }
 
 async fn api_services(State(state): State<Arc<AppState>>) -> Json<Value> {
-    let rows: Vec<(i32, i16, String)> =
+    // num_payloads is INTEGER — i16 decode fails, which unwrap_or_default
+    // swallowed as []
+    let rows: Vec<(i32, i32, String)> =
         sqlx::query_as("SELECT id, num_payloads, name FROM services ORDER BY id")
             .fetch_all(&state.db)
             .await
@@ -310,8 +312,9 @@ async fn overview_set_timing(
 
 async fn overview_logs(
     State(state): State<Arc<AppState>>,
-    Path(min_id): Path<Option<i32>>,
+    min_id: Option<Path<i32>>,
 ) -> Json<Value> {
+    let min_id = min_id.map(|Path(min_id)| min_id);
     let limit: i64 = if min_id.is_some() { 100 } else { 30 };
     let logs = match min_id {
         Some(min_id) => sqlx::query_as::<_, models::LogMessage>(
@@ -1618,11 +1621,14 @@ async fn api_teams_list(
         .unwrap_or(1)
         .max(1);
     let page = page.min(total_pages);
+    // slice bounds must stay within rows — len can be far below per_page
+    let start = ((page - 1) * per_page).min(rows.len());
+    let end = (page * per_page).min(rows.len());
     Ok(Json(json!({
         "current_stats_timestamp": current_stats_time.timestamp(),
         "current_stats_timestamp_start": (current_stats_time - chrono::Duration::seconds(60)).timestamp(),
         "pages": total_pages,
-        "teams": rows[(page - 1) * per_page..page * per_page].iter().map(|t| json!({
+        "teams": rows[start..end].iter().map(|t| json!({
             "id": t.id, "name": t.name, "website": t.website, "affiliation": t.affiliation,
             "logo": t.logo, "vpn_connected": t.vpn_connected, "vpn2_connected": t.vpn2_connected,
             "wg_vulnbox_connected": t.wg_vulnbox_connected,
@@ -1673,7 +1679,7 @@ type FirstbloodRow = (
 );
 type CheckerResultRow = (
     i32,
-    i16,
+    i32, // tick — checker_results.tick is INTEGER (INT4)
     i16,
     i16,
     String,

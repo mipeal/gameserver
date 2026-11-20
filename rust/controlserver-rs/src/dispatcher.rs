@@ -194,7 +194,7 @@ impl Dispatcher {
 
         // per-combination stream index; order:{tick} rows are [team, service, tick, stream_idx]
         let mut streams: Vec<StreamSeg> = Vec::new();
-        let mut order_rows: Vec<[i64; 4]> = Vec::new();
+        let mut order_rows: Vec<[i64; 3]> = Vec::new();
         for (team, service) in &combinations {
             let (msg, stream) = if spread {
                 let sid = service.id as i64;
@@ -215,11 +215,10 @@ impl Dispatcher {
                 self.build_task(service, team.id as i64, tick, None, None, None)
             };
             let id = Self::xadd(redis, &stream, &msg).await?;
-            let idx = match streams.last_mut() {
+            match streams.last_mut() {
                 Some(seg) if seg.stream == stream => {
                     seg.last = id.clone();
                     seg.count += 1;
-                    streams.len() - 1
                 }
                 _ => {
                     streams.push(StreamSeg {
@@ -228,14 +227,13 @@ impl Dispatcher {
                         last: String::new(),
                         count: 1,
                     });
-                    streams.len() - 1
                 }
             };
             let seg = streams.last_mut().unwrap();
             if seg.last.is_empty() {
                 seg.last = seg.first.clone();
             }
-            order_rows.push([team.id as i64, service.id as i64, tick, idx as i64]);
+            order_rows.push([team.id as i64, service.id as i64, tick]);
         }
         let _: () = redis
             .set(
@@ -408,7 +406,7 @@ impl Dispatcher {
         }
 
         // Log checker script errors
-        let crashed: Vec<(i64, i64)> = sqlx::query_as(
+        let crashed: Vec<(i16, i64)> = sqlx::query_as(
             "SELECT service_id, COUNT(*) FROM checker_results WHERE tick=$1 AND status='CRASHED' GROUP BY service_id",
         )
         .bind(tick as i32)
@@ -416,7 +414,7 @@ impl Dispatcher {
         .await?;
         for (service_id, count) in crashed {
             let name: Option<(String,)> = sqlx::query_as("SELECT name FROM services WHERE id=$1")
-                .bind(service_id as i16)
+                .bind(service_id)
                 .fetch_optional(db)
                 .await?;
             let msg = format!(
@@ -461,7 +459,9 @@ impl Dispatcher {
                 time: None,
                 celery_id: task_id.into(),
                 output: Some("Not started before the tick ended".into()),
-                run_over_time: None,
+                // Python's CheckerResult defaults run_over_time to False
+                // (models.py:557 `self.run_over_time or False`) — NULL violates
+                run_over_time: Some(false),
                 finished: None,
                 data: None,
             }

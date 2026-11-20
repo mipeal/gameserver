@@ -70,6 +70,8 @@ async fn run_saarctf_subprocess(
         .arg(task.team_id.to_string())
         .arg(task.tick.to_string())
         .current_dir(python_dir)
+        // saarctf.py imports `checker_runner` before its own sys.path fixup
+        .env("PYTHONPATH", python_dir)
         // set at saarctf.py import for pwntools
         .env("TERM", "xterm")
         .env("PWNLIB_NOTERM", "1")
