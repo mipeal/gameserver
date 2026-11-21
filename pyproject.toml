@@ -1,10 +1,10 @@
 [project]
-name = "saarctf-gameserver"
+name = "ctf-gameserver"
 version = "0.1.0"
-description = "saarCTF gameserver / engine"
+description = "CTF gameserver / engine"
 readme = "README.md"
 requires-python = ">=3.12"
-authors = ["saarCTF maintainers <saarctf@saarsec.rocks>"]
+authors = ["CTF maintainers <ctf@example.com>"]
 
 [tool.mypy]
 exclude = [

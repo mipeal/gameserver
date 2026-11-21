@@ -1,0 +1,620 @@
+{
+  "generatedAt": "2026-11-21T05:41:19.191Z",
+  "cells": [
+    {
+      "viewport": "1920x1080",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1920x1080-scoretable.png",
+      "scrollWidth": 1920,
+      "bodyScrollWidth": 1920,
+      "innerWidth": 1920,
+      "overflowPx": 0,
+      "tableWidth": 1876,
+      "scrollContainers": [],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1897,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 1133,
+          "right": 1224,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "scrollMode": "none"
+    },
+    {
+      "viewport": "1920x1080",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1920x1080-team1.png",
+      "scrollWidth": 1920,
+      "bodyScrollWidth": 1920,
+      "innerWidth": 1920,
+      "overflowPx": 0,
+      "tableWidth": 1876,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1920x1080",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1920x1080-graphs.png",
+      "scrollWidth": 1920,
+      "bodyScrollWidth": 1920,
+      "innerWidth": 1920,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1440x900",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1440x900-scoretable.png",
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440,
+      "innerWidth": 1440,
+      "overflowPx": 0,
+      "tableWidth": 1396,
+      "scrollContainers": [],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1417,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 656,
+          "right": 747,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "scrollMode": "none"
+    },
+    {
+      "viewport": "1440x900",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1440x900-team1.png",
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440,
+      "innerWidth": 1440,
+      "overflowPx": 0,
+      "tableWidth": 1396,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1440x900",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1440x900-graphs.png",
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440,
+      "innerWidth": 1440,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1280x800",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1280x800-scoretable.png",
+      "scrollWidth": 1280,
+      "bodyScrollWidth": 1280,
+      "innerWidth": 1280,
+      "overflowPx": 0,
+      "tableWidth": 1236,
+      "scrollContainers": [],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1257,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 497,
+          "right": 587,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "scrollMode": "none"
+    },
+    {
+      "viewport": "1280x800",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1280x800-team1.png",
+      "scrollWidth": 1280,
+      "bodyScrollWidth": 1280,
+      "innerWidth": 1280,
+      "overflowPx": 0,
+      "tableWidth": 1236,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1280x800",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1280x800-graphs.png",
+      "scrollWidth": 1280,
+      "bodyScrollWidth": 1280,
+      "innerWidth": 1280,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1024x768",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1024x768-scoretable.png",
+      "scrollWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "innerWidth": 1024,
+      "overflowPx": 0,
+      "tableWidth": 996,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1040,
+          "clientWidth": 1024
+        }
+      ],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1017,
+          "top": 340,
+          "bottom": 428,
+          "height": 88
+        },
+        "score": {
+          "left": 258,
+          "right": 349,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "scrollMode": "scrollable-container"
+    },
+    {
+      "viewport": "1024x768",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1024x768-team1.png",
+      "scrollWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "innerWidth": 1024,
+      "overflowPx": 0,
+      "tableWidth": 980,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1047,
+          "clientWidth": 1024
+        }
+      ]
+    },
+    {
+      "viewport": "1024x768",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1024x768-graphs.png",
+      "scrollWidth": 1024,
+      "bodyScrollWidth": 1024,
+      "innerWidth": 1024,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "768x1024",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-768x1024-scoretable.png",
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "innerWidth": 768,
+      "overflowPx": 0,
+      "tableWidth": 996,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1040,
+          "clientWidth": 768
+        }
+      ],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 356,
+          "bottom": 443,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "scrollMode": "scrollable-container"
+    },
+    {
+      "viewport": "768x1024",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-768x1024-team1.png",
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "innerWidth": 768,
+      "overflowPx": 0,
+      "tableWidth": 724,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1047,
+          "clientWidth": 768
+        }
+      ]
+    },
+    {
+      "viewport": "768x1024",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-768x1024-graphs.png",
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "innerWidth": 768,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "414x896",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-414x896-scoretable.png",
+      "scrollWidth": 414,
+      "bodyScrollWidth": 414,
+      "innerWidth": 414,
+      "overflowPx": 0,
+      "tableWidth": 996,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1040,
+          "clientWidth": 414
+        }
+      ],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 404,
+          "bottom": 492,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "controls": [
+        {
+          "label": "dark",
+          "left": 22,
+          "right": 72,
+          "top": 73,
+          "bottom": 99,
+          "width": 50,
+          "inViewport": true
+        },
+        {
+          "label": "show history",
+          "left": 78,
+          "right": 183,
+          "top": 73,
+          "bottom": 99,
+          "width": 105,
+          "inViewport": true
+        },
+        {
+          "label": "only sums",
+          "left": 189,
+          "right": 273,
+          "top": 73,
+          "bottom": 99,
+          "width": 84,
+          "inViewport": true
+        },
+        {
+          "label": "settings-button",
+          "left": 284,
+          "right": 314,
+          "top": 110,
+          "bottom": 130,
+          "width": 30,
+          "inViewport": true
+        }
+      ],
+      "controlsScrollY": 0,
+      "scrollMode": "scrollable-container"
+    },
+    {
+      "viewport": "414x896",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-414x896-team1.png",
+      "scrollWidth": 414,
+      "bodyScrollWidth": 414,
+      "innerWidth": 414,
+      "overflowPx": 0,
+      "tableWidth": 630,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1047,
+          "clientWidth": 414
+        }
+      ]
+    },
+    {
+      "viewport": "414x896",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-414x896-graphs.png",
+      "scrollWidth": 414,
+      "bodyScrollWidth": 414,
+      "innerWidth": 414,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "375x667",
+      "route": "/",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-375x667-scoretable.png",
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375,
+      "innerWidth": 375,
+      "overflowPx": 0,
+      "tableWidth": 996,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1040,
+          "clientWidth": 375
+        }
+      ],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "controls": [
+        {
+          "label": "dark",
+          "left": 22,
+          "right": 72,
+          "top": 73,
+          "bottom": 99,
+          "width": 50,
+          "inViewport": true
+        },
+        {
+          "label": "show history",
+          "left": 78,
+          "right": 183,
+          "top": 73,
+          "bottom": 99,
+          "width": 105,
+          "inViewport": true
+        },
+        {
+          "label": "only sums",
+          "left": 189,
+          "right": 273,
+          "top": 73,
+          "bottom": 99,
+          "width": 84,
+          "inViewport": true
+        },
+        {
+          "label": "settings-button",
+          "left": 284,
+          "right": 314,
+          "top": 110,
+          "bottom": 130,
+          "width": 30,
+          "inViewport": true
+        }
+      ],
+      "controlsScrollY": 0,
+      "scrollMode": "scrollable-container"
+    },
+    {
+      "viewport": "375x667",
+      "route": "/team/1",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-375x667-team1.png",
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375,
+      "innerWidth": 375,
+      "overflowPx": 0,
+      "tableWidth": 630,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1047,
+          "clientWidth": 375
+        }
+      ]
+    },
+    {
+      "viewport": "375x667",
+      "route": "/graphs",
+      "light": false,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-375x667-graphs.png",
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375,
+      "innerWidth": 375,
+      "overflowPx": 0,
+      "tableWidth": null,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "1440x900",
+      "route": "/dashboard",
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-1440x900-dashboard.png",
+      "scrollWidth": 1440,
+      "bodyScrollWidth": 1440,
+      "innerWidth": 1440,
+      "overflowPx": 0,
+      "tableWidth": 1396,
+      "scrollContainers": []
+    },
+    {
+      "viewport": "375x667",
+      "route": "/",
+      "light": true,
+      "screenshot": "/Users/mmpeal/Developer/personal/gameserver/rust/scoreboard-rs/e2e/out/vp-375x667-scoretable-light.png",
+      "scrollWidth": 375,
+      "bodyScrollWidth": 375,
+      "innerWidth": 375,
+      "overflowPx": 0,
+      "tableWidth": 996,
+      "scrollContainers": [
+        {
+          "tag": "main",
+          "cls": "app-main",
+          "scrollWidth": 1040,
+          "clientWidth": 375
+        }
+      ],
+      "team1Row": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11135.4",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      },
+      "controls": [
+        {
+          "label": "dark",
+          "left": 22,
+          "right": 72,
+          "top": 73,
+          "bottom": 99,
+          "width": 50,
+          "inViewport": true
+        },
+        {
+          "label": "show history",
+          "left": 78,
+          "right": 183,
+          "top": 73,
+          "bottom": 99,
+          "width": 105,
+          "inViewport": true
+        },
+        {
+          "label": "only sums",
+          "left": 189,
+          "right": 273,
+          "top": 73,
+          "bottom": 99,
+          "width": 84,
+          "inViewport": true
+        },
+        {
+          "label": "settings-button",
+          "left": 284,
+          "right": 314,
+          "top": 110,
+          "bottom": 130,
+          "width": 30,
+          "inViewport": true
+        }
+      ],
+      "controlsScrollY": 0,
+      "scrollMode": "scrollable-container"
+    }
+  ]
+}

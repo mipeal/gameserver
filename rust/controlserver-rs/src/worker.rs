@@ -10,7 +10,7 @@ use crate::runners;
 use chrono::Utc;
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use sqlx::PgPool;
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -21,7 +21,7 @@ const RUNNING_TTL_SECS: i64 = 2 * 60 * 60;
 /// The worker process (celery_cmd.py + the celery worker loop).
 pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<(), String> {
     let client = redis::Client::open(
-        saarctf_commons_rs::redis::redis_url(&cfg.redis).map_err(|e| format!("redis url: {e}"))?,
+        ctf_commons_rs::redis::redis_url(&cfg.redis).map_err(|e| format!("redis url: {e}"))?,
     )
     .map_err(|e| format!("redis client: {e}"))?;
     let write_conn = ConnectionManager::new(client.clone())
@@ -32,7 +32,7 @@ pub async fn run_worker(cfg: &Config, db: PgPool, concurrency: usize) -> Result<
         client,
         write_conn: tokio::sync::Mutex::new(write_conn),
         streams: tokio::sync::RwLock::new(Vec::new()),
-        python_dir: saarctf_commons_rs::config::python_dir(cfg),
+        python_dir: ctf_commons_rs::config::python_dir(cfg),
         cfg: cfg.clone(),
         checker_packages_path: cfg.checker_packages_path.clone(),
         checker_packages_lfs: cfg.checker_packages_lfs.clone(),
@@ -89,7 +89,7 @@ struct WorkerState {
     python_dir: std::path::PathBuf,
     checker_packages_path: String,
     checker_packages_lfs: Option<String>,
-    cfg: saarctf_commons_rs::config::Config,
+    cfg: ctf_commons_rs::config::Config,
 }
 
 /// SCAN for `checker:*` streams (type filter drops the `checker:running:*`

@@ -12,7 +12,7 @@ Generates valid flags
 
 // Binary flag format (after b64 decode): 24 bytes
 // = 32 bytes base64
-// = 38 bytes including SAAR{}
+// = 38 bytes including FLAG{}
 // Truncated format: 24bytes => 32chars => 38chars total
 struct __attribute__((__packed__)) FlagFormat {
 	uint16_t tick;

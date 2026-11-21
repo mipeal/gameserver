@@ -5,7 +5,7 @@ stateful infrastructure (redis pool, logging/metrics setup) out of the PyO3 surf
 remaining exports are side-effecting one-liners whose recorded cases would be "Config not initialized"
 noise. No Python service ever calls Rust here: Python services keep Python saarctf_commons during the
 staged cutover (ADR-006), Rust services use the Rust crate directly.
-Decision: `saarctf-commons-rs` is a plain workspace library crate, not a bridge unit. Equivalence is
+Decision: `ctf-commons-rs` is a plain workspace library crate, not a bridge unit. Equivalence is
 verified by golden tests: the Python original's `Config.load_from_file(...).to_dict()`, network math
 (`team_id_to_*`, `network_ip_to_id`) and Influx line formatting are captured as JSON goldens from
 fixture configs (yaml + json), and the Rust port must reproduce them exactly. Redis connection helper,
@@ -39,7 +39,7 @@ scheduled by the dispatcher loop, whichever is simpler at implementation time).
 ## ADR-017: checker subprocess program becomes Rust (embedded CPython); controlserver/ Python deleted
 Status: accepted (2026-11-20)
 Context: After the cutover, the only Python in the runtime path is the checker subprocess
-bootstrap (`checker_runner/runners/saarctf.py` + `checker_execution.py` + `package_loader.py`,
+bootstrap (`checker_runner/runners/ctf.py` + `checker_execution.py` + `package_loader.py`,
 spawned per task by the Rust worker) plus the checker-script ecosystem it runs (gamelib SDK,
 saarctf_commons). The bootstrap keeps 2,372 lines of dead `controlserver/` Python alive
 (models.Service row read, db_filesystem, init_database). The user chose "migrate to pure rust"
@@ -58,7 +58,7 @@ Consequences: `checker_runner/` Python (except demo_checker) and `controlserver/
 deleted after gate; `controlserver/static/less` moves to the image build path. The original
 bootstrap is kept until the port's record/diff is green, then deleted (recoverable from git).
 Python scripts/ originals stay as recording reference (no recorded parity cases exist for the
-30 saarctf-scripts-rs bins).
+30 ctf-scripts-rs bins).
 ### ADR-017 implementation record (2026-11-20)
 `rust/checker-exec/`: ~30-line Rust launcher (PyO3 0.30, `auto-initialize`, abi3-py39) +
 `src/shim.py` (~110 lines, embedded via include_str!) holding the orchestration that must run
@@ -81,7 +81,7 @@ Also deleted with user approval: `controlserver/` Python entirely (less sources 
 `rust/controlserver-rs/less`; css_build path updated; the image keeps
 /opt/controlserver/static/css/index.css for the scoreboard generator); checker_runner/
 wrapper code (celery_cmd, checker_execution, package_loader, runner, user_agents, runners/).
-`scripts/` and `sample_files/` dropped from the runtime image (ops use saarctf-scripts-rs);
+`scripts/` and `sample_files/` dropped from the runtime image (ops use ctf-scripts-rs);
 they stay in the repo as reference — note that scripts importing controlserver are now
 import-broken by design. `ci/` scripts still reference the deleted flask app (controlserver/
 app.py) and cannot run until the CI harness is reworked for the Rust stack.

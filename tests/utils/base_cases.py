@@ -31,7 +31,7 @@ config_basis = {
     },
 }
 config_file: Path = Path(__file__).absolute().parent.parent.parent / "config.test.yaml"
-os.environ["SAARCTF_CONFIG"] = str(config_file)
+os.environ["CTF_CONFIG"] = str(config_file)
 
 
 class TestCase(unittest.TestCase):

@@ -75,7 +75,7 @@ vpnboard and vulnboxes and runners need `NET_ADMIN` (SIM_VPN=1 only).
 ```sh
 docker exec <vulnbox-team-2> ping -c1 10.32.3.1        # through the tunnel(s)
 docker exec <controlserver> wg show                    # tt-<id> + recent handshakes
-docker exec <postgres> psql -U saarctf -d saarctf -tAc \
+docker exec <postgres> psql -U ctf -d ctf -tAc \
   "SELECT id, wg_vulnbox_connected FROM teams"         # vpnboard's verdicts
 ```
 

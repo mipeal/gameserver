@@ -1,9 +1,9 @@
-# saarCTF simulation deployment
+# CTF simulation deployment
 
-A Docker-only deployment of the whole saarCTF pipeline (controlserver,
+A Docker-only deployment of the whole CTF pipeline (controlserver,
 checker runners, flag submitter, scoreboard, and per-team vulnbox fixture
 containers) for demoing and testing the Rust gameserver end to end. Gated by
-`SAARCTF_SIMULATION=1`: with the env unset, the real pipeline is byte-identical
+`CTF_SIMULATION=1`: with the env unset, the real pipeline is byte-identical
 (ADR-006) — no sim code runs.
 
 ## Layout
@@ -83,18 +83,18 @@ attributes flags to the right attacker — the real CTF attack model.
 
 | symptom | cause / fix |
 |---|---|
-| No `wg show` handshakes (SIM_VPN=1) | `/dev/net/tun` missing or NET_ADMIN dropped — check `docker logs saarctf-sim-controlserver-1` for the wg setup; fall back to SIM_VPN=0 |
+| No `wg show` handshakes (SIM_VPN=1) | `/dev/net/tun` missing or NET_ADMIN dropped — check `docker logs ctf-sim-controlserver-1` for the wg setup; fall back to SIM_VPN=0 |
 | Vulnboxes crash-looping with `RTNETLINK answers: File exists` right after bring-up | the wg route (10.32.0.0/16) and the bridge subnet collided — regenerate compose (`simctl up`); with SIM_VPN=1 the bridge is 10.33.0.0/16 |
 | Vulnboxes crash-looping with `Name or service not known: controlserver:51820` | startup race: wg-quick resolved the Endpoint before the controlserver joined the network — the restart policy self-heals within a few seconds |
 | Team goes OFFLINE after `wg-quick down wg0` on a vulnbox | expected (that is the demo); vpnboard marks it down after two missed ~120 s handshakes, so allow up to 5 min on the scoreboard. Reconnect with `wg-quick up wg0` — recovery is equally slow. |
 | Checker results stuck at CRASHED | read `output` of the newest `checker_results` row; usually a missing Python dep in the base image (see `rust/controlserver-rs/Dockerfile.rust`) |
-| Submitter restart-looping | it reads `SAARCTF_CONFIG` (C++ convention) — must point at the mounted `config.sim.yaml` |
+| Submitter restart-looping | it reads `CTF_CONFIG` (C++ convention) — must point at the mounted `config.sim.yaml` |
 | Stale behavior after editing controlserver-rs sources | both images must be rebuilt — `gameserver-sim` reuses the cached `gameserver-rust` base and does not rebuild it |
 
 ## What is simulated vs real
 
 - **Real pipeline:** tick timer, checker subprocess protocol
-  (`checker_runner/runners/saarctf.py`), flag generation (HMAC via
+  (`checker_runner/runners/ctf.py`), flag generation (HMAC via
   `SECRET_FLAG_KEY`), checker-result Redis Streams, dispatcher, scoreboard
   scoring, flag submission + validation.
 - **Simulated:** the vulnbox services (fixture HTTP shims), the attack side

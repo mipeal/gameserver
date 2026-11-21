@@ -75,7 +75,7 @@ const char *progress_flag(const char *flag, int len, struct sockaddr_in *addr, u
 	// check length
 	if (len != FLAG_LENGTH_FULL) return "[ERR] Wrong length\n";
 
-	// check format (SAAR{...})
+	// check format (FLAG{...})
 	if (memcmp(flag, Config::flagPrefix.c_str(), Config::flagPrefix.size()) != 0 ||
 		flag[Config::flagPrefix.size()] != '{' ||
 		flag[FLAG_LENGTH_FULL - 1] != '}') {

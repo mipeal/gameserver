@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** One-command Docker demo of the full gameserver pipeline — real checkers probing containerized vulnboxes over real WireGuard tunnels, an attack simulator producing first-bloods, scoreboard SPA live — gated by `SAARCTF_SIMULATION=1` so the real pipeline is untouched.
+**Goal:** One-command Docker demo of the full gameserver pipeline — real checkers probing containerized vulnboxes over real WireGuard tunnels, an attack simulator producing first-bloods, scoreboard SPA live — gated by `CTF_SIMULATION=1` so the real pipeline is untouched.
 
 **Architecture:** A `rust/simulation/` tree (fixtures, checker sources, vulnbox, simulator, compose generator) plus a minimal env-gated boot hook in controlserver-rs (seed → import services → enable checkers → start timer). Vulnbox containers get static IPs `10.32.N.2` on a `/16` bridge matching the sim config's `vulnbox_ip` override; WireGuard runs for real when `SIM_VPN=1`.
 
@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Never print or persist `SECRET_FLAG_KEY` / `cfg.secret_flag_key` in logs, compose output, or fixtures. The demo config's zero placeholder for `secret_flags` is safe.
-- `SAARCTF_SIMULATION` unset or `0` ⇒ controlserver-rs behavior byte-identical to today (single check at startup, stored in state).
+- `CTF_SIMULATION` unset or `0` ⇒ controlserver-rs behavior byte-identical to today (single check at startup, stored in state).
 - Sim-only files live under `rust/simulation/`; Rust changes touch only `rust/controlserver-rs/src/bin/controlserver.rs` (+ a small new module) — no dispatcher/scoring/worker changes.
 - ADR-013 (checkers stay Python), ADR-001 (submitter stays the existing Python image), ADR-011 (admin API unauthenticated), ADR-004 (semantic equivalence).
 - Real-deployment files `rust/docker-compose.rust.yml` and `rust/controlserver-rs/Dockerfile.rust` are not modified.
@@ -23,7 +23,7 @@
 ## Review Focus
 
 1. **Checker target host:** checker scripts must connect to `team.ip` (gamelib `Team.ip` = vulnbox IP), never `localhost`. Test: Task 2 Step 4 runs a checker inside the gameserver-rust image against a vulnbox at `10.32.2.2` and asserts `SUCCESS`.
-2. **`SAARCTF_SIMULATION` unset = zero change:** Test: Task 3 Step 2's unit test asserts gating off ⇒ no seed/import/start calls; Task 7 Step 4 diff-checks default compose behavior.
+2. **`CTF_SIMULATION` unset = zero change:** Test: Task 3 Step 2's unit test asserts gating off ⇒ no seed/import/start calls; Task 7 Step 4 diff-checks default compose behavior.
 3. **Vulnbox IP math:** sim config must yield `team_id_to_vulnbox_ip(2) == "10.32.2.2"` (the demo config yields `127.0.2.2` — do not copy it). Test: Task 3 Step 1.
 4. **Attack rate 0 = no submissions:** Test: Task 4 Step 1's unit test asserts zero submissions at rate 0.
 5. **VPN gating honesty:** a team whose tunnel is down must produce no checker results and show offline on vpnboard, and recover when the tunnel returns. Test: Task 7 Step 6 (live down/up cycle).
@@ -45,7 +45,7 @@
 - [ ] **Step 2: Write `Dockerfile.vulnbox`** — `FROM php:8.3-cli` (base is small and ubiquitous), `RUN apt-get update && apt-get install -y --no-install-recommends python3 wireguard-tools iproute2` (wg tools only needed in SIM_VPN=1; harmless otherwise), COPY `services.py` + `entrypoint.sh`, `ENTRYPOINT ["./entrypoint.sh"]`.
 - [ ] **Step 3: Write `entrypoint.sh`** — if `/run/sim/keys/team$TEAM_ID.json` exists, bring up wg (Task 6 defines the JSON shape and the wg0 setup); always start `python3 services.py`.
 - [ ] **Step 4: Verify locally** —
-  Run: `docker build -f rust/simulation/vulnbox/Dockerfile.vulnbox -t sim-vulnbox rust/simulation/vulnbox && docker run -d --rm --name sim-vulnbox-test -p 1337:1337 sim-vulnbox && curl -sf -d 'team_id=2&service_id=1&tick=5&flag=SAAR%3Ddemo' http://localhost:1337/ && curl -sf 'http://localhost:1337/?team_id=2&service_id=1&tick=5' | grep -q 'SAAR=demo' && docker rm -f sim-vulnbox-test`
+  Run: `docker build -f rust/simulation/vulnbox/Dockerfile.vulnbox -t sim-vulnbox rust/simulation/vulnbox && docker run -d --rm --name sim-vulnbox-test -p 1337:1337 sim-vulnbox && curl -sf -d 'team_id=2&service_id=1&tick=5&flag=FLAG%3Ddemo' http://localhost:1337/ && curl -sf 'http://localhost:1337/?team_id=2&service_id=1&tick=5' | grep -q 'FLAG=demo' && docker rm -f sim-vulnbox-test`
   Expected: command exits 0.
 - [ ] **Step 5: Commit** — `git add rust/simulation/vulnbox && git commit -m "simulation: vulnbox image with HTTP service shims"`
 
@@ -72,8 +72,8 @@
   docker network create --subnet=10.32.0.0/16 simtest && \
   docker run -d --name vtest --network simtest --ip 10.32.2.2 sim-vulnbox && \
   docker run --rm --network simtest -v "$PWD/rust/simulation/services/demoservice/checkers:/work" \
-    -w /opt -e SAARCTF_NO_RLIMIT=1 ${IMAGE_REGISTRY:-gameserver-rust} \
-    python3 checker_runner/runners/saarctf.py "" checker:DemoServiceService 1 2 5; \
+    -w /opt -e CTF_NO_RLIMIT=1 ${IMAGE_REGISTRY:-gameserver-rust} \
+    python3 checker_runner/runners/ctf.py "" checker:DemoServiceService 1 2 5; \
   docker rm -f vtest; docker network rm simtest
   ```
   (If the image tag differs locally, use the tag from `docker images | grep gameserver-rust`.) Expected: output contains `SUCCESS` (check_integrity + empty store/retrieve pass). If the runner expects a non-empty package, pass `test` and note it — package identity is set by Task 3's import, not here.
@@ -89,8 +89,8 @@
 - Create: `rust/simulation/seed.sql`
 
 **Interfaces:**
-- Consumes: `Config` (saarctf-commons), `ServiceRepoManager::import_services(&mut self, cfg: &Config, db: &PgPool) -> Result<(), String>` (`rust/controlserver-rs/src/service_mgr.rs:226`), `timer.start_ctf()` (`rust/controlserver-rs/src/timer.rs:312`), migrations already applied before this point in `bin/controlserver.rs`.
-- Produces: `sim_boot::simulation_enabled_with(value: Option<&str>) -> bool` (injectable core; env `SAARCTF_SIMULATION` == "1" ⇒ true, anything else false), `sim_boot::simulation_enabled() -> bool` (reads the real env), `sim_boot::run(cfg, db, seed_path: Option<&str>) -> Result<(), String>` — executes `seed.sql` if the path is set and the file exists, then `import_services`, then `UPDATE services SET checker_enabled = TRUE`, then idempotency: re-running must be a no-op (import skips existing names; UPDATE is idempotent; seed uses `ON CONFLICT (id) DO NOTHING`).
+- Consumes: `Config` (ctf-commons), `ServiceRepoManager::import_services(&mut self, cfg: &Config, db: &PgPool) -> Result<(), String>` (`rust/controlserver-rs/src/service_mgr.rs:226`), `timer.start_ctf()` (`rust/controlserver-rs/src/timer.rs:312`), migrations already applied before this point in `bin/controlserver.rs`.
+- Produces: `sim_boot::simulation_enabled_with(value: Option<&str>) -> bool` (injectable core; env `CTF_SIMULATION` == "1" ⇒ true, anything else false), `sim_boot::simulation_enabled() -> bool` (reads the real env), `sim_boot::run(cfg, db, seed_path: Option<&str>) -> Result<(), String>` — executes `seed.sql` if the path is set and the file exists, then `import_services`, then `UPDATE services SET checker_enabled = TRUE`, then idempotency: re-running must be a no-op (import skips existing names; UPDATE is idempotent; seed uses `ON CONFLICT (id) DO NOTHING`).
 
 - [ ] **Step 1: Write the failing test** — `tests/sim_boot.rs`:
   ```rust
@@ -103,14 +103,14 @@
   fn gating_on() { assert!(sim_boot::simulation_enabled_with(Some("1"))); }
   ```
   (`simulation_enabled_with(value: Option<&str>)` is the injectable core; `simulation_enabled()` reads the real env.)
-  Also a config test (same file or `tests/sim_config.rs`): load `rust/simulation/config.sim.yaml` via the same `Config` loader used at boot (`saarctf_commons_rs::config`, `CONFIG_FILE` env) and assert `cfg.network.team_id_to_vulnbox_ip(2) == "10.32.2.2"`, `cfg.dispatcher_check_vpn_status == true`, `cfg.services_path == "/opt/services"`, `cfg.tick_duration_default == 30`. Run it with `CONFIG_FILE` pointed at the sim config; needs no DB.
+  Also a config test (same file or `tests/sim_config.rs`): load `rust/simulation/config.sim.yaml` via the same `Config` loader used at boot (`ctf_commons_rs::config`, `CONFIG_FILE` env) and assert `cfg.network.team_id_to_vulnbox_ip(2) == "10.32.2.2"`, `cfg.dispatcher_check_vpn_status == true`, `cfg.services_path == "/opt/services"`, `cfg.tick_duration_default == 30`. Run it with `CONFIG_FILE` pointed at the sim config; needs no DB.
 - [ ] **Step 2: Run tests to verify they fail** — `cargo test -p controlserver-rs --test sim_boot --test sim_config`. Expected: compile failure (module missing).
-- [ ] **Step 3: Implement `sim_boot.rs`** — the two functions above; `run()` order: seed (only if path set), import, enable. In `bin/controlserver.rs`, after migrations and before/after timer spawn: if `sim_boot::simulation_enabled()`, call `sim_boot::run(cfg, db, env SAARCTF_SIM_SEED)`, log a `tracing::info!("simulation mode: boot steps applied")`, and after `spawn_timer` call `start_ctf()` if state is not already Running. No other file changes.
-- [ ] **Step 4: Write `config.sim.yaml`** — copy of `/tmp/saarctf-demo/config.yaml` with: `dispatcher_check_vpn_status: true`; `services_path: /opt/services`; `checker_packages_path: /tmp/packages`; `scoreboard_path: /var/scoreboard`; `vpnboard_path: /tmp/vpnboard`; database/redis hosts = compose service names (`postgres`, `redis:6379`); `network.vulnbox_ip` = `[10, 32, [1, 256, 0], 2]` and `gameserver_ip`/`gateway_ip`/`testbox_ip`/`vpn_peer_ips` overridden to the same 10.32-math shape (use `[10, 32, [1, 256, 0], 1]` for gateway etc.); `vpn_host: 10.32.250.1` kept; `secret_flag_key: "0"`-style placeholder per the demo config (never a real key). No `rabbitmq` dependence (Rust stack uses Redis Streams, ADR-012).
+- [ ] **Step 3: Implement `sim_boot.rs`** — the two functions above; `run()` order: seed (only if path set), import, enable. In `bin/controlserver.rs`, after migrations and before/after timer spawn: if `sim_boot::simulation_enabled()`, call `sim_boot::run(cfg, db, env CTF_SIM_SEED)`, log a `tracing::info!("simulation mode: boot steps applied")`, and after `spawn_timer` call `start_ctf()` if state is not already Running. No other file changes.
+- [ ] **Step 4: Write `config.sim.yaml`** — copy of `/tmp/ctf-demo/config.yaml` with: `dispatcher_check_vpn_status: true`; `services_path: /opt/services`; `checker_packages_path: /tmp/packages`; `scoreboard_path: /var/scoreboard`; `vpnboard_path: /tmp/vpnboard`; database/redis hosts = compose service names (`postgres`, `redis:6379`); `network.vulnbox_ip` = `[10, 32, [1, 256, 0], 2]` and `gameserver_ip`/`gateway_ip`/`testbox_ip`/`vpn_peer_ips` overridden to the same 10.32-math shape (use `[10, 32, [1, 256, 0], 1]` for gateway etc.); `vpn_host: 10.32.250.1` kept; `secret_flag_key: "0"`-style placeholder per the demo config (never a real key). No `rabbitmq` dependence (Rust stack uses Redis Streams, ADR-012).
 - [ ] **Step 5: Write `seed.sql`** — the 8 fixture teams from the demo seed, one statement per concern: `INSERT INTO teams (id, name, affiliation, website, vpn_connected) VALUES ... ON CONFLICT (id) DO NOTHING;` with `vpn_connected = TRUE` (cosmetic consumers; dispatcher uses real wg state in SIM_VPN=1).
 - [ ] **Step 6: Run tests to verify they pass** — `cargo test -p controlserver-rs --test sim_boot --test sim_config`. Expected: PASS.
 - [ ] **Step 7: Build gate** — `cargo clippy -p controlserver-rs --all-targets -- -D warnings && cargo build -p controlserver-rs --bins`. Expected: clean.
-- [ ] **Step 8: Commit** — `git add rust/controlserver-rs/src/bin/controlserver.rs rust/controlserver-rs/src/sim_boot.rs rust/controlserver-rs/tests/ rust/simulation/config.sim.yaml rust/simulation/seed.sql && git commit -m "simulation: SAARCTF_SIMULATION boot gate (seed, import, enable, auto-start) + sim config/seed"`
+- [ ] **Step 8: Commit** — `git add rust/controlserver-rs/src/bin/controlserver.rs rust/controlserver-rs/src/sim_boot.rs rust/controlserver-rs/tests/ rust/simulation/config.sim.yaml rust/simulation/seed.sql && git commit -m "simulation: CTF_SIMULATION boot gate (seed, import, enable, auto-start) + sim config/seed"`
 
 ### Task 4: Attack simulator sidecar
 
@@ -151,7 +151,7 @@
 **Files:**
 - Create: `rust/simulation/Dockerfile.sim` — `FROM` the built `gameserver-rust` image; adds `wireguard-tools iproute2 iptables` plus the `wireguard-sync` + `vpnboard` binaries (build them in a `rust_build` stage copying `rust/wireguard-sync-rs` and `rust/vpnboard-rs` — copy the sibling crates the same way `Dockerfile.rust` does for controlserver).
 - Create: `rust/simulation/gen_compose.py` — emits `rust/simulation/docker-compose.vulnboxes.yml`: for team N in 2..=TEAMS (team 1 is the gameserver's own vulnbox? No — team 1 is NOP and still needs a vulnbox: emit for 1..=TEAMS) one service `vulnbox-N`: image `sim-vulnbox`+`sim-tools` layering per SIM_VPN, `ipv4_address: 10.32.N.2` on network `simnet` (subnet `10.32.0.0/16`, gateway `10.32.0.1`), env `TEAM_ID=N`, mounts `keys:/run/sim/keys:ro` (SIM_VPN=1), `cap_add: [NET_ADMIN]` + `devices: [/dev/net/tun]` in SIM_VPN=1.
-- Create: `rust/docker-compose.simulation.yml` — full stack: `postgres` (with `seed.sql` NOT auto-mounted — seed runs via the env gate; ports internal only), `redis`, `controlserver` (image from `Dockerfile.sim`, `SAARCTF_SIMULATION=1`, `SAARCTF_SIM_SEED=/opt/sim/seed.sql`, mounts: `rust/simulation/seed.sql:/opt/sim/seed.sql:ro`, `rust/simulation/services:/opt/services:ro`, `config.sim.yaml` as `CONFIG_FILE`, wg caps + port `51820/udp` in SIM_VPN=1), `checker_runner` (same image, replicas 4), `submitter` (existing Python image from `flag-submission-server`, port 1337:31337), `scoreboard-daemon` + `scoreboard` nginx (port 8080:80), `sim-init` (one-shot: runs `wireguard-sync generate -a $TEAMS` and exports the server public key to the keys volume; only in SIM_VPN=1), `wireguard-sync` (long-running, privileged wg server side; SIM_VPN=1), `vpnboard` (`network_mode: service:controlserver`, port via the controlserver container; SIM_VPN=1), `attack-simulator` (Task 4 image). SIM_VPN is resolved by `gen_compose.py` emitting a small override file (`docker-compose.sim-vpn.yml`) rather than YAML anchors, so the base file never contains privileged entries. Never inline `SECRET_FLAG_KEY` — pass through `${SECRET_FLAG_KEY}` from `.env.sim`.
+- Create: `rust/docker-compose.simulation.yml` — full stack: `postgres` (with `seed.sql` NOT auto-mounted — seed runs via the env gate; ports internal only), `redis`, `controlserver` (image from `Dockerfile.sim`, `CTF_SIMULATION=1`, `CTF_SIM_SEED=/opt/sim/seed.sql`, mounts: `rust/simulation/seed.sql:/opt/sim/seed.sql:ro`, `rust/simulation/services:/opt/services:ro`, `config.sim.yaml` as `CONFIG_FILE`, wg caps + port `51820/udp` in SIM_VPN=1), `checker_runner` (same image, replicas 4), `submitter` (existing Python image from `flag-submission-server`, port 1337:31337), `scoreboard-daemon` + `scoreboard` nginx (port 8080:80), `sim-init` (one-shot: runs `wireguard-sync generate -a $TEAMS` and exports the server public key to the keys volume; only in SIM_VPN=1), `wireguard-sync` (long-running, privileged wg server side; SIM_VPN=1), `vpnboard` (`network_mode: service:controlserver`, port via the controlserver container; SIM_VPN=1), `attack-simulator` (Task 4 image). SIM_VPN is resolved by `gen_compose.py` emitting a small override file (`docker-compose.sim-vpn.yml`) rather than YAML anchors, so the base file never contains privileged entries. Never inline `SECRET_FLAG_KEY` — pass through `${SECRET_FLAG_KEY}` from `.env.sim`.
 - Create: `rust/simulation/.env.sim.example` — `TEAMS=8`, `SIM_ATTACK_RATE=0.25`, `SIM_VPN=1`, `SECRET_FLAG_KEY=<zero placeholder for demo>`, `POSTGRES_PASSWORD=demo`, `REDIS_PASSWORD=demo`.
 - Create: `rust/simulation/simctl` — tiny shell wrapper: `simctl up` (gen compose files → `docker compose -f ... up -d --build`), `simctl down`, `simctl demo-commands` (prints curl/one-liners for the demo).
 
@@ -175,7 +175,7 @@
 - [ ] **Step 1: Write `README.md`** — what it is (link the spec), prerequisites (Docker with /dev/net/tun for SIM_VPN=1; rootless docker ⇒ SIM_VPN=0), quickstart (`cp .env.sim.example .env.sim && ./simctl up`), env var table, ports (scoreboard :8080, submitter :1337, vpnboard via controlserver), what to watch (ticks, first-blood overlay + sound in the SPA), the in-memory flag-store caveat (vulnbox restart drops stored flags — checkers will FlagMissing until next store tick; acceptable for demo), teardown, and troubleshooting (wg handshake absent ⇒ check port 51820/udp and capabilities).
 - [ ] **Step 2: Clean-state bring-up (SIM_VPN=0 first)** — `SIM_VPN=0 TEAMS=3 ./simctl up`; wait 3 ticks (≥90 s). Verify: controlserver log shows `simulation mode: boot steps applied` and `New tick` lines; checker results rows appear (`docker compose exec postgres psql ... -c "SELECT status, count(*) FROM checker_results GROUP BY status"` — statuses are SUCCESS/MUMBLE/OFFLINE, no dispatch errors); scoreboard JSON at `http://localhost:8080/api/...` regenerates per tick; SPA loads.
 - [ ] **Step 3: First-blood check (SIM_ATTACK_RATE=0.5)** — bring up with attacks on; within ~3 ticks the SPA shows a First Blood overlay (verify by watching `scoreboard_round_*.json` for a nonzero attacker count on some team, plus the SPA visually if interactive).
-- [ ] **Step 4: Real-pipeline untouched** — `git diff master -- rust/docker-compose.rust.yml rust/controlserver-rs/Dockerfile.rust` is empty; and `SAARCTF_SIMULATION` unset start of controlserver (no env) logs no `simulation mode` line (run the binary briefly locally with the demo config as before — same as pre-existing behavior).
+- [ ] **Step 4: Real-pipeline untouched** — `git diff master -- rust/docker-compose.rust.yml rust/controlserver-rs/Dockerfile.rust` is empty; and `CTF_SIMULATION` unset start of controlserver (no env) logs no `simulation mode` line (run the binary briefly locally with the demo config as before — same as pre-existing behavior).
 - [ ] **Step 5: VPN bring-up (SIM_VPN=1)** — `SIM_VPN=1 TEAMS=3 ./simctl up`; verify vpnboard shows all 3 peers with recent handshakes, and `docker compose exec controlserver wg show` lists them.
 - [ ] **Step 6: VPN gating down/up cycle** — inside vulnbox-2: `wg-quick down wg0`; within ~2 vpnboard cycles (its offline threshold is two missed ~120 s handshakes — allow up to 5 min) vpnboard shows team 2 offline and its checker results stop arriving; `wg-quick up wg0` restores both. Record actual timings in the README troubleshooting section.
 - [ ] **Step 7: Commit** — `git add rust/simulation/README.md && git commit -m "simulation: runbook + end-to-end verification notes"`
@@ -186,4 +186,4 @@
 
 - Tasks 1→2→3 are strictly ordered (checkers need the vulnbox image; the boot gate needs both). Task 4 and Task 5 are independent of 3 and can run in parallel once 1/2 exist. Task 6 depends on all; Task 7 depends on 6.
 - The Rust change (Task 3) is the only product-code change; everything else is additive under `rust/simulation/`.
-- If `saarctf.py` requires a real package name in Task 2 Step 4, the correct package string comes from `import_services` in Task 3 — the smoke test may substitute the package name printed by that step when run against a live DB, or use `SAARCTF_PYTHON_DIR`-relative import of the mounted checker dir as a fallback smoke.
+- If `ctf.py` requires a real package name in Task 2 Step 4, the correct package string comes from `import_services` in Task 3 — the smoke test may substitute the package name printed by that step when run against a live DB, or use `CTF_PYTHON_DIR`-relative import of the mounted checker dir as a fallback smoke.

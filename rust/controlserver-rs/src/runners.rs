@@ -1,6 +1,6 @@
-//! Port of `checker_runner/runner.py` + `runners/saarctf.py` execution path.
+//! Port of `checker_runner/runner.py` + `runners/ctf.py` execution path.
 //! Every checker runs as a Python subprocess through the existing
-//! `checker_runner/runners/saarctf.py` entry point (ADR-013: checkers stay
+//! `checker_runner/runners/ctf.py` entry point (ADR-013: checkers stay
 //! Python), so subprocess semantics are the ones that matter: timeout at the
 //! soft limit → TIMEOUT, non-zero exit → CRASHED, result after SEPARATOR.
 
@@ -142,13 +142,13 @@ pub async fn run_checker(task: &TaskMessage, python_dir: &std::path::Path) -> Ch
     if script == "pendingtest" {
         script = "checker_runner.demo_checker:TimeoutService".to_string();
     }
-    run_saarctf_subprocess(task, &script, python_dir).await
+    run_ctf_subprocess(task, &script, python_dir).await
 }
 
-/// `SaarctfServiceRunner.execute_checker_subprocess` — now spawns the Rust
+/// `CtfServiceRunner.execute_checker_subprocess` — now spawns the Rust
 /// `checker-exec` binary (embedded CPython shim, ADR-017) instead of
-/// `python3 checker_runner/runners/saarctf.py`. Service config comes via argv.
-async fn run_saarctf_subprocess(
+/// `python3 checker_runner/runners/ctf.py`. Service config comes via argv.
+async fn run_ctf_subprocess(
     task: &TaskMessage,
     script: &str,
     python_dir: &std::path::Path,
@@ -166,10 +166,10 @@ async fn run_saarctf_subprocess(
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .kill_on_drop(true);
-    // set_limits(): RLIMIT_AS 2GB soft / 3GB hard, unless SAARCTF_NO_RLIMIT is
+    // set_limits(): RLIMIT_AS 2GB soft / 3GB hard, unless CTF_NO_RLIMIT is
     // set (that one is inherited from our own environment).
     #[cfg(unix)]
-    if std::env::var_os("SAARCTF_NO_RLIMIT").is_none() {
+    if std::env::var_os("CTF_NO_RLIMIT").is_none() {
         // SAFETY: runs setrlimit in the forked child before exec; no shared state touched.
         unsafe {
             cmd.pre_exec(|| {
@@ -273,7 +273,7 @@ mod tests {
     async fn crashtest_special_returns_crashed() {
         let task = TaskMessage {
             task_id: "t".into(),
-            runner_spec: "saarctf:SaarctfServiceRunner".into(),
+            runner_spec: "ctf:CtfServiceRunner".into(),
             package: None,
             checker_script: "crashtest".into(),
             service_id: 1,

@@ -13,7 +13,7 @@ use crate::models::{STATE_RUNNING, STATE_STOPPED, STATE_SUSPENDED};
 use crate::store::Store;
 use crate::ui::Ui;
 use leptos::prelude::*;
-use leptos_router::components::{Redirect, Route, Router, Routes, A};
+use leptos_router::components::{Redirect, Route, Router, Routes};
 use leptos_router::hooks::use_location;
 use leptos_router::path;
 
@@ -22,7 +22,7 @@ fn main() {
     mount_to_body(App);
 }
 
-/// `app.component.html` — header band, router outlet, credits.
+/// `app.component.html` — header band, router outlet.
 #[component]
 fn App() -> impl IntoView {
     let store = Store::new();
@@ -34,38 +34,43 @@ fn App() -> impl IntoView {
         <Router>
             <a class="skip-link" href="#main-content">"Skip to scoreboard"</a>
             <overlay::NotificationOverlay />
-            <div class="flexible-container">
-                <div class="bg-primary-theme">
-                    <div class="header-inner">
-                        <Settings />
-                        <div class="container-fluid">
-                            <h1 class="page-header">
-                                {"\u{00a0}CTF Scoreboard"}
-                                <small>
-                                    <A href="/dashboard"><span class="fas fa-th"></span></A>
-                                    {"\u{00a0}"}
-                                    <A href="/graphs"><span class="fas fa-chart-line"></span></A>
-                                </small>
-                                <BackLink />
-                                <span class="pull-right"><CurrentTick /></span>
-                            </h1>
-                        </div>
-                        <br/>
-                    </div>
-                </div>
-                <div class="container-fluid flexible-container">
-                    <div id="main-content">
-                        <Routes fallback=not_found>
-                            <Route path=path!("/") view=move || pages::scoretable(store, ui) />
-                            <Route path=path!("/dashboard") view=move || pages::dashboard(store, ui) />
-                            <Route path=path!("/team/:teamid") view=move || team::team_page(store, ui) />
-                            <Route path=path!("/graphs") view=move || graphs::graphs_page(store, ui) />
-                        </Routes>
-                    </div>
-                </div>
-                <br/>
-            </div>
+            <header class="app-header">
+                <a class="logo" href="/" aria-label="CTF scoreboard home">"◼ "<span>"CTF"</span>" SCOREBOARD"</a>
+                <nav class="mainnav" aria-label="Scoreboard">
+                    <NavLink href="/" label="scoretable" icon="fa-th-large" />
+                    <NavLink href="/graphs" label="graphs" icon="fa-chart-line" />
+                    <NavLink href="/dashboard" label="dashboard" icon="fa-tachometer-alt" />
+                </nav>
+                <BackLink />
+                <CurrentTick />
+                <Settings />
+            </header>
+            <main id="main-content" tabindex="-1" class="app-main">
+                <Routes fallback=not_found>
+                    <Route path=path!("/") view=move || pages::scoretable(store, ui) />
+                    <Route path=path!("/dashboard") view=move || pages::dashboard(store, ui) />
+                    <Route path=path!("/team/:teamid") view=move || team::team_page(store, ui) />
+                    <Route path=path!("/graphs") view=move || graphs::graphs_page(store, ui) />
+                </Routes>
+            </main>
         </Router>
+    }
+}
+
+/// Header navigation entry: icon-only, label kept as accessible name and
+/// tooltip; `aria-current` marks the active route.
+#[component]
+fn NavLink(href: &'static str, label: &'static str, icon: &'static str) -> impl IntoView {
+    let path = use_location().pathname;
+    let current = move || {
+        let p = path.get();
+        if href == "/" { (p == "/").to_string() } else { p.starts_with(href).to_string() }
+    };
+    view! {
+        <a href=href title=label aria-current=move || if current() == "true" { "page" } else { "false" }>
+            <span class=format!("fas {icon}") aria-hidden="true"></span>
+            <span class="sr-only">{label}</span>
+        </a>
     }
 }
 
@@ -75,49 +80,54 @@ fn BackLink() -> impl IntoView {
     let path = use_location().pathname;
     view! {
         <a href="/" class="backlink" class:hidden=move || path.get() == "/" >
-            <i class="fas fa-chevron-left"></i> " back to scoreboard"
+            "\u{2190} back to scoreboard"
         </a>
     }
 }
 
-/// `settings.component` — dropdown toggling the UiService preferences.
+/// `settings.component` — dropdown for every preference.
 #[component]
 fn Settings() -> impl IntoView {
     let ui = expect_context::<Ui>();
     let open = RwSignal::new(false);
 
     view! {
-        <div class="pull-right btn-group">
+        <div class="settings">
             <button
                 id="settings-button"
                 type="button"
-                class="btn btn-link dropdown-toggle"
+                class="gear"
                 aria-label="Settings"
                 aria-haspopup="true"
                 aria-expanded=move || open.get().to_string()
                 on:click=move |_| open.update(|o| *o = !*o)
             >
-                <i class="fas fa-cog"></i><span class="caret"></span>
+                <span class="fas fa-cog" aria-hidden="true"></span>
             </button>
             {move || {
                 if !open.get() { return ().into_any(); }
                 let items = [
-                    (ui.show_history, "Hide differences to last tick", "Show differences to last tick"),
-                    (ui.show_only_sums, "Show detailed scores", "Hide detailed scores (slim mode)"),
+                    (ui.darkmode, "Switch to light mode", "Switch to dark mode"),
+                    (ui.show_history, "Hide tick history", "Show tick history"),
+                    (ui.show_only_sums, "Show full table", "Show only sums"),
                     (ui.show_images, "Hide team logos", "Show team logos"),
                     (ui.show_notifications, "Hide notifications", "Show notifications"),
                     (ui.sound, "Disable first blood sound", "Enable first blood sound"),
-                    (ui.darkmode, "Light mode", "Dark mode"),
                 ];
                 view! {
-                    <ul id="dropdown-settings" class="dropdown-menu dropdown-menu-right show" role="menu" aria-labelledby="settings-button">
+                    <ul id="dropdown-settings" class="dropdown-menu show" role="menu" aria-labelledby="settings-button">
                         {items.iter().map(|(sig, off_label, on_label)| {
                             let (sig, off_label, on_label) = (*sig, *off_label, *on_label);
                             view! {
                                 <li role="menuitem">
-                                    <a class="dropdown-item href" on:click=move |_| sig.update(|v| *v = !*v)>
+                                    <button
+                                        type="button"
+                                        class="dropdown-item"
+                                        aria-pressed=move || sig.get().to_string()
+                                        on:click=move |_| sig.update(|v| *v = !*v)
+                                    >
                                         {move || if sig.get() { off_label } else { on_label }}
-                                    </a>
+                                    </button>
                                 </li>
                             }
                         }).collect_view()}
@@ -142,8 +152,8 @@ fn CurrentTick() -> impl IntoView {
     });
 
     view! {
-        <div class="current-tick" aria-live="polite">
-            <p class="state">
+        <div class="tickclock" aria-live="polite">
+            <span class="state">
                 {move || {
                     let st = store.state.get();
                     if st.frozen {
@@ -172,37 +182,35 @@ fn CurrentTick() -> impl IntoView {
                         view! { <span class="label label-danger">"not started"</span> }.into_any()
                     } else { ().into_any() }
                 }}
-            </p>
+            </span>
             {move || {
                 let t = store.state.get().current_tick;
                 if t >= 0 {
-                    view! { <p class="tick">{format!("Tick {t}")}</p> }.into_any()
+                    view! { <span class="tickline">"tick " <b>{t}</b></span> }.into_any()
                 } else { ().into_any() }
             }}
-            <p class="time">
-                {move || {
-                    let st = store.state.get();
-                    if current_time.get() > 0 && (st.state == STATE_RUNNING || st.current_tick < 0) {
-                        // formatRemainingTime: remaining = tick_until - client_now + (client - server)
-                        let mut remaining =
-                            st.current_tick_until - current_time.get_untracked()
-                                + store.delta_client_to_server.get_untracked();
-                        if remaining < 0 { remaining = 0; }
-                        let m = remaining / 60;
-                        let s = remaining % 60;
-                        view! {
-                            <span>{format!("{m:02}:{s:02}")}</span>
-                        }.into_any()
-                    } else { ().into_any() }
-                }}
-            </p>
+            {move || {
+                let st = store.state.get();
+                if current_time.get() > 0 && (st.state == STATE_RUNNING || st.current_tick < 0) {
+                    // formatRemainingTime: remaining = tick_until - client_now + (client - server)
+                    let mut remaining =
+                        st.current_tick_until - current_time.get_untracked()
+                            + store.delta_client_to_server.get_untracked();
+                    if remaining < 0 { remaining = 0; }
+                    let m = remaining / 60;
+                    let s = remaining % 60;
+                    view! {
+                        <span class="round">"· round ends in\u{00a0}"<span class="time">{format!("{m:02}:{s:02}")}</span></span>
+                    }.into_any()
+                } else { ().into_any() }
+            }}
         </div>
     }
 }
 
 fn not_found() -> impl IntoView {
     view! {
-        <div class="alert alert-danger">"Page not found"</div>
+        <div class="alert alert-danger" role="alert">"Page not found"</div>
         <Redirect path="/" />
     }
 }

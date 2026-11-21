@@ -14,11 +14,11 @@
 #define CHECK_STATE
 
 
-// FORMAT: SAAR{QUFBQUFBQUFCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkFB}
+// FORMAT: FLAG{QUFBQUFBQUFCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkFB}
 
 // Binary flag format (after b64 decode): 39 bytes
 // = 56 bytes base64
-// = 62 bytes including SAAR{}
+// = 62 bytes including FLAG{}
 // Truncated format: 24bytes => 32chars => 38chars total
 struct __attribute__((__packed__)) FlagFormat {
 	uint16_t round;

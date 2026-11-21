@@ -39,8 +39,8 @@ State: `open` | `claimed by <session> <date>` | `done (<gate>, <replay>)`
 | 1 | `sample_files/checker_demoservice/` (132 ln) | stays Python | ADR-013. |
 | 2 | `migrations/` (71 ln) | closed | env.py — superseded by ADR-005. |
 | 2 | `sample_files/` (240 ln) | stays Python | demo exploits, ADR-013. |
-| 2 | `scripts/` (1,225 ln) | done (`saarctf-scripts-rs`, 30 bins, clippy clean) | Ops CLIs incl. scoreboard exports (wave 3). |
-| 2 | `vpn/` (1,663 ln) | done (wave 2) | iptables via subprocess, eBPF maps via libc, hcloud API only. Bins + daemons in saarctf-scripts-rs. |
+| 2 | `scripts/` (1,225 ln) | done (`ctf-scripts-rs`, 30 bins, clippy clean) | Ops CLIs incl. scoreboard exports (wave 3). |
+| 2 | `vpn/` (1,663 ln) | done (wave 2) | iptables via subprocess, eBPF maps via libc, hcloud API only. Bins + daemons in ctf-scripts-rs. |
 | 2 | `vpnboard/` (535 ln) | done (`vpnboard-rs`, clippy clean) | Status daemon + board. |
 | 5 | `controlserver` admin HTML → Leptos SPA `rust/admin-gui-rs` | done (wave 5) | 15 JSON admin endpoints + SPA, served by controlserver-rs. |
 | 6 | `scoreboard/src/app` (Angular) → Leptos SPA `rust/scoreboard-rs` | done (wasm build clean, trunk dist) | ADR-002. rust-anything front-door/app_lift superseded — see ADR-016. Cutover tooling: rust/docker-compose.rust.yml + rust/cutover.sh (multi-arch buildx, amd64+arm64). |

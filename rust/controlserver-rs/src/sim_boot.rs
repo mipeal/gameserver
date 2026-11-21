@@ -1,9 +1,9 @@
-//! Simulation boot steps (plan task 3): when `SAARCTF_SIMULATION=1`, apply the
+//! Simulation boot steps (plan task 3): when `CTF_SIMULATION=1`, apply the
 //! sim seed, import the sim checker sources from `services_path`, enable them,
 //! and auto-start the CTF. With the env unset nothing here runs — the real
 //! pipeline is byte-identical (ADR-006).
 
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use sqlx::PgPool;
 
 use crate::service_mgr::ServiceRepoManager;
@@ -13,9 +13,9 @@ pub fn simulation_enabled_with(value: Option<&str>) -> bool {
     value == Some("1")
 }
 
-/// Reads `SAARCTF_SIMULATION` from the real environment.
+/// Reads `CTF_SIMULATION` from the real environment.
 pub fn simulation_enabled() -> bool {
-    simulation_enabled_with(std::env::var("SAARCTF_SIMULATION").ok().as_deref())
+    simulation_enabled_with(std::env::var("CTF_SIMULATION").ok().as_deref())
 }
 
 /// Seed + import + enable, in that order; idempotent (seed uses ON CONFLICT

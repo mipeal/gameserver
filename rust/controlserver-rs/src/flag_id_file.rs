@@ -4,7 +4,7 @@
 use crate::models::{Service, Team};
 use crate::timer::TimingState;
 use redis::aio::ConnectionManager;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::path::Path;

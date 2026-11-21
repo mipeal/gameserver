@@ -9,7 +9,7 @@ use crate::scoreboard::Scoreboard;
 use crate::scoring::ScoringCalculation;
 use crate::timer::CtfEvents;
 use chrono::Utc;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use sqlx::PgPool;
 use std::sync::Arc;
 
@@ -140,7 +140,7 @@ impl CtfEvents for DeferredCtfEvents {
         let db = self.db.clone();
         let cfg = self.cfg.clone();
         tokio::spawn(async move {
-            let mut redis = match saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+            let mut redis = match ctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
             {
                 Ok(r) => r,
                 Err(e) => {
@@ -199,7 +199,7 @@ impl CtfEvents for DeferredCtfEvents {
             let cfg = self.cfg.clone();
             tokio::spawn(async move {
                 let Ok(mut redis) =
-                    saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+                    ctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
                 else {
                     return;
                 };
@@ -215,7 +215,7 @@ impl CtfEvents for DeferredCtfEvents {
             let cfg = self.cfg.clone();
             let _ = tokio::spawn(async move {
                 let Ok(mut redis) =
-                    saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
+                    ctf_commons_rs::redis::get_redis_connection(&cfg.redis).await
                 else {
                     return;
                 };

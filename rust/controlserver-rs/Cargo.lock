@@ -248,6 +248,7 @@ dependencies = [
  "axum",
  "base64 0.22.1",
  "chrono",
+ "ctf-commons-rs",
  "futures-util",
  "gamelib-rs",
  "hex",
@@ -257,7 +258,6 @@ dependencies = [
  "rand 0.8.8",
  "redis",
  "reqwest",
- "saarctf-commons-rs",
  "serde",
  "serde_json",
  "sha2",
@@ -331,6 +331,18 @@ checksum = "78c8292055d1c1df0cce5d180393dc8cce0abec0a7102adb6c7b1eef6016d60a"
 dependencies = [
  "generic-array",
  "typenum",
+]
+
+[[package]]
+name = "ctf-commons-rs"
+version = "0.1.0"
+dependencies = [
+ "redis",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sqlx",
+ "tokio",
 ]
 
 [[package]]
@@ -1578,18 +1590,6 @@ name = "ryu"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f"
-
-[[package]]
-name = "saarctf-commons-rs"
-version = "0.1.0"
-dependencies = [
- "redis",
- "serde",
- "serde_json",
- "serde_yaml",
- "sqlx",
- "tokio",
-]
 
 [[package]]
 name = "scopeguard"

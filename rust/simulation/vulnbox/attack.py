@@ -25,7 +25,7 @@ import threading
 import time
 
 SERVICES = [(1, 1337), (2, 8080), (3, 31337)]
-FLAG_MARKERS = ("SAAR{",)
+FLAG_MARKERS = ("FLAG{",)
 
 
 def env_float(name, default):

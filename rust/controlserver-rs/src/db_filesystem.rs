@@ -3,7 +3,7 @@
 //! `checker_files`, md5-identified). The package id is
 //! `md5(json.dumps([[path, kind], ...]))` with Python's json.dumps separators.
 
-use saarctf_commons_rs::metrics::py_json_str;
+use ctf_commons_rs::metrics::py_json_str;
 use sqlx::PgPool;
 use std::io::Write;
 use std::path::{Path, PathBuf};

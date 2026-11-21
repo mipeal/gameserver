@@ -54,7 +54,7 @@ pub struct ServiceResult {
     pub d: f64,
     #[serde(default)]
     pub s: f64,
-    #[serde(default)]
+    #[serde(default, rename = "do")]
     pub do_: f64, // "do" — delta off
     #[serde(default)]
     pub dd: f64,
@@ -90,7 +90,7 @@ pub struct Rank {
     pub d: f64,
     #[serde(default)]
     pub s: f64,
-    #[serde(default)]
+    #[serde(default, rename = "do")]
     pub do_: f64,
     #[serde(default)]
     pub dd: f64,

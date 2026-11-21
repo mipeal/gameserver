@@ -29,7 +29,7 @@ def submit_random_flags(conn, endround: int, chance=0.33):
 		for t in teams:
 			team_exploit_ready[(t, sid)] = random.randint(1, round(endround / chance)) * service_difficulty
 			team_patch_ready[(t, sid)] = random.randint(1, round(endround)) * service_difficulty // 3
-			if team_names[t] == 'saarsec':
+			if team_names[t] == 'Team 4':
 				team_exploit_ready[(t, sid)] = int(team_exploit_ready[(t, sid)] * 0.8)
 				team_patch_ready[(t, sid)] = int(team_patch_ready[(t, sid)] * 0.8)
 	for s in services:

@@ -1,6 +1,6 @@
-name: saarctf-sim
+name: ctf-sim
 
-# Simulation deployment (SAARCTF_SIMULATION=1): the full Rust stack against
+# Simulation deployment (CTF_SIMULATION=1): the full Rust stack against
 # per-team vulnbox fixture containers on the 10.32.0.0/16 simnet. Never used
 # by the real pipeline. See rust/simulation/README.md.
 #
@@ -12,19 +12,19 @@ name: saarctf-sim
 x-gameserver-common-env: &gameserver-common-env
   POSTGRES_SERVER: postgres
   POSTGRES_PORT: "5432"
-  POSTGRES_DATABASE: saarctf
-  POSTGRES_USERNAME: saarctf
+  POSTGRES_DATABASE: ctf
+  POSTGRES_USERNAME: ctf
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-demo}
   REDIS_HOST: redis
   REDIS_PORT: "6379"
   REDIS_DB: "0"
   SECRET_FLAG_KEY: ${SECRET_FLAG_KEY}
   CONFIG: /opt/sim/config.sim.yaml
-  SAARCTF_CONFIG: /opt/sim/config.sim.yaml  # python checker subprocesses (saarctf_commons)
+  CTF_CONFIG: /opt/sim/config.sim.yaml  # python checker subprocesses (saarctf_commons)
   SCOREBOARD_PATH: /var/scoreboard
-  SAARCTF_PYTHON_DIR: /opt
-  SAARCTF_SIMULATION: "1"
-  SAARCTF_SIM_SEED: /opt/sim/seed.sql
+  CTF_PYTHON_DIR: /opt
+  CTF_SIMULATION: "1"
+  CTF_SIM_SEED: /opt/sim/seed.sql
 
 x-sim-image: &sim-image
   image: gameserver-sim
@@ -46,13 +46,13 @@ services:
   postgres:
     image: postgres:17.2
     environment:
-      POSTGRES_DB: saarctf
-      POSTGRES_USER: saarctf
+      POSTGRES_DB: ctf
+      POSTGRES_USER: ctf
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-demo}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U saarctf -d saarctf"]
+      test: ["CMD-SHELL", "pg_isready -U ctf -d ctf"]
       interval: 10s
       timeout: 1s
       retries: 30
@@ -113,14 +113,14 @@ services:
     environment:
       POSTGRES_SERVER: postgres
       POSTGRES_PORT: "5432"
-      POSTGRES_DATABASE: saarctf
-      POSTGRES_USERNAME: saarctf
+      POSTGRES_DATABASE: ctf
+      POSTGRES_USERNAME: ctf
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-demo}
       REDIS_HOST: redis
       REDIS_PORT: "6379"
       REDIS_DATABASE: "0"
       CONFIG_SECRET_FLAGS: ${SECRET_FLAG_KEY}
-      SAARCTF_CONFIG: /opt/sim/config.sim.yaml
+      CTF_CONFIG: /opt/sim/config.sim.yaml
     volumes:
       - ./simulation/config.sim.yaml:/opt/sim/config.sim.yaml:ro
     ports:

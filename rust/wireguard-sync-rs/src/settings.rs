@@ -1,4 +1,4 @@
-//! `wireguard_sync/settings.py` — env defaults, overridden by the saarctf
+//! `wireguard_sync/settings.py` — env defaults, overridden by the ctf
 //! config's `wireguard_sync` section (keystore then lands next to the config
 //! file, like `config.basedir / "keystore.json"`).
 
@@ -31,8 +31,8 @@ impl Default for Settings {
 }
 
 impl Settings {
-    /// env vars, then the saarctf config section (Python order: env first,
-    /// saarctf settings win if present).
+    /// env vars, then the ctf config section (Python order: env first,
+    /// ctf settings win if present).
     pub fn load() -> Result<Settings, String> {
         let mut s = Settings::default();
         if let Ok(v) = std::env::var("API_SERVER") {
@@ -53,12 +53,12 @@ impl Settings {
 
         let cfg = match super::load_config() {
             Ok(c) => c,
-            Err(_) => return Ok(s), // "No saarctf settings available"
+            Err(_) => return Ok(s), // "No ctf settings available"
         };
         match &cfg.wireguard_sync {
-            None => tracing::info!("Wireguard sync not configured in saarctf settings"),
+            None => tracing::info!("Wireguard sync not configured in ctf settings"),
             Some(wg) => {
-                println!("Imported saarctf settings");
+                println!("Imported ctf settings");
                 s.api_server = wg.api_server.clone();
                 s.api_base = wg.api_base.clone();
                 s.api_token = Some(wg.api_token.clone());

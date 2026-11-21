@@ -7,7 +7,7 @@ use base64::Engine;
 use hmac::{Hmac, Mac};
 use rand::seq::SliceRandom;
 use rand::Rng;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeSet, HashMap};
@@ -777,7 +777,7 @@ pub async fn run_eno_checker(task: &TaskMessage, cfg: &Config) -> CheckerRunOutp
             };
         }
     };
-    let mut redis = match saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await {
+    let mut redis = match ctf_commons_rs::redis::get_redis_connection(&cfg.redis).await {
         Ok(conn) => conn,
         Err(e) => {
             return CheckerRunOutput {

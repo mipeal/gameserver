@@ -8,7 +8,7 @@
 /* ===== app.component.less ===== */
 .flexible-container { display: inline-block; }
 .header-inner { position: sticky; left: 0; width: 100%; max-width: 100%; }
-a.backlink { color: white; }
+a.backlink { color: var(--dim); }
 .credits {
 	text-align: center;
 	margin-top: 20px;
@@ -28,10 +28,6 @@ a.backlink.hidden { display: none; }
 .current-tick .time span { margin-left: 5px; }
 
 /* ===== settings.component.less ===== */
-/* keep the gear on the Japandi palette in dark mode (the original used blue) */
-html.dark #settings-button { color: #9a9184; }
-html.dark #settings-button:hover,
-html.dark #settings-button:focus { color: #eae5db; }
 
 /* ===== table-service-header-cell.component.less ===== */
 td.servicecell { text-align: center; }
@@ -65,7 +61,7 @@ td.servicecell .fa-tint { padding-left: 1px; padding-right: 1px; }
 	grid-column-gap: 3px;
 	grid-row-gap: 1px;
 }
-.sum-container > i.fas, .result-container > i.fas { color: #222; justify-self: center; align-self: center; }
+.sum-container > i.fas, .result-container > i.fas { color: var(--dim); justify-self: center; align-self: center; }
 .sum-container > .delta, .result-container > .delta { justify-self: center; }
 .sum-container > .points, .result-container > .points { justify-self: end; align-self: center; }
 .sum-container { grid-template-columns: 18px max-content; }
@@ -105,10 +101,8 @@ table.table-stickyhead .teamcell { border-left: none; }
 .team-logo-media { padding-right: 15px; }
 .team-logo-media > img, .team-logo-media > a > img { width: 64px; max-width: 64px; max-height: 64px; }
 .team-name { margin-top: 3px; margin-bottom: 1px; display: flex; max-width: 200px; }
-.team-name a { color: #212529; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
-html.dark .team-name a { color: #d9d9d9; }
-.team-name.blocked a { color: #a94442; text-decoration: line-through; }
-html.dark .team-name.blocked a { color: #ff304f; }
+.team-name a { color: var(--fg); flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+.team-name.blocked a { color: var(--err); text-decoration: line-through; }
 .team-vulnbox { font-size: 75%; }
 .team-total-points { font-size: 16px; }
 
@@ -122,8 +116,8 @@ table.table-fixed p { margin: 5px 0; }
 	column-gap: 0px;
 	row-gap: 0px;
 	grid-template-columns: 1fr;
-	border-left: 1px solid #e9ecef;
-	border-top: 1px solid #e9ecef;
+	border-left: 1px solid var(--line);
+	border-top: 1px solid var(--line);
 }
 @media (min-width: 671px) and (max-width: 1000px) { .teamgrid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1001px) and (max-width: 1330px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr; } }
@@ -132,9 +126,7 @@ table.table-fixed p { margin: 5px 0; }
 @media (min-width: 1991px) and (max-width: 2320px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; } }
 @media (min-width: 2321px) and (max-width: 2650px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr; } }
 @media (min-width: 2651px) { .teamgrid { grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; } }
-.teamgrid > * { border-right: 1px solid #e9ecef; border-bottom: 1px solid #e9ecef; }
-html.dark .teamgrid, html.dark .teamgrid > * { border-color: #868e96; }
-html.dark .page-dashboard .loading { background-color: #121212; }
+.teamgrid > * { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .team { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: stretch; }
 .team .rank {
 	padding-left: 8px;
@@ -144,7 +136,7 @@ html.dark .page-dashboard .loading { background-color: #121212; }
 	align-items: center;
 }
 .team .teamcell { padding: 8px 8px 8px 0; }
-.rank.rank1 { background-color: #d4af37; }
+.rank.rank1 { background-color: var(--acc); }
 .rank.rank2 { background-color: #c0c0c0; }
 .rank.rank3 { background-color: #c79b56; }
 html.dark .rank.rank1 { background-color: #8C730C; }
@@ -256,14 +248,13 @@ a.skip-link {
 	left: -9999px;
 	top: 0;
 	z-index: 2000;
-	background: #fff;
-	color: #212529;
+	background: var(--panel);
+	color: var(--fg);
 	padding: 8px 16px;
 	border-radius: 0 0 6px 0;
 }
 a.skip-link:focus { left: 0; }
-:focus-visible { outline: 2px solid #025b95; outline-offset: 1px; }
-html.dark :focus-visible { outline-color: #3d7a9e; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 1px; }
 @media (prefers-reduced-motion: reduce) {
 	* { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

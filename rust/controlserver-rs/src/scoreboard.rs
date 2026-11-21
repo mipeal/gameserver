@@ -6,7 +6,7 @@ use crate::timer::CtfState;
 use crate::{logger, models};
 use chrono::Utc;
 use redis::AsyncCommands;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use serde_json::{json, Value};
 use sqlx::PgPool;
 use std::collections::{HashMap, HashSet};
@@ -131,7 +131,7 @@ impl Scoreboard {
             db,
             firstblood_level: calculation.first_blood.get_required_level(),
             calculation,
-            angular_build_path: saarctf_commons_rs::config::python_dir(cfg)
+            angular_build_path: ctf_commons_rs::config::python_dir(cfg)
                 .join("scoreboard")
                 .join("dist")
                 .join("scoreboard"),
@@ -145,7 +145,7 @@ impl Scoreboard {
     }
 
     async fn publish(&self, scoreboard_tick: i64) {
-        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
+        if let Ok(mut conn) = ctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
         {
             let _: Result<(), _> = conn
                 .set("timing:scoreboard_tick", scoreboard_tick.to_string())
@@ -276,7 +276,7 @@ impl Scoreboard {
             data["current_tick_start"] = json!(state.tick_start);
             data["current_tick_until"] = json!(state.tick_end);
         }
-        if let Ok(mut conn) = saarctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
+        if let Ok(mut conn) = ctf_commons_rs::redis::get_redis_connection(&self.cfg.redis).await
         {
             let banned: Vec<String> = conn.smembers("network:banned").await.unwrap_or_default();
             data["banned_teams"] = json!(banned);
@@ -681,7 +681,7 @@ impl Scoreboard {
         }
         let api_path = self.output.join("api");
         std::fs::create_dir_all(&api_path).map_err(|e| e.to_string())?;
-        let base = saarctf_commons_rs::config::python_dir(&self.cfg);
+        let base = ctf_commons_rs::config::python_dir(&self.cfg);
         let static_dir = base.join("controlserver").join("static");
         if static_dir.exists() {
             std::fs::copy(
@@ -1037,7 +1037,7 @@ pub async fn run_scoreboard_generator(cfg: &Config, db: PgPool) -> Result<(), St
 
     // listen for future scoreboard publications
     tracing::info!("Waiting for new ticks ...");
-    let redis_url = saarctf_commons_rs::redis::redis_url(&cfg.redis)?;
+    let redis_url = ctf_commons_rs::redis::redis_url(&cfg.redis)?;
     let client = redis::Client::open(redis_url.as_str()).map_err(|e| e.to_string())?;
     let mut current: i64 = -1;
     loop {

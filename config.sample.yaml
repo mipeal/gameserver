@@ -7,7 +7,7 @@ databases:
     port: 5432
     username: ''
     password: ''
-    database: saarctf
+    database: ctf
   redis:
     host: localhost
     port: 6379
@@ -16,8 +16,8 @@ databases:
   rabbitmq:
     host: localhost
     port: 5672
-    vhost: saarctf
-    username: saarctf
+    vhost: ctf
+    username: ctf
     password: '123456789'
 
 # remote services
@@ -45,14 +45,14 @@ environment: dev  # use "intern" or "dev" to add a visual tag, null to remove ta
 
 # Flags / scoring
 secret_flags: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-flag_prefix: SAAR  # must be exactly 4 letters
+flag_prefix: FLAG  # must be exactly 4 letters
 scoring:
   flags_rounds_valid: 10
   nop_team_id: 1
   off_factor: 1
   def_factor: 1
   sla_factor: 1
-  # algorithm: "saarctf:SaarctfScoreAlgorithm"  # if you define alternate algorithms
+  # algorithm: "ctf:CtfScoreAlgorithm"  # if you define alternate algorithms
 
 # Do not update results after a certain tick (except on "internal" scoreboard)
 # this is the last tick that's completely published, every tick afterwards will keep this tick's results
@@ -64,9 +64,9 @@ runner:
     check_past_ticks: 5
     timeout: 15  # in seconds
 
-# List of (saarctf-style) services for auto-deployment on servers
+# List of (ctf-style) services for auto-deployment on servers
 service_remotes:
-  - ssh://git@gitlab.saarsec.rocks:2222/...
+  - ssh://git@gitlab.example.com:2222/...
 
 # Network configuration
 dispatcher_check_vpn_status: true
@@ -88,7 +88,7 @@ network:
   gameserver_range: 10.32.250.0/24
 
 wireguard_sync:
-  api_server: https://ctf.saarland
+  api_server: https://example.com
   api_token: "..."
 
 ctfroute_namespace: cte25

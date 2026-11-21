@@ -1,11 +1,12 @@
-//! Port of `page-team`: stacked per-service point chart for one team, with
-//! the neighbours as dashed reference lines, plus the per-tick detail table
-//! with infinite scroll (7 more ticks per batch, as upstream `loadMore`).
+//! Port of `page-team`: fact tiles, per-service state and point chart for one
+//! team, plus the per-tick detail table with infinite scroll (7 more ticks
+//! per batch, as upstream `loadMore`).
 
 use crate::charts::{dataset, y_scale, ChartHandle};
 // allow: rustc's liveness analysis misses uses inside leptos `view!` closures.
 #[allow(unused_imports)]
-use crate::pages::{float_to_string, line_cells, service_header_cells};
+use crate::pages::{float_to_string, float_value, line_cells, neg_count, service_header_cells};
+use crate::models::*;
 use crate::store::Store;
 use crate::ui::Ui;
 use leptos::prelude::*;
@@ -15,15 +16,15 @@ use std::sync::{Arc, Mutex};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::JsCast;
 
-/// `COLORS_LIGHT` from `chart-colorschemes.ts`, re-tuned for the Japandi
-/// themes: [0]/[1] are the dashed neighbour lines, the rest the series palette.
+/// Series palette for the active theme: [0]/[1] are the dashed neighbour
+/// lines, the rest the per-service palette (Ops Console hues).
 pub const COLORS_DARK: &[&str] = &[
-    "#6b6357", "#c25e4c", "#8aa07c", "#c9a86a", "#c67f53", "#8ca0b3", "#b08ea2",
-    "#7f9e9b", "#a8986e", "#94794f", "#6e8a5e", "#bd7d6e", "#88919d",
+    "#8b949e", "#d29922", "#58a6ff", "#3fb950", "#f85149", "#a371f7", "#39c5cf",
+    "#db61a2", "#e3b341", "#7ee787", "#ffa657", "#79c0ff", "#d2a8ff",
 ];
 pub const COLORS_LIGHT: &[&str] = &[
-    "#857b6c", "#b04a35", "#54684a", "#7d6128", "#96542a", "#47617b", "#8a5f75",
-    "#4f7a76", "#7d6a3a", "#6b4e2a", "#48683a", "#a05548", "#4f5a68",
+    "#57606a", "#9a6700", "#0969da", "#1a7f37", "#cf222e", "#8250df", "#1b7c83",
+    "#bf3989", "#7d4e00", "#116329", "#bc4c00", "#0550ae", "#6639ba",
 ];
 
 /// Series palette for the active theme.
@@ -162,11 +163,6 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
     view! {
         <div class="page-team">
             {move || {
-                let st = current_tick.get();
-                if st < 0 { return ().into_any(); }
-                view! { <div class="chart-container"><canvas node_ref=canvas /></div> }.into_any()
-            }}
-            {move || {
                 let id = team_id.get();
                 if id < 0 { return ().into_any(); }
                 let team = store.team(id);
@@ -175,8 +171,29 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
                 };
                 let name = team.name.clone();
                 let logo = team.logo.clone();
+                let logo_head = logo.clone();
                 let banned = store.banned(id);
                 let services = info.services.clone();
+                let rank = info.scoreboard.iter().find(|r| r.team_id == id).cloned();
+                let (place, points) = rank.as_ref().map(|r| (r.rank, r.points)).unwrap_or((0, 0.0));
+                let (o, d, s) = rank.as_ref().map(|r| (r.o, r.d, r.s)).unwrap_or((0.0, 0.0, 0.0));
+                let svc_results = rank.as_ref().map(|r| r.services.clone()).unwrap_or_default();
+                // best SLA points per service across all teams: bar reference
+                let svc_best: Vec<f64> = (0..services.len())
+                    .map(|i| {
+                        info.scoreboard
+                            .iter()
+                            .filter_map(|r| r.services.get(i))
+                            .map(|x| x.s)
+                            .fold(0.0, f64::max)
+                    })
+                    .collect();
+                // confirmed first bloods of this team, per service
+                let first_bloods: Vec<String> = services
+                    .iter()
+                    .filter(|svc| svc.first_blood.iter().any(|fb| fb.confirmed && fb.name == name))
+                    .map(|svc| svc.name.clone())
+                    .collect();
                 // per-tick rows, newest first, only already-fetched ticks
                 let max = current_tick.get_untracked().max(0);
                 let from = (max + 1 - num_results.get_untracked()).max(0);
@@ -184,8 +201,101 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
                     .rev()
                     .filter(|t| store.ranking(*t).is_some())
                     .collect();
-                let all_loaded = ticks.len() as i64 >= max + 1;
+                let all_loaded = ticks.len() as i64 > max;
                 view! {
+                    <div class="team-head">
+                        {move || {
+                            if !ui.show_images.get() || logo_head.is_empty() || logo_head == "false" {
+                                return ().into_any();
+                            }
+                            view! {
+                                <div class="media-left team-logo-media">
+                                    <img class="media-object" src={format!("logos/{logo_head}")} alt="" loading="lazy" />
+                                </div>
+                            }.into_any()
+                        }}
+                        <div>
+                            <h1>{format!("TEAM {id} — {}", name.to_uppercase())}</h1>
+                            <div class="sub">
+                                {team.vulnbox.clone()}
+                                {(!team.aff.is_empty()).then(|| format!(" · {}", team.aff))}
+                                {(!team.web.is_empty()).then(|| format!(" · {}", team.web))}
+                                {banned.then(|| view! {
+                                    <span class="label label-danger" title="Network access is currently blocked. Please contact the organizers in IRC!">"! network blocked !"</span>
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="facts">
+                        <div class="tile"><div class="k">"place"</div><div class="v">{if place > 0 { place.to_string() } else { "-".into() }}</div></div>
+                        <div class="tile"><div class="k">"attack"</div><div class="v att">{float_value(o)}</div></div>
+                        <div class="tile"><div class="k">"defense"</div><div class="v def">{float_value(d)}</div></div>
+                        <div class="tile"><div class="k">"sla"</div><div class="v sla">{float_value(s)}</div></div>
+                        <div class="tile"><div class="k">"total"</div><div class="v">{float_value(points)}</div></div>
+                    </div>
+
+                    <h2>"Per-service state (current tick)"</h2>
+                    <table class="table table-bordered narrow">
+                        <thead>
+                            <tr>
+                                <th scope="col">"Service"</th>
+                                <th scope="col" class="num acc" title="Flags captured from other teams">"Flags captured"</th>
+                                <th scope="col" class="num err" title="Flags of this team captured by others">"Flags lost"</th>
+                                <th scope="col" class="num sla" title="SLA points">"SLA points"</th>
+                                <th scope="col" title="SLA points relative to the best team on this service">"SLA"</th>
+                                <th scope="col" title="Checker status">"Status"</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {services.iter().enumerate().map(|(i, svc)| {
+                                let sr = svc_results.get(i).cloned();
+                                let best = svc_best.get(i).copied().unwrap_or(0.0);
+                                let (cap, st, sp, status) = sr
+                                    .as_ref()
+                                    .map(|r| (r.cap, r.st, r.s, r.c.clone()))
+                                    .unwrap_or((0, 0, 0.0, "PENDING".to_string()));
+                                let pct = if best > 0.0 { (sp / best * 100.0).clamp(0.0, 100.0) } else { 0.0 };
+                                let title = status_to_tooltip(&status).to_string();
+                                view! {
+                                    <tr>
+                                        <td>{svc.name.clone()}</td>
+                                        <td class="num acc">{cap}</td>
+                                        <td class="num err">{neg_count(st)}</td>
+                                        <td class="num sla">{format!("{sp:.0}")}</td>
+                                        <td>
+                                            <span
+                                                class="bar"
+                                                role="img"
+                                                aria-label={format!("SLA points of {} relative to the best team: {:.0} percent", svc.name, pct)}
+                                            >
+                                                <i style={format!("width:{pct:.0}%")}></i>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class={format!("label {}", status_to_class(&status))} title=title>
+                                                {status_to_text(&status).to_string()}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }).collect_view()}
+                        </tbody>
+                    </table>
+
+                    <h2>"Score over ticks"</h2>
+                    <div class="chart-container"><canvas node_ref=canvas /></div>
+
+                    <h2>"First bloods"</h2>
+                    <p class="fb-list">
+                        {if first_bloods.is_empty() {
+                            "none yet".to_string()
+                        } else {
+                            first_bloods.iter().map(|n| format!("★ {n}")).collect::<Vec<_>>().join(" · ")
+                        }}
+                    </p>
+
+                    <h2>"Per-tick detail"</h2>
                     <table
                         class="table table-bordered table-stickyhead"
                         class:hideHistory=move || !ui.show_history.get()
@@ -193,7 +303,7 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
                     >
                         <thead>
                             <tr>
-                                <th colspan="2" class="headercell">
+                                <th colspan="2" scope="col" class="headercell">
                                     {move || {
                                         if !ui.show_images.get() { return ().into_any(); }
                                         view! {
@@ -221,25 +331,12 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
                                                 </span>
                                             })}
                                         </h4>
-                                        <span class="team-vulnbox">{team.vulnbox.clone()}</span><br/>
                                         {if current_round_info.get().is_none() {
                                             view! { <span class="fas fa-spinner fa-spin"></span> }.into_any()
                                         } else { ().into_any() }}
-                                        {if banned {
-                                            view! {
-                                                <a class="label label-danger"
-                                                    title="Network access is currently blocked. Please contact the organizers in IRC!">
-                                                    "! network blocked !"
-                                                </a>
-                                            }.into_any()
-                                        } else { ().into_any() }}
                                     </div>
                                 </th>
-                                // the sum cell (team o/d/s totals) only exists outside slim mode
-                                {move || {
-                                    if ui.show_only_sums.get() { return ().into_any(); }
-                                    view! { <th class="headercell totalhead">"Total"</th> }.into_any()
-                                }}
+                                <th class="num score" scope="col" title="Attack / defense / SLA / total points">"Score"</th>
                                 {service_header_cells(&services)}
                             </tr>
                         </thead>
@@ -253,15 +350,8 @@ pub fn team_page(store: Store, ui: Ui) -> impl IntoView {
                                         <td class="rankcell"><h4>{rank.rank}</h4></td>
                                         <td class="teamcell">
                                             <h4 class="team-name">{format!("Tick {tick}")}</h4>
-                                            <span class="team-vulnbox"></span><br/>
-                                            <span class="team-total-points">
-                                                <i class="fas fa-chart-line"></i>{"\u{00a0}"}{format!("{:.1}", rank.points)}
-                                                <span class="delta">
-                                                    <small title="New points this tick">{format!("({})", float_to_string(rank.do_ + rank.dd + rank.ds))}</small>
-                                                </span>
-                                            </span>
                                         </td>
-                                        {line_cells(&rank, tick, ui.show_history, ui.show_only_sums)}
+                                        {line_cells(&rank, tick, false, ui.show_history, ui.show_only_sums)}
                                     </tr>
                                 })
                             }).collect_view()}

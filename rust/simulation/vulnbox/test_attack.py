@@ -12,7 +12,7 @@ from attack import AttackThread
 
 
 class MockVulnbox(BaseHTTPRequestHandler):
-    stored = {"1": "SAAR{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA}\n"}
+    stored = {"1": "FLAG{AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA}\n"}
 
     def log_message(self, *a):
         pass
@@ -115,7 +115,7 @@ class Test(unittest.TestCase):
         stolen = a.tick(5)
         self.assertGreaterEqual(stolen, 1)
         self.assertGreaterEqual(len(self.sub.lines), 1)
-        self.assertIn("SAAR{", self.sub.lines[0])
+        self.assertIn("FLAG{", self.sub.lines[0])
 
     def test_rate_zero_submits_nothing(self):
         a = self.attack(2, 0.0, teams=(2,))
@@ -130,7 +130,7 @@ class Test(unittest.TestCase):
             victims = {v for (_, v, _, _) in a.stolen_log}
             self.assertNotIn(1, victims)
         for line in self.sub.lines:
-            self.assertIn("SAAR{", line)
+            self.assertIn("FLAG{", line)
 
     def test_empty_tick_falls_back_to_older_tick(self):
         # tick-1 store can be empty at bring-up (scoreboard tick lags,
@@ -141,7 +141,7 @@ class Test(unittest.TestCase):
 
             def do_GET(self):
                 if "tick=8" in self.path:
-                    body = b"SAAR{BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB}\n"
+                    body = b"FLAG{BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB}\n"
                 else:
                     body = b""
                 self.send_response(200)
@@ -193,7 +193,7 @@ class Test(unittest.TestCase):
         try:
             a = self.attack(2, 1.0)
             a.source_ip = "10.32.2.2"
-            a._submit(["SAAR{X}"])
+            a._submit(["FLAG{X}"])
             self.assertEqual(captured["submit_src"], ("10.32.2.2", 0))
         finally:
             socket.create_connection = orig_cc
@@ -237,7 +237,7 @@ class Test(unittest.TestCase):
         socket.create_connection = fake_create_connection
         try:
             a = self.attack(2, 1.0)  # source_ip unset
-            a._submit(["SAAR{X}"])
+            a._submit(["FLAG{X}"])
             self.assertIsNone(captured["src"])
         finally:
             socket.create_connection = orig

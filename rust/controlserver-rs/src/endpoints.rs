@@ -18,8 +18,8 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Form, Json, Router};
-use saarctf_commons_rs::config::Config;
-use saarctf_commons_rs::metrics::{metrics_record_many, MetricValue};
+use ctf_commons_rs::config::Config;
+use ctf_commons_rs::metrics::{metrics_record_many, MetricValue};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::PgPool;
@@ -219,7 +219,7 @@ async fn overview_timing(
 ) -> Result<Json<Value>, (StatusCode, String)> {
     let t = state.timer.lock().await;
     let master_timers = {
-        let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+        let mut redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
             .await
             .map_err(internal)?;
         let sub: (String, i64) = redis::cmd("PUBSUB")
@@ -351,7 +351,7 @@ async fn overview_logs(
 async fn overview_components(
     State(state): State<Arc<AppState>>,
 ) -> Result<Json<Value>, StatusCode> {
-    let mut conn = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let mut conn = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     let text: String = redis::cmd("CLIENT")
@@ -1137,7 +1137,7 @@ use crate::service_mgr::ServiceRepoManager;
 
 async fn broadcast_preload(state: &AppState, packages: Vec<String>) -> Result<String, String> {
     let task_id = uuid::Uuid::new_v4().to_string();
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(|e| e.to_string())?;
     dispatcher::broadcast(&mut redis, "preload_packages", &task_id, json!(packages))
@@ -1288,7 +1288,7 @@ async fn packages_run(
         return Ok(Json(json!(false)));
     }
     let task_id = uuid::Uuid::new_v4().to_string();
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(internal)?;
     dispatcher::broadcast(&mut redis, "run_command", &task_id, json!(command))
@@ -1387,7 +1387,7 @@ async fn packages_test(
     };
 
     let dispatcher = Dispatcher::from_config(&state.cfg);
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(internal)?;
     let task = dispatcher
@@ -2125,7 +2125,7 @@ async fn api_checker_status(
     .fetch_all(&state.db)
     .await
     .map_err(internal)?;
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(internal)?;
     let tick_start: i64 = redis::cmd("GET")
@@ -2262,7 +2262,7 @@ async fn tick_combinations(
     redis_cfg: &serde_json::Value,
     tick: i64,
 ) -> Result<Vec<(i64, i64, i64)>, (StatusCode, String)> {
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(redis_cfg)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(redis_cfg)
         .await
         .map_err(internal)?;
     let order_json: Option<String> = redis::cmd("GET")
@@ -2283,7 +2283,7 @@ async fn api_checker_status_overview(
     let current_tick = state.timer.lock().await.t.current_tick;
     let all = false; // /checker_status/overview (the /all variant stays reachable via query below)
     let first_tick = if all { 1 } else { (current_tick - 30).max(1) };
-    let redis = saarctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
+    let redis = ctf_commons_rs::redis::get_redis_connection(&state.cfg.redis)
         .await
         .map_err(internal)?;
     #[derive(sqlx::FromRow)]
@@ -2380,9 +2380,9 @@ async fn api_checker_status_overview(
     Ok(Json(json!({"first_tick": first_tick, "ticks": ticks})))
 }
 
-// ---- patches page (uses the shared patch_utils from saarctf_commons_rs) ----
+// ---- patches page (uses the shared patch_utils from ctf_commons_rs) ----
 
-use saarctf_commons_rs::patch_utils::PatchUtils;
+use ctf_commons_rs::patch_utils::PatchUtils;
 
 const ANSIBLE_COMMAND: [&str; 2] = ["ansible-playbook", "-f"];
 

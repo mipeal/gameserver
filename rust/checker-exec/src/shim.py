@@ -1,4 +1,4 @@
-"""checker-exec shim: embedded port of checker_runner/runners/saarctf.py (ADR-017).
+"""checker-exec shim: embedded port of checker_runner/runners/ctf.py (ADR-017).
 
 Deliberate differences from the original (recorded in rust/DECISIONS.md ADR-017):
 - Service config comes from argv (the worker owns the Service row) instead of a

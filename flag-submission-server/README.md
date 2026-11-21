@@ -22,7 +22,7 @@ Default port: 31337, default threads: 1.
 
 Flag format
 -----------
-`SAAR{32-websafe-base64-bytes}` (example: `SAAR{vQA2AAYAAACXlPecBGL77CAqZOuU4BTa}`, regex `SAAR\{[A-Za-z0-9-_]{32}\}`)
+`FLAG{32-websafe-base64-bytes}` (example: `FLAG{vQA2AAYAAACXlPecBGL77CAqZOuU4BTa}`, regex `FLAG\{[A-Za-z0-9-_]{32}\}`)
 
 Binary data consists of (all numbers are little-endian): 
 
@@ -55,4 +55,4 @@ Run `make` afterwards.
 
 Database
 --------
-This server needs the database layout from the `saarctf` gameserver. It does not initialize the database itself.
+This server needs the database layout from the `ctf` gameserver. It does not initialize the database itself.

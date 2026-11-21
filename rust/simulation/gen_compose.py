@@ -149,8 +149,8 @@ def gen_sim_vpn(teams):
       CONFIG: /opt/sim/config.sim.yaml
       POSTGRES_SERVER: postgres
       POSTGRES_PORT: "5432"
-      POSTGRES_DATABASE: saarctf
-      POSTGRES_USERNAME: saarctf
+      POSTGRES_DATABASE: ctf
+      POSTGRES_USERNAME: ctf
       POSTGRES_PASSWORD: ${{POSTGRES_PASSWORD:-demo}}
       REDIS_HOST: redis
       REDIS_PORT: "6379"

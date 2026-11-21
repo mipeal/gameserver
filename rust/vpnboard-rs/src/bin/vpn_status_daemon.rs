@@ -5,8 +5,8 @@
 use chrono::Utc;
 use controlserver_rs::models::Team;
 use futures_util::StreamExt;
-use saarctf_commons_rs::config::Config;
-use saarctf_commons_rs::metrics::{metrics_record_many, MetricValue};
+use ctf_commons_rs::config::Config;
+use ctf_commons_rs::metrics::{metrics_record_many, MetricValue};
 use sqlx::PgPool;
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -505,11 +505,11 @@ async fn main() -> Result<(), String> {
         }
     }
 
-    let (cfg, db, _redis_conn) = saarctf_scripts_rs::init("vpn-status-daemon").await?;
-    saarctf_commons_rs::metrics::setup_default_metrics();
+    let (cfg, db, _redis_conn) = ctf_scripts_rs::init("vpn-status-daemon").await?;
+    ctf_commons_rs::metrics::setup_default_metrics();
 
     let client = redis::Client::open(
-        saarctf_commons_rs::redis::redis_url(&cfg.redis).map_err(|e| format!("redis url: {e}"))?,
+        ctf_commons_rs::redis::redis_url(&cfg.redis).map_err(|e| format!("redis url: {e}"))?,
     )
     .map_err(|e| e.to_string())?;
     let shared = Shared {

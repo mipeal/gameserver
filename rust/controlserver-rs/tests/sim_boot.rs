@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use controlserver_rs::sim_boot;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 
 #[test]
 fn gating_off_by_default() {

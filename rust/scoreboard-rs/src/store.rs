@@ -260,12 +260,15 @@ impl Store {
     pub fn team_history(&self, team_id: i64) -> Option<Vec<Vec<f64>>> {
         let hist = self.team_point_history.get(); // tracked
         let cached = hist.get(&team_id).cloned();
+        // the history file holds one point per finished tick (0..scoreboard_tick),
+        // i.e. exactly `current_tick` entries — comparing to current_tick + 1
+        // never passes and made every reactive re-read refetch forever
         let complete = cached
             .as_ref()
             .and_then(|p| p.first())
             .map(|p| p.len())
             .unwrap_or(0)
-            >= (self.state.get_untracked().current_tick.max(0) + 1) as usize;
+            >= self.state.get_untracked().current_tick.max(0) as usize;
         if !complete && !self.history_inflight.get_untracked().contains(&team_id) {
             self.history_inflight.update(|s| { s.insert(team_id); });
             let this = *self;

@@ -1,5 +1,5 @@
 """Wire-format parity: the Rust scoreboard generator's demo output vs. the live
-saarCTF scoreboard fixtures (rust/parity-tests/fixtures/live/).
+CTF scoreboard fixtures (rust/parity-tests/fixtures/live/).
 
 Schema equality = same key sets at every object level and the same JSON type
 for every value (arrays checked against their first element). Values themselves
@@ -16,7 +16,7 @@ import pytest
 
 HERE = Path(__file__).parent
 LIVE = HERE / "fixtures" / "live"
-DEMO = Path("/tmp/saarctf-demo/scoreboard/api")
+DEMO = Path("/tmp/ctf-demo/scoreboard/api")
 
 
 def shape(v):

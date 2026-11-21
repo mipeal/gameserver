@@ -14,14 +14,14 @@ INSERT INTO services ("name", checker_script, checker_timeout, checker_script_di
 
 SELECT setval('teams_id_seq', 1, false);
 INSERT INTO teams ("name") VALUES
-('NOP'),
-('Bushwhackers'),
-('c00kies@venice'),
-('saarsec'),
-('LC↯BC'),
-('Destructive Voice'),
-('Shadow Servants'),
-('SUSlo.PAS'),
+('Team 1'),
+('Team 2'),
+('Team 3'),
+('Team 4'),
+('Team 5'),
+('Team 6'),
+('Team 7'),
+('Team 8'),
 ('SiBears'),
 ('Lights Out'),
 ('STT'),

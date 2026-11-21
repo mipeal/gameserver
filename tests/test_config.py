@@ -25,7 +25,7 @@ class ConfigTest(TestCase):
         c = config.Config.load_from_file(f, interpolate_env=False)
         self.assertEqual(1, c.SCORING.nop_team_id)
         self.assertEqual(10, c.SCORING.flags_rounds_valid)
-        self.assertEqual('SAAR', c.FLAG_PREFIX)
+        self.assertEqual('FLAG', c.FLAG_PREFIX)
         c.validate()
 
     def test_legacy_config(self) -> None:

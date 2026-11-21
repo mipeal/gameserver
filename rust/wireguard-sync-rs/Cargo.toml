@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+ctf-commons-rs = { path = "../ctf-commons-rs" }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "signal", "process", "io-util", "sync"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
 serde = { version = "1", features = ["derive"] }

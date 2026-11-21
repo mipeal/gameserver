@@ -11,7 +11,7 @@ hmac = "0.12"
 hex = "0.4"
 base64 = "0.22"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
-saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+ctf-commons-rs = { path = "../ctf-commons-rs" }
 gamelib-rs = { path = "../gamelib-rs" }
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros", "migrate"] }
 redis = { version = "0.32", features = ["connection-manager", "tokio-comp"] }

@@ -6,10 +6,10 @@ ARG BASE_IMAGE=gameserver-rust
 
 FROM rust:1-bookworm AS wg_build
 WORKDIR /build
-COPY saarctf-commons-rs ./saarctf-commons-rs
+COPY ctf-commons-rs ./ctf-commons-rs
 COPY gamelib-rs ./gamelib-rs
 COPY controlserver-rs ./controlserver-rs
-COPY saarctf-scripts-rs ./saarctf-scripts-rs
+COPY ctf-scripts-rs ./ctf-scripts-rs
 COPY wireguard-sync-rs ./wireguard-sync-rs
 COPY vpnboard-rs ./vpnboard-rs
 RUN cd wireguard-sync-rs && cargo build --release --bin wireguard-sync \

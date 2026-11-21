@@ -30,24 +30,19 @@ fn ss_set(key: &str, v: bool) {
 
 impl Ui {
     pub fn new() -> Ui {
-        // darkmode default: prefers-color-scheme, like the original
-        let prefers_dark = web_sys::window()
-            .map(|w| w.match_media("(prefers-color-scheme: dark)").ok().flatten())
-            .flatten()
-            .map(|m| m.matches())
-            .unwrap_or(false);
+        // darkmode default: the Ops Console is dark-first; a stored choice wins
         let ui = Ui {
             show_history: RwSignal::new(ss_get("showHistory").unwrap_or(true)),
             show_only_sums: RwSignal::new(ss_get("showOnlySums").unwrap_or(false)),
             show_images: RwSignal::new(ss_get("showImages").unwrap_or(true)),
             show_notifications: RwSignal::new(ss_get("showNotifications").unwrap_or(true)),
             sound: RwSignal::new(ss_get("sound").unwrap_or(true)),
-            darkmode: RwSignal::new(ss_get("darkmode").unwrap_or(prefers_dark)),
+            darkmode: RwSignal::new(ss_get("darkmode").unwrap_or(true)),
         };
         let this = ui;
         Effect::new(move || {
             let dark = this.darkmode.get();
-            if let Some(doc) = web_sys::window().map(|w| w.document()).flatten() {
+            if let Some(doc) = web_sys::window().and_then(|w| w.document()) {
                 let class = doc.document_element().map(|e| e.class_list());
                 if let Some(list) = class {
                     let _ = if dark { list.add_1("dark") } else { list.remove_1("dark") };

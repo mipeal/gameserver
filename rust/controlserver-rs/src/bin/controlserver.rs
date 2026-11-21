@@ -8,13 +8,13 @@ async fn main() {
     let cfg = load_config().expect("config");
     cfg.validate().expect("config invalid");
     controlserver_rs::logger::setup_script_logging(None);
-    saarctf_commons_rs::metrics::setup_default_metrics();
+    ctf_commons_rs::metrics::setup_default_metrics();
     let db = connect_db(&cfg).await.expect("database");
     sqlx::migrate!().run(&db).await.expect("migrations");
 
-    // Simulation mode (SAARCTF_SIMULATION=1): seed, import sim checkers, enable.
+    // Simulation mode (CTF_SIMULATION=1): seed, import sim checkers, enable.
     if sim_boot::simulation_enabled() {
-        sim_boot::run(&cfg, &db, std::env::var("SAARCTF_SIM_SEED").ok().as_deref())
+        sim_boot::run(&cfg, &db, std::env::var("CTF_SIM_SEED").ok().as_deref())
             .await
             .expect("simulation boot steps");
         tracing::info!("simulation mode: boot steps applied");

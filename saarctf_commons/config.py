@@ -3,13 +3,13 @@ This module loads the configuration file and exposes it with a nicer interface.
 The configuration file is a yaml/json file, to get the format see the examples in the repository root.
 
 The file is looked up in this order, the first match is loaded:
-- $SAARCTF_CONFIG
-- $SAARCTF_CONFIG_DIR/config_test.yaml
-- $SAARCTF_CONFIG_DIR/config2.yaml
-- $SAARCTF_CONFIG_DIR/config.yaml
-- $SAARCTF_CONFIG_DIR/config_test.json
-- $SAARCTF_CONFIG_DIR/config2.json
-- $SAARCTF_CONFIG_DIR/config.json
+- $CTF_CONFIG
+- $CTF_CONFIG_DIR/config_test.yaml
+- $CTF_CONFIG_DIR/config2.yaml
+- $CTF_CONFIG_DIR/config.yaml
+- $CTF_CONFIG_DIR/config_test.json
+- $CTF_CONFIG_DIR/config2.json
+- $CTF_CONFIG_DIR/config.json
 - <repo-root>/config_test.json
 - <repo-root>/config2.json
 - <repo-root>/config.json
@@ -173,7 +173,7 @@ class ScoringConfig(ConfigSection):
     def_factor: float = 1.0
     sla_factor: float = 1.0
     # custom algorithms name, if necessary
-    algorithm: str = "saarctf:SaarctfScoreAlgorithm"
+    algorithm: str = "ctf:CtfScoreAlgorithm"
     firstblood_algorithm: str = "firstblood:DefaultFirstBloodAlgorithm"
     # additional data for custom algorithms
     data: dict[str, Any] = field(default_factory=dict)
@@ -310,8 +310,8 @@ class Config:
             if not config_file.exists():
                 raise ValueError(f"{config_file} does not exist")
             return cls.load_from_file(config_file)
-        if 'SAARCTF_CONFIG_DIR' in os.environ:
-            basedir = Path(os.environ['SAARCTF_CONFIG_DIR']).absolute()
+        if 'CTF_CONFIG_DIR' in os.environ:
+            basedir = Path(os.environ['CTF_CONFIG_DIR']).absolute()
         else:
             basedir = Path(__file__).absolute().parent.parent
         possible_config_files = [
@@ -322,8 +322,8 @@ class Config:
             basedir / 'config.yaml',
             basedir / 'config.json'
         ]
-        if 'SAARCTF_CONFIG' in os.environ:
-            possible_config_files = [Path(os.environ['SAARCTF_CONFIG'])] + possible_config_files
+        if 'CTF_CONFIG' in os.environ:
+            possible_config_files = [Path(os.environ['CTF_CONFIG'])] + possible_config_files
         for configfile in possible_config_files:
             if configfile.exists():
                 return cls.load_from_file(configfile)
@@ -345,7 +345,7 @@ class Config:
         cloudconfig_file = basedir / "cloud-status.json"
 
         postgres: dict = initial_config["databases"]["postgres"] or {}
-        postgres_use_socket = os.environ.get("SAARCTF_POSTGRES_USE_SOCKET", "False").lower() == "true"
+        postgres_use_socket = os.environ.get("CTF_POSTGRES_USE_SOCKET", "False").lower() == "true"
         redis: dict = initial_config["databases"]["redis"] or {}
         rabbitmq: dict | None = initial_config["databases"]["rabbitmq"] if "rabbitmq" in initial_config["databases"] else None
         metrics: dict = postgres | {"database": postgres["database"] + "_metrics"} | initial_config["databases"].get("metrics", {})
@@ -367,7 +367,7 @@ class Config:
         grafana_url: Optional[str] = initial_config.get("grafana_url", False) or None
         patches_url: Optional[str] = initial_config.get("patches_url", False) or scoreboard_url.rstrip("/") + "/patches" if scoreboard_url else None
 
-        flag_prefix: str = initial_config.get("flag_prefix", "SAAR")
+        flag_prefix: str = initial_config.get("flag_prefix", "FLAG")
         secret_flag_key: bytes = binascii.unhexlify(initial_config.get("secret_flags", ""))
         dispatcher_check_vpn_status: bool = initial_config.get("dispatcher_check_vpn_status", False)
         scoring = initial_config.get("scoring", {})

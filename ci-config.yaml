@@ -4,9 +4,9 @@
             # Leave server empty to use local socket
             "server": "postgres",
             "port": 5432,
-            "username": "saarsec",
+            "username": "ctf",
             "password": "123456789",
-            "database": "saarctf"
+            "database": "ctf"
         },
         "redis": {
             "host": "redis",
@@ -16,11 +16,11 @@
         "rabbitmq": {
             "host": "rabbitmq",
             "port": 5672,
-            "vhost": "saarctf",
-            "username": "saarsec",
+            "vhost": "ctf",
+            "username": "ctf",
             "password": "123456789"
         },
-        "website": "sqlite:///../../saarctf-webpage/db.sqlite3"
+        "website": "sqlite:///../../ctf-webpage/db.sqlite3"
     },
     "scoreboard_path": "/dev/shm/scoreboard",
     "vpnboard_path": "/dev/shm/vpnboard",

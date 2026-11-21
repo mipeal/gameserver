@@ -19,7 +19,7 @@ use std::sync::LazyLock;
 const DEFAULT_SECRET_FLAG_KEY: &[u8] = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
                                           \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 /// `config.FLAG_PREFIX` fallback.
-const DEFAULT_FLAG_PREFIX: &str = "SAAR";
+const DEFAULT_FLAG_PREFIX: &str = "FLAG";
 const MAC_LENGTH: usize = 16;
 
 static ADJECTIVES: LazyLock<Vec<String>> = LazyLock::new(|| {
@@ -473,7 +473,7 @@ mod tests {
         // Recorded from the original: get_flag(1, 1, 1, 0) with the zero key.
         assert_eq!(
             get_flag(1, 1, 1, 0).unwrap(),
-            "SAAR{AQABAAEAAAA1gl4THL8cvFriWd_mag-H}"
+            "FLAG{AQABAAEAAAA1gl4THL8cvFriWd_mag-H}"
         );
     }
 

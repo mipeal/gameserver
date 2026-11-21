@@ -84,8 +84,10 @@ pub fn ts(v: &Value) -> String {
             // ISO strings (e.g. checker_results.finished): "2026-11-20T20:06:36.095611+00:00"
             // → "2026-11-20 20:06:36"
             let raw = s_opt(v);
-            if raw.len() >= 19 && raw.as_bytes().get(10) == Some(&b'T') {
-                format!("{} {}", &raw[..10], &raw[11..19])
+            // ISO strings (e.g. "2026-11-20T20:06:36.095611+00:00") → local time via Date::parse
+            let ms = js_sys::Date::parse(&raw);
+            if !ms.is_nan() {
+                chrono_dash((ms / 1000.0) as i64).unwrap_or(raw)
             } else {
                 raw
             }
@@ -93,24 +95,17 @@ pub fn ts(v: &Value) -> String {
 }
 
 fn chrono_dash(unix: i64) -> Option<String> {
-    // no chrono in wasm: format UTC manually
-    let days = unix.div_euclid(86400);
-    let secs = unix.rem_euclid(86400);
-    let (y, m, d) = civil_from_days(days);
-    Some(format!("{y:04}-{m:02}-{d:02} {:02}:{:02}:{:02}", secs / 3600, (secs % 3600) / 60, secs % 60))
-}
-
-fn civil_from_days(z: i64) -> (i64, u32, u32) {
-    let z = z + 719468;
-    let era = z.div_euclid(146097);
-    let doe = z.rem_euclid(146097);
-    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = (doy - (153 * mp + 2) / 5 + 1) as u32;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32;
-    (if m <= 2 { y + 1 } else { y }, m, d)
+    // no chrono in wasm: format in the browser's local timezone via JS Date
+    let d = js_sys::Date::new(&(unix as f64 * 1000.0).into());
+    Some(format!(
+        "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+        d.get_full_year() as i64,
+        d.get_month() as i64 + 1,
+        d.get_date() as i64,
+        d.get_hours() as i64,
+        d.get_minutes() as i64,
+        d.get_seconds() as i64,
+    ))
 }
 
 /// Polling helper: increments a signal every `secs` so LocalResources re-fetch.

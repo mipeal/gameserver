@@ -437,68 +437,68 @@
 {"fn": "is_valid_flag_id", "args": ["café café"], "ok": false}
 {"fn": "is_valid_flag_id", "args": ["ΣΑΣ σας ς"], "ok": false}
 {"fn": "get_flag", "args": [2147483647, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 1, 2147483647, 1], "ok": "SAAR{__9kAAEAAQBazGDExspQipYpTXSGOKWz}"}
+{"fn": "get_flag", "args": [100, 1, 2147483647, 1], "ok": "FLAG{__9kAAEAAQBazGDExspQipYpTXSGOKWz}"}
 {"fn": "get_flag", "args": [-1, 100, 0, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [255, 255, 7], "ok": "SAAR{BwD_AP8AAAC3xo74aGdDmQZOov4Dlc5S}"}
+{"fn": "get_flag", "args": [255, 255, 7], "ok": "FLAG{BwD_AP8AAAC3xo74aGdDmQZOov4Dlc5S}"}
 {"fn": "get_flag", "args": [100, 42, 255, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 255, 0, 1], "ok": "SAAR{AABkAP8AAQBp5wGZ8CFdFI-i8qxId_-V}"}
+{"fn": "get_flag", "args": [100, 255, 0, 1], "ok": "FLAG{AABkAP8AAQBp5wGZ8CFdFI-i8qxId_-V}"}
 {"fn": "get_flag", "args": [1, 2, 42, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 42, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 2, 9223372036854775807, 2], "ok": "SAAR{__8CAAIAAgAaGs7WiiTc8ECyJahwCux6}"}
-{"fn": "get_flag", "args": [2, -100, -2147483648, 1], "ok": "SAAR{AAACAJz_AQBK5EABPbGONjiz2i7YXhqr}"}
-{"fn": "get_flag", "args": [42, -1, 7, 255], "ok": "SAAR{BwAqAP___wDqKEOutlNI2xRS0dGunToA}"}
-{"fn": "get_flag", "args": [2, 1, 2, {"$undefined": true}], "ok": "SAAR{AgACAAEAAACAPXSRlCEtyZpcnRtb-b2P}"}
-{"fn": "get_flag", "args": [2, -2147483648, 9223372036854775807, 255], "ok": "SAAR{__8CAAAA_wBMm50kBTzyixK9uLazBL-S}"}
+{"fn": "get_flag", "args": [2, 2, 9223372036854775807, 2], "ok": "FLAG{__8CAAIAAgAaGs7WiiTc8ECyJahwCux6}"}
+{"fn": "get_flag", "args": [2, -100, -2147483648, 1], "ok": "FLAG{AAACAJz_AQBK5EABPbGONjiz2i7YXhqr}"}
+{"fn": "get_flag", "args": [42, -1, 7, 255], "ok": "FLAG{BwAqAP___wDqKEOutlNI2xRS0dGunToA}"}
+{"fn": "get_flag", "args": [2, 1, 2, {"$undefined": true}], "ok": "FLAG{AgACAAEAAACAPXSRlCEtyZpcnRtb-b2P}"}
+{"fn": "get_flag", "args": [2, -2147483648, 9223372036854775807, 255], "ok": "FLAG{__8CAAAA_wBMm50kBTzyixK9uLazBL-S}"}
 {"fn": "get_flag", "args": [-2147483648, -100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 42, -100], "ok": "SAAR{nP9kACoAAAA3kNZMJNaMUhSf6VHMaCK2}"}
+{"fn": "get_flag", "args": [100, 42, -100], "ok": "FLAG{nP9kACoAAAA3kNZMJNaMUhSf6VHMaCK2}"}
 {"fn": "get_flag", "args": [255, -1, 7, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 2147483647, 100, 0], "ok": "SAAR{ZAACAP__AACN4GTCRHwwhQUiDm6ErN7j}"}
+{"fn": "get_flag", "args": [2, 2147483647, 100, 0], "ok": "FLAG{ZAACAP__AACN4GTCRHwwhQUiDm6ErN7j}"}
 {"fn": "get_flag", "args": [0, 9223372036854775807, 2, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 255, 9223372036854775807, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [0, 2147483647, -100, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 7, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [42, -1, 100, 255], "ok": "SAAR{ZAAqAP___wD5riA6G6McMaV6WvvDKcbj}"}
+{"fn": "get_flag", "args": [42, -1, 100, 255], "ok": "FLAG{ZAAqAP___wD5riA6G6McMaV6WvvDKcbj}"}
 {"fn": "get_flag", "args": [0, -100, -100, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [1, 0, 2147483647, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 7, 2, 0], "ok": "SAAR{AgAAAAcAAAB0Nshm-RsEYJ9GOcBt3_TR}"}
-{"fn": "get_flag", "args": [100, -1, 7], "ok": "SAAR{BwBkAP__AACHW4ryns02VUm2ta0bSb8y}"}
+{"fn": "get_flag", "args": [0, 7, 2, 0], "ok": "FLAG{AgAAAAcAAAB0Nshm-RsEYJ9GOcBt3_TR}"}
+{"fn": "get_flag", "args": [100, -1, 7], "ok": "FLAG{BwBkAP__AACHW4ryns02VUm2ta0bSb8y}"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, -2147483648, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 2147483647, -100, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, -100, -1, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [1, 9223372036854775807, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, -2147483648, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, -1, 255, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 100, -100, 42], "ok": "SAAR{nP8CAGQAKgC0gasusvDShvJ3PiLkW591}"}
+{"fn": "get_flag", "args": [2, 100, -100, 42], "ok": "FLAG{nP8CAGQAKgC0gasusvDShvJ3PiLkW591}"}
 {"fn": "get_flag", "args": [-2147483648, 1, 100, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, -2147483648, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, -1, 1, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2, -100, 0, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 42, 0, 1], "ok": "SAAR{AAAAACoAAQBL-GrTMNCcXKQBhMARhiOZ}"}
+{"fn": "get_flag", "args": [0, 42, 0, 1], "ok": "FLAG{AAAAACoAAQBL-GrTMNCcXKQBhMARhiOZ}"}
 {"fn": "get_flag", "args": [-100, -1, 1, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 0, -2147483648, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 42, -1, 7], "ok": "SAAR{__9kACoABwA_l7AlUHyRJN5vygVYwqU2}"}
+{"fn": "get_flag", "args": [100, 42, -1, 7], "ok": "FLAG{__9kACoABwA_l7AlUHyRJN5vygVYwqU2}"}
 {"fn": "get_flag", "args": [-100, 2147483647, 2147483647, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [255, 255, 255, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [100, 100, 42, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2, -100, 255, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [42, 1, 1, {"$undefined": true}], "ok": "SAAR{AQAqAAEAAAAXR2F6oKPJy28zT0aBZ_7K}"}
+{"fn": "get_flag", "args": [42, 1, 1, {"$undefined": true}], "ok": "FLAG{AQAqAAEAAAAXR2F6oKPJy28zT0aBZ_7K}"}
 {"fn": "get_flag", "args": [-2147483648, 255, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 100, -2147483648, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 1, 42, 1], "ok": "SAAR{KgACAAEAAQBpZx0qcAqsuOMEgu8665EW}"}
+{"fn": "get_flag", "args": [2, 1, 42, 1], "ok": "FLAG{KgACAAEAAQBpZx0qcAqsuOMEgu8665EW}"}
 {"fn": "get_flag", "args": [7, -100, 2, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 2147483647, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 2147483647, 2, 42], "ok": "SAAR{AgAAAP__KgCNqbmPDxZRcgaSGnkxhHuw}"}
+{"fn": "get_flag", "args": [0, 2147483647, 2, 42], "ok": "FLAG{AgAAAP__KgCNqbmPDxZRcgaSGnkxhHuw}"}
 {"fn": "get_flag", "args": [9223372036854775807, 100, 100, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, -2147483648, -2147483648, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, -2147483648, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 2, -100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 7, -1, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 2, 255, 2], "ok": "SAAR{_wACAAIAAgBGm0N1F4wxoTJtrGa-BZT0}"}
-{"fn": "get_flag", "args": [0, 2, 1, {"$undefined": true}], "ok": "SAAR{AQAAAAIAAACWjXD2ErP2VSbhCZJHRfCa}"}
-{"fn": "get_flag", "args": [2, 7, 2, 7], "ok": "SAAR{AgACAAcABwArZauF8ak_ljXkLYKAokc4}"}
-{"fn": "get_flag", "args": [1, -1, -100, 255], "ok": "SAAR{nP8BAP___wAXJvBgMUOydXz0rABY_RZ8}"}
-{"fn": "get_flag", "args": [100, 0, 7, 7], "ok": "SAAR{BwBkAAAABwDrxg8IMxTv1DKHYy4PI-Ij}"}
+{"fn": "get_flag", "args": [2, 2, 255, 2], "ok": "FLAG{_wACAAIAAgBGm0N1F4wxoTJtrGa-BZT0}"}
+{"fn": "get_flag", "args": [0, 2, 1, {"$undefined": true}], "ok": "FLAG{AQAAAAIAAACWjXD2ErP2VSbhCZJHRfCa}"}
+{"fn": "get_flag", "args": [2, 7, 2, 7], "ok": "FLAG{AgACAAcABwArZauF8ak_ljXkLYKAokc4}"}
+{"fn": "get_flag", "args": [1, -1, -100, 255], "ok": "FLAG{nP8BAP___wAXJvBgMUOydXz0rABY_RZ8}"}
+{"fn": "get_flag", "args": [100, 0, 7, 7], "ok": "FLAG{BwBkAAAABwDrxg8IMxTv1DKHYy4PI-Ij}"}
 {"fn": "get_flag", "args": [-2147483648, -100, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [255, 42, 9223372036854775807, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 2147483647, 7, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
@@ -506,38 +506,38 @@
 {"fn": "get_flag", "args": [2147483647, 7, -2147483648, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [100, 7, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, -100, 42, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 2, -100, 0], "ok": "SAAR{nP8CAAIAAAC_Ey4ytwXIjghMxESwBdtX}"}
-{"fn": "get_flag", "args": [42, 0, 2147483647, 1], "ok": "SAAR{__8qAAAAAQB41sAPAVOqCfAL1CDtxK1h}"}
+{"fn": "get_flag", "args": [2, 2, -100, 0], "ok": "FLAG{nP8CAAIAAAC_Ey4ytwXIjghMxESwBdtX}"}
+{"fn": "get_flag", "args": [42, 0, 2147483647, 1], "ok": "FLAG{__8qAAAAAQB41sAPAVOqCfAL1CDtxK1h}"}
 {"fn": "get_flag", "args": [2147483647, -2147483648, 255, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 100, 2147483647, {"$undefined": true}], "ok": "SAAR{__8CAGQAAADo38JIMAk8iMBrqfUz-k3R}"}
-{"fn": "get_flag", "args": [2, 255, 100, 2], "ok": "SAAR{ZAACAP8AAgB6Rp9tgK3Pdioa3rhsHg-L}"}
+{"fn": "get_flag", "args": [2, 100, 2147483647, {"$undefined": true}], "ok": "FLAG{__8CAGQAAADo38JIMAk8iMBrqfUz-k3R}"}
+{"fn": "get_flag", "args": [2, 255, 100, 2], "ok": "FLAG{ZAACAP8AAgB6Rp9tgK3Pdioa3rhsHg-L}"}
 {"fn": "get_flag", "args": [0, 9223372036854775807, -2147483648, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [100, 42, 1, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, -1, 42, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, 100, -2147483648, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 9223372036854775807, -1, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 7, 2, {"$undefined": true}], "ok": "SAAR{AgACAAcAAACtthW0zxTpRw0twlng2WG5}"}
-{"fn": "get_flag", "args": [7, 9223372036854775807, 7, {"$undefined": true}], "ok": "SAAR{BwAHAP__AAAxcN_xS6CJumOf2YCio_Z7}"}
+{"fn": "get_flag", "args": [2, 7, 2, {"$undefined": true}], "ok": "FLAG{AgACAAcAAACtthW0zxTpRw0twlng2WG5}"}
+{"fn": "get_flag", "args": [7, 9223372036854775807, 7, {"$undefined": true}], "ok": "FLAG{BwAHAP__AAAxcN_xS6CJumOf2YCio_Z7}"}
 {"fn": "get_flag", "args": [-1, 0, -100, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [1, 100, 7, 100], "ok": "SAAR{BwABAGQAZAAGMktZcTGRrIBX1bWBv64e}"}
-{"fn": "get_flag", "args": [2, 2147483647, 1, {"$undefined": true}], "ok": "SAAR{AQACAP__AACDtJAJbQ-owBjvbATFeefH}"}
+{"fn": "get_flag", "args": [1, 100, 7, 100], "ok": "FLAG{BwABAGQAZAAGMktZcTGRrIBX1bWBv64e}"}
+{"fn": "get_flag", "args": [2, 2147483647, 1, {"$undefined": true}], "ok": "FLAG{AQACAP__AACDtJAJbQ-owBjvbATFeefH}"}
 {"fn": "get_flag", "args": [2147483647, -2147483648, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [0, 1, 100, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 2, 1, {"$undefined": true}], "ok": "SAAR{AQBkAAIAAACuN__sQqJv0rloOv1R_e2i}"}
+{"fn": "get_flag", "args": [100, 2, 1, {"$undefined": true}], "ok": "FLAG{AQBkAAIAAACuN__sQqJv0rloOv1R_e2i}"}
 {"fn": "get_flag", "args": [9223372036854775807, 7, -1, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 0, 100, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [7, 100, -100, 255], "ok": "SAAR{nP8HAGQA_wAbh01gr9KAe7G-r1CUDzO_}"}
-{"fn": "get_flag", "args": [255, -100, -100, 255], "ok": "SAAR{nP__AJz__wC4Cs2UOQelsyEgyrP45miY}"}
+{"fn": "get_flag", "args": [7, 100, -100, 255], "ok": "FLAG{nP8HAGQA_wAbh01gr9KAe7G-r1CUDzO_}"}
+{"fn": "get_flag", "args": [255, -100, -100, 255], "ok": "FLAG{nP__AJz__wC4Cs2UOQelsyEgyrP45miY}"}
 {"fn": "get_flag", "args": [9223372036854775807, 7, 100, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 100, 2147483647, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [42, 7, 2147483647, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 2, 1, 1], "ok": "SAAR{AQAAAAIAAQB4HNik799u2cnKJRj88y83}"}
+{"fn": "get_flag", "args": [0, 2, 1, 1], "ok": "FLAG{AQAAAAIAAQB4HNik799u2cnKJRj88y83}"}
 {"fn": "get_flag", "args": [100, -2147483648, 255, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 1, 1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, -1, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 2147483647, 42, {"$undefined": true}], "ok": "SAAR{KgAAAP__AAC0ZEODjMX1f1FJUTDaiclN}"}
-{"fn": "get_flag", "args": [7, 100, -1, 0], "ok": "SAAR{__8HAGQAAACMY-xvJf_USsP8brW8daQI}"}
+{"fn": "get_flag", "args": [0, 2147483647, 42, {"$undefined": true}], "ok": "FLAG{KgAAAP__AAC0ZEODjMX1f1FJUTDaiclN}"}
+{"fn": "get_flag", "args": [7, 100, -1, 0], "ok": "FLAG{__8HAGQAAACMY-xvJf_USsP8brW8daQI}"}
 {"fn": "get_flag", "args": [0, 9223372036854775807, -1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, -100, 9223372036854775807, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 100, -100, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
@@ -546,22 +546,22 @@
 {"fn": "get_flag", "args": [-2147483648, 7, 2, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 7, 1, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [42, 9223372036854775807, 7, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 9223372036854775807, 9223372036854775807, 42], "ok": "SAAR{__8CAP__KgAnhVtv_wzKAr-OF_g9ahBD}"}
+{"fn": "get_flag", "args": [2, 9223372036854775807, 9223372036854775807, 42], "ok": "FLAG{__8CAP__KgAnhVtv_wzKAr-OF_g9ahBD}"}
 {"fn": "get_flag", "args": [-2147483648, 2147483647, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 42, 42, 42], "ok": "SAAR{KgACACoAKgCAG-AjhJv-tz9rviix-6e4}"}
+{"fn": "get_flag", "args": [2, 42, 42, 42], "ok": "FLAG{KgACACoAKgCAG-AjhJv-tz9rviix-6e4}"}
 {"fn": "get_flag", "args": [2147483647, 9223372036854775807, -100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 2, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 255, 42, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [1, 100, 100, 2], "ok": "SAAR{ZAABAGQAAgA4-BH2Qosvi13bqmjs6NOJ}"}
+{"fn": "get_flag", "args": [1, 100, 100, 2], "ok": "FLAG{ZAABAGQAAgA4-BH2Qosvi13bqmjs6NOJ}"}
 {"fn": "get_flag", "args": [-100, 2147483647, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [255, 0, 2147483647], "ok": "SAAR{____AAAAAAAu45_8bMRKXeeukJDgARt4}"}
-{"fn": "get_flag", "args": [2, 9223372036854775807, -100, 2], "ok": "SAAR{nP8CAP__AgCegHWnfCfOq1RqJlrTU7cJ}"}
+{"fn": "get_flag", "args": [255, 0, 2147483647], "ok": "FLAG{____AAAAAAAu45_8bMRKXeeukJDgARt4}"}
+{"fn": "get_flag", "args": [2, 9223372036854775807, -100, 2], "ok": "FLAG{nP8CAP__AgCegHWnfCfOq1RqJlrTU7cJ}"}
 {"fn": "get_flag", "args": [42, -100, 100, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 42, 7, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 0, 100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, -1, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [1, 1, 255], "ok": "SAAR{_wABAAEAAAAiI3OFZOYRMOdeGpqYEBGK}"}
-{"fn": "get_flag", "args": [100, 255, 100, {"$undefined": true}], "ok": "SAAR{ZABkAP8AAAD1DTbKYUdU6dLV0YAGKFAR}"}
+{"fn": "get_flag", "args": [1, 1, 255], "ok": "FLAG{_wABAAEAAAAiI3OFZOYRMOdeGpqYEBGK}"}
+{"fn": "get_flag", "args": [100, 255, 100, {"$undefined": true}], "ok": "FLAG{ZABkAP8AAAD1DTbKYUdU6dLV0YAGKFAR}"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 2, 2, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, 2147483647, 9223372036854775807, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
@@ -571,32 +571,32 @@
 {"fn": "get_flag", "args": [42, 1, 1, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 2, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 42, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [7, -1, -1, 1], "ok": "SAAR{__8HAP__AQDmSKWji7RajcL-tS3eKq-t}"}
-{"fn": "get_flag", "args": [255, 9223372036854775807, 100, {"$undefined": true}], "ok": "SAAR{ZAD_AP__AAA5iBdI5OvKW1eY9V0MLfJJ}"}
+{"fn": "get_flag", "args": [7, -1, -1, 1], "ok": "FLAG{__8HAP__AQDmSKWji7RajcL-tS3eKq-t}"}
+{"fn": "get_flag", "args": [255, 9223372036854775807, 100, {"$undefined": true}], "ok": "FLAG{ZAD_AP__AAA5iBdI5OvKW1eY9V0MLfJJ}"}
 {"fn": "get_flag", "args": [9223372036854775807, -1, 2, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [0, 42, 0, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 2147483647, 2, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 9223372036854775807, 1, 100], "ok": "SAAR{AQAAAP__ZADjcwTg0Sf7qVfhZmpgTAfc}"}
+{"fn": "get_flag", "args": [0, 9223372036854775807, 1, 100], "ok": "FLAG{AQAAAP__ZADjcwTg0Sf7qVfhZmpgTAfc}"}
 {"fn": "get_flag", "args": [-1, 2147483647, -2147483648, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 2, 7, 1], "ok": "SAAR{BwAAAAIAAQDenq-T690I3BZd-OKZGhCV}"}
-{"fn": "get_flag", "args": [0, -100, 0, {"$undefined": true}], "ok": "SAAR{AAAAAJz_AABBw8uK1OS6WqjjC9nKNSWE}"}
+{"fn": "get_flag", "args": [0, 2, 7, 1], "ok": "FLAG{BwAAAAIAAQDenq-T690I3BZd-OKZGhCV}"}
+{"fn": "get_flag", "args": [0, -100, 0, {"$undefined": true}], "ok": "FLAG{AAAAAJz_AABBw8uK1OS6WqjjC9nKNSWE}"}
 {"fn": "get_flag", "args": [-2147483648, 0, 0, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 0, 255, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [1, 2147483647, -2147483648, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 1, 2147483647, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483648, 0, 42, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [1, 7, -1, 100], "ok": "SAAR{__8BAAcAZABlEiBapba53HfdB_9nyDiw}"}
+{"fn": "get_flag", "args": [1, 7, -1, 100], "ok": "FLAG{__8BAAcAZABlEiBapba53HfdB_9nyDiw}"}
 {"fn": "get_flag", "args": [2, 9223372036854775807, 7, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 100, 7, 2], "ok": "SAAR{BwBkAGQAAgBTj6yR5N9RlGt0648zaJGo}"}
+{"fn": "get_flag", "args": [100, 100, 7, 2], "ok": "FLAG{BwBkAGQAAgBTj6yR5N9RlGt0648zaJGo}"}
 {"fn": "get_flag", "args": [-2147483648, -100, 0, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [255, -1, 7, 42], "ok": "SAAR{BwD_AP__KgDigFq5uKXzZyUGY4cA2_Qt}"}
-{"fn": "get_flag", "args": [7, 42, 2, 7], "ok": "SAAR{AgAHACoABwA48rFTOpB4GQX7Z__Dg0NP}"}
-{"fn": "get_flag", "args": [1, 42, 100], "ok": "SAAR{ZAABACoAAACPveU_yyerR6zdM__jM3nI}"}
+{"fn": "get_flag", "args": [255, -1, 7, 42], "ok": "FLAG{BwD_AP__KgDigFq5uKXzZyUGY4cA2_Qt}"}
+{"fn": "get_flag", "args": [7, 42, 2, 7], "ok": "FLAG{AgAHACoABwA48rFTOpB4GQX7Z__Dg0NP}"}
+{"fn": "get_flag", "args": [1, 42, 100], "ok": "FLAG{ZAABACoAAACPveU_yyerR6zdM__jM3nI}"}
 {"fn": "get_flag", "args": [-1, 0, 0], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 100, 0, 1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [255, 1, -1, 7], "ok": "SAAR{____AAEABwC-UXOwZjYXfmgeYiBAFKzJ}"}
-{"fn": "get_flag", "args": [2, -100, 100, 0], "ok": "SAAR{ZAACAJz_AAAhPVxUgkkdoFCXn9Dp0Fjt}"}
-{"fn": "get_flag", "args": [2, -1, 0], "ok": "SAAR{AAACAP__AABwRyr0p5HF06s_qfghJMw0}"}
+{"fn": "get_flag", "args": [255, 1, -1, 7], "ok": "FLAG{____AAEABwC-UXOwZjYXfmgeYiBAFKzJ}"}
+{"fn": "get_flag", "args": [2, -100, 100, 0], "ok": "FLAG{ZAACAJz_AAAhPVxUgkkdoFCXn9Dp0Fjt}"}
+{"fn": "get_flag", "args": [2, -1, 0], "ok": "FLAG{AAACAP__AABwRyr0p5HF06s_qfghJMw0}"}
 {"fn": "get_flag", "args": [9223372036854775807, 0, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 1, 100, 2], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [255, 2147483647, 255, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
@@ -607,38 +607,38 @@
 {"fn": "get_flag", "args": [0, 1, -1, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9223372036854775807, 2147483647, 0, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 100, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [2, 2, 100, 0], "ok": "SAAR{ZAACAAIAAACxbc1xSby1ScWUQ3-6LVLy}"}
+{"fn": "get_flag", "args": [2, 2, 100, 0], "ok": "FLAG{ZAACAAIAAACxbc1xSby1ScWUQ3-6LVLy}"}
 {"fn": "get_flag", "args": [-100, 255, 9223372036854775807, -1], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 255, -100, {"$undefined": true}], "ok": "SAAR{nP8AAP8AAACay0voR1WfDoNTaR_FTTle}"}
-{"fn": "get_flag", "args": [1, 100, 255, 100], "ok": "SAAR{_wABAGQAZAAoGPBQUfYV8XlHGlLdtU-Z}"}
-{"fn": "get_flag", "args": [0, 255, 2], "ok": "SAAR{AgAAAP8AAAChsNYJN9kfzDxanERj_I1Y}"}
-{"fn": "get_flag", "args": [7, 7, 0, 7], "ok": "SAAR{AAAHAAcABwAitZuu7qRWkv3K-ikZNSgS}"}
-{"fn": "get_flag", "args": [100, -1, 9223372036854775807, 42], "ok": "SAAR{__9kAP__KgAp24mLvL4lWC4MREU7UUY6}"}
+{"fn": "get_flag", "args": [0, 255, -100, {"$undefined": true}], "ok": "FLAG{nP8AAP8AAACay0voR1WfDoNTaR_FTTle}"}
+{"fn": "get_flag", "args": [1, 100, 255, 100], "ok": "FLAG{_wABAGQAZAAoGPBQUfYV8XlHGlLdtU-Z}"}
+{"fn": "get_flag", "args": [0, 255, 2], "ok": "FLAG{AgAAAP8AAAChsNYJN9kfzDxanERj_I1Y}"}
+{"fn": "get_flag", "args": [7, 7, 0, 7], "ok": "FLAG{AAAHAAcABwAitZuu7qRWkv3K-ikZNSgS}"}
+{"fn": "get_flag", "args": [100, -1, 9223372036854775807, 42], "ok": "FLAG{__9kAP__KgAp24mLvL4lWC4MREU7UUY6}"}
 {"fn": "get_flag", "args": [9223372036854775807, -2147483648, 7, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 100, 2, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [2147483647, 2147483647, -1, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 7, 1, 9223372036854775807], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [42, 100, -2147483648, 2], "ok": "SAAR{AAAqAGQAAgBjIB9fhJBzbLi70wQv433N}"}
+{"fn": "get_flag", "args": [42, 100, -2147483648, 2], "ok": "FLAG{AAAqAGQAAgBjIB9fhJBzbLi70wQv433N}"}
 {"fn": "get_flag", "args": [-100, 255, 7], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [7, -2147483648, 42, 100], "ok": "SAAR{KgAHAAAAZABknd6FnyeohHWEz2jibtBS}"}
+{"fn": "get_flag", "args": [7, -2147483648, 42, 100], "ok": "FLAG{KgAHAAAAZABknd6FnyeohHWEz2jibtBS}"}
 {"fn": "get_flag", "args": [-1, 42, 0, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 100, 100, {"$undefined": true}], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 42, 9223372036854775807, {"$undefined": true}], "ok": "SAAR{__8AACoAAACwzDWuWv1FUXTSdlg6XP_g}"}
-{"fn": "get_flag", "args": [7, 42, 2, {"$undefined": true}], "ok": "SAAR{AgAHACoAAAC1jghUDaDMF6b3Tkz5TdUl}"}
+{"fn": "get_flag", "args": [0, 42, 9223372036854775807, {"$undefined": true}], "ok": "FLAG{__8AACoAAACwzDWuWv1FUXTSdlg6XP_g}"}
+{"fn": "get_flag", "args": [7, 42, 2, {"$undefined": true}], "ok": "FLAG{AgAHACoAAAC1jghUDaDMF6b3Tkz5TdUl}"}
 {"fn": "get_flag", "args": [-2147483648, -100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [7, 2147483647, 2147483647, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-100, 1, 7, -2147483648], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [100, 255, 0, 42], "ok": "SAAR{AABkAP8AKgCN2qBbW9HW1aGQ2v2i80_0}"}
+{"fn": "get_flag", "args": [100, 255, 0, 42], "ok": "FLAG{AABkAP8AKgCN2qBbW9HW1aGQ2v2i80_0}"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, 2, 2147483647], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [255, 0, 2], "ok": "SAAR{AgD_AAAAAACDzBtn1rGA3iZYKmS1SKyn}"}
-{"fn": "get_flag", "args": [255, 9223372036854775807, 255, 1], "ok": "SAAR{_wD_AP__AQC_kX6JDOY4z5eRiRzl6Kto}"}
+{"fn": "get_flag", "args": [255, 0, 2], "ok": "FLAG{AgD_AAAAAACDzBtn1rGA3iZYKmS1SKyn}"}
+{"fn": "get_flag", "args": [255, 9223372036854775807, 255, 1], "ok": "FLAG{_wD_AP__AQC_kX6JDOY4z5eRiRzl6Kto}"}
 {"fn": "get_flag", "args": [9223372036854775807, 2, -2147483648, 42], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [0, -100, 42, -100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [1, 42, 0, 100], "ok": "SAAR{AAABACoAZABEZyUCePApA2c0kHxOYLnP}"}
+{"fn": "get_flag", "args": [1, 42, 0, 100], "ok": "FLAG{AAABACoAZABEZyUCePApA2c0kHxOYLnP}"}
 {"fn": "get_flag", "args": [2147483647, 7, 2147483647, 255], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-7, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-1, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
-{"fn": "get_flag", "args": [0, 1, 100, 100], "ok": "SAAR{ZAAAAAEAZADBkD1leZdTV1VBaT8ViQf9}"}
+{"fn": "get_flag", "args": [0, 1, 100, 100], "ok": "FLAG{ZAAAAAEAZADBkD1leZdTV1VBaT8ViQf9}"}
 {"fn": "get_flag", "args": [2147483648, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [-2147483649, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}
 {"fn": "get_flag", "args": [9007199254740993, 1, 100, 100], "error": "error: 'H' format requires 0 <= number <= 65535"}

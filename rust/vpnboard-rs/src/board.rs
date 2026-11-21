@@ -1,12 +1,12 @@
 //! Port of `vpnboard/vpn_board.py` — renders the static board files into
 //! `config.vpnboard_path`. jinja2 + htmlmin replaced by inline HTML generation
 //! (same markup, not minified); JSON files identical; static files copied from
-//! the Python tree (`SAARCTF_PYTHON_DIR`, default `..`).
+//! the Python tree (`CTF_PYTHON_DIR`, default `..`).
 
 use crate::VpnStatus;
 use chrono::{DateTime, TimeZone, Utc};
 use controlserver_rs::models::Team;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use std::collections::HashSet;
 use std::path::Path;
 
@@ -25,7 +25,7 @@ impl VpnBoard {
     }
 
     fn copy_static_files(cfg: &Config, path: &Path) -> Result<(), String> {
-        let static_dir = saarctf_commons_rs::config::python_dir(cfg)
+        let static_dir = ctf_commons_rs::config::python_dir(cfg)
             .join("controlserver")
             .join("static");
         std::fs::copy(
@@ -128,7 +128,7 @@ fn render_vpn_html(
     start: DateTime<Utc>,
 ) -> String {
     let mut out = String::with_capacity(4096 + states.len() * 512);
-    out.push_str("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t<link rel=\"stylesheet\" href=\"index.css\">\n\t<link rel=\"icon\" type=\"image/png\" href=\"favicon.png\">\n\t<link rel=\"shortcut icon\" type=\"image/png\" href=\"favicon.png\">\n\n    <style>\n        table th { vertical-align: top !important; }\n        table th small { font-weight: normal }\n    </style>\n\n\t<title>Team VPN Status - saarCTF</title>\n\t<meta http-equiv=\"refresh\" content=\"60\">\n</head>\n<body>\n<div class=\"bg-primary-theme\">\n\t<div class=\"container-fluid\">\n\t\t<h1 class=\"page-header\">saarCTF Team VPN Status</h1>\n\t</div>\n\t<br/>\n</div>\n\n<br/>\n\n<div class=\"container\">\n\n\t<p>\n\t\t<a href=\"all_teams.json\">&rArr; all teams (as JSON)</a><br/>\n\t\t<a href=\"available_teams.json\">&rArr; teams that connected to the VPN once (as JSON)</a>\n\t\t<span class=\"text-muted\"> &mdash; Cloud-hosting teams will not be included until the competition starts.</span>\n\t</p>\n\n\t<p class=\"text-muted\">Last update: ");
+    out.push_str("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n\t<link rel=\"stylesheet\" href=\"index.css\">\n\t<link rel=\"icon\" type=\"image/png\" href=\"favicon.png\">\n\t<link rel=\"shortcut icon\" type=\"image/png\" href=\"favicon.png\">\n\n    <style>\n        table th { vertical-align: top !important; }\n        table th small { font-weight: normal }\n    </style>\n\n\t<title>Team VPN Status - CTF</title>\n\t<meta http-equiv=\"refresh\" content=\"60\">\n</head>\n<body>\n<div class=\"bg-primary-theme\">\n\t<div class=\"container-fluid\">\n\t\t<h1 class=\"page-header\">CTF Team VPN Status</h1>\n\t</div>\n\t<br/>\n</div>\n\n<br/>\n\n<div class=\"container\">\n\n\t<p>\n\t\t<a href=\"all_teams.json\">&rArr; all teams (as JSON)</a><br/>\n\t\t<a href=\"available_teams.json\">&rArr; teams that connected to the VPN once (as JSON)</a>\n\t\t<span class=\"text-muted\"> &mdash; Cloud-hosting teams will not be included until the competition starts.</span>\n\t</p>\n\n\t<p class=\"text-muted\">Last update: ");
     out.push_str(&esc(&fmt_dt(start)));
     out.push_str("</p>\n\n\t<table class=\"table table-bordered\">\n\t\t<thead>\n\t\t<tr>\n\t\t\t<th>#</th>\n\t\t\t<th>Team</th>\n\t\t\t<th>\n                VPN Status\n");
     if wireguard {

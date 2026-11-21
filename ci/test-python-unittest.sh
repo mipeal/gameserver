@@ -5,8 +5,8 @@ set -euxo pipefail
 make check
 
 # Configure database credentials for container setup
-sed 's/"database": "saarctf"/"database": "saarctf_unittest"/' ./ci-config.yaml > ./config.test.yaml
+sed 's/"database": "ctf"/"database": "ctf_unittest"/' ./ci-config.yaml > ./config.test.yaml
 export PGPASSWORD=123456789
-echo 'CREATE DATABASE saarctf_unittest;' | psql -Usaarsec -h postgres saarctf
+echo 'CREATE DATABASE ctf_unittest;' | psql -Uctf -h postgres ctf
 
 make test

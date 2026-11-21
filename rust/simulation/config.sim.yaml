@@ -1,4 +1,4 @@
-# Simulation deployment config (SAARCTF_SIMULATION=1). Base shape = demo
+# Simulation deployment config (CTF_SIMULATION=1). Base shape = demo
 # config; databases point at compose service names, all fixture IPs use the
 # 10.32 team math (10.32.<team>.N). secrets are zero placeholders — real
 # secrets come from env/compose, never committed.
@@ -7,11 +7,11 @@ coder_url: ''
 ctfroute_namespace: cte25
 databases:
   postgres:
-    database: saarctf
+    database: ctf
     password: demo
     port: 5432
     server: postgres
-    username: saarctf
+    username: ctf
   redis:
     db: 0
     host: redis
@@ -19,7 +19,7 @@ databases:
 dispatcher_check_vpn_status: true
 environment: dev
 external_timer: false
-flag_prefix: SAAR
+flag_prefix: FLAG
 flower_url: http://localhost:5555/
 grafana_url: ''
 network:

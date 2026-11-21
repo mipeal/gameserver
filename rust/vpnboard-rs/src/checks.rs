@@ -91,7 +91,7 @@ pub async fn test_web(ip: &str) -> String {
         Ok(c) => c,
         Err(e) => return format!("error: {e}"),
     };
-    match client.get(format!("http://{ip}/saarctf")).send().await {
+    match client.get(format!("http://{ip}/ctf")).send().await {
         Ok(resp) => {
             let status = resp.status().as_u16();
             let body = resp.bytes().await.map(|b| b.to_vec());
@@ -100,7 +100,7 @@ pub async fn test_web(ip: &str) -> String {
                     if status != 200 {
                         return format!("status {status}");
                     }
-                    if String::from_utf8_lossy(&body).trim() != "saarctf-testbox" {
+                    if String::from_utf8_lossy(&body).trim() != "ctf-testbox" {
                         return "unexpected text".into();
                     }
                     "OK".into()

@@ -38,8 +38,8 @@ docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simula
 curl -s localhost:15000/overview/services | head -c 400; echo
 # scoreboard
 curl -s localhost:8080/api/scoreboard_current.json | head -c 300; echo
-# submit a flag manually (SAAR{...} from a checker run / attack-simulator log)
-printf 'SAAR{...}\n' | nc localhost 1337
+# submit a flag manually (FLAG{...} from a checker run / attack-simulator log)
+printf 'FLAG{...}\n' | nc localhost 1337
 # attack output (per-team attack loop runs inside each vulnbox)
 docker compose --env-file rust/simulation/.env.sim -f rust/docker-compose.simulation.yml \
     -f rust/simulation/docker-compose.vulnboxes.yml logs vulnbox-2 --tail 20

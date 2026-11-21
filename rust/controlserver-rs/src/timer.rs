@@ -8,7 +8,7 @@
 use chrono::{DateTime, Timelike, Utc};
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 
 /// CTFState IntEnum.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -187,8 +187,8 @@ pub async fn spawn_timer(
             open_vulnbox_access_at: None,
         },
         listener,
-        redis: saarctf_commons_rs::redis::get_redis_connection(&cfg.redis).await?,
-        redis_url: saarctf_commons_rs::redis::redis_url(&cfg.redis)?,
+        redis: ctf_commons_rs::redis::get_redis_connection(&cfg.redis).await?,
+        redis_url: ctf_commons_rs::redis::redis_url(&cfg.redis)?,
     };
     timer.init_from_redis().await?;
     let redis_url = timer.redis_url.clone();
@@ -581,9 +581,9 @@ pub fn now_secs() -> i64 {
 /// Read the timing state straight from redis (slave-style snapshot, for
 /// processes that do not own the timer).
 pub async fn read_timing_state(
-    cfg: &saarctf_commons_rs::config::Config,
+    cfg: &ctf_commons_rs::config::Config,
 ) -> Result<TimingState, redis::RedisError> {
-    let mut redis = saarctf_commons_rs::redis::get_redis_connection(&cfg.redis)
+    let mut redis = ctf_commons_rs::redis::get_redis_connection(&cfg.redis)
         .await
         .map_err(|_e| redis::RedisError::from((redis::ErrorKind::IoError, "redis connect")))?;
     let mut pipe = redis::pipe();

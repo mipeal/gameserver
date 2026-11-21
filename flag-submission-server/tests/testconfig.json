@@ -6,7 +6,7 @@
       "port": 5432,
       "username": "",
       "password": "",
-      "database": "saarctf_2"
+      "database": "ctf_2"
     },
     "redis": {
       "host": "localhost",
@@ -16,8 +16,8 @@
     "rabbitmq": {
       "host": "localhost",
       "port": 5672,
-      "vhost": "saarctf",
-      "username": "saarctf",
+      "vhost": "ctf",
+      "username": "ctf",
       "password": "123456789"
     }
   },

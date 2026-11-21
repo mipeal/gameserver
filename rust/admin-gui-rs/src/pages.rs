@@ -1,19 +1,19 @@
 //! Teams / Services / Checker pages.
 
 use crate::api::*;
-use crate::{err_box, table};
+use crate::{err_box, fmt_bytes, short_ts, status_cls, table};
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 use serde_json::Value;
 
 fn pager(name: &'static str, cur: impl Fn() -> usize + Send + Copy + 'static, pages: impl Fn() -> usize + Send + Copy + 'static, nav: impl Fn(isize) + Send + Copy + 'static) -> impl IntoView {
     view! {
-        <p>
+        <div class="pager">
             <button type="button" on:click=move |_| { if cur() > 1 { nav(-1) } }>{"‹ prev"}</button>
-            {move || format!(" page {} / {} ", cur(), pages())}
+            <span>{move || format!("page {} / {}", cur(), pages())}</span>
             <button type="button" on:click=move |_| { if cur() < pages() { nav(1) } }>{"next ›"}</button>
-            <a href=name style="margin-left: 12px">{"back to "}{name.replace('_', " ")}</a>
-        </p>
+            <a href=name class="dim">{"back to "}{name.replace('_', " ")}</a>
+        </div>
     }
 }
 
@@ -31,42 +31,165 @@ pub fn TeamsList() -> impl IntoView {
     });
     let th = move |name: &'static str, key: &'static str| {
         view! {
-            <th on:click=move |_| { set_sort.set(key.to_string()); set_dir.set(if dir.get() == "desc" { "asc".into() } else { "desc".into() }); }>{name}</th>
+            <th class="sort" on:click=move |_| {
+                if sort.get() == key {
+                    set_dir.set(if dir.get() == "desc" { "asc".into() } else { "desc".into() });
+                } else {
+                    set_sort.set(key.to_string());
+                    set_dir.set("asc".into());
+                }
+            }>
+                {name}
+                {move || if sort.get() == key {
+                    if dir.get() == "asc" { " ▲" } else { " ▼" }
+                } else { "" }}
+            </th>
         }
     };
     view! {
         <h1>"Teams"</h1>
-        <form class="inline">
-            <select on:change=move |e| set_filter.set(event_target_value(&e))>
+        <div class="sub">
+            {move || match teams.get() {
+                Some(Ok(v)) => format!(
+                    "{} teams · live VPN state · sort: click header",
+                    v["teams"].as_array().map(|a| a.len()).unwrap_or(0)
+                ),
+                _ => "live VPN state · sort: click header".to_string(),
+            }}
+        </div>
+        <div class="toolbar">
+            <span class="dim">"filter"</span>
+            <select on:change=move |e| { set_filter.set(event_target_value(&e)); set_page.set(1); }>
                 <option value="">"all"</option>
                 <option value="online">"online"</option>
                 <option value="ever online">"ever online"</option>
                 <option value="offline">"offline"</option>
             </select>
-        </form>
+        </div>
         {move || match teams.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
                 let pages = v["pages"].as_u64().unwrap_or(1) as usize;
-                let rows = v["teams"].as_array().cloned().unwrap_or_default().iter().map(|t| vec![
-                    view! { <a href={format!("/teams/view/{}", s(&t["id"]))}>{s(&t["id"])}</a> }.into_any(),
-                    s(&t["name"]).into_any(),
-                    s_opt(&t["affiliation"]).into_any(),
-                    s_opt(&t["website"]).into_any(),
-                    {if t["vpn_connected"].as_bool().unwrap_or(false) { view! { <span class="ok">"online"</span> }.into_any() }
-                     else if t["vpn_last_connect"].is_null() { view! { <span class="err">"offline"</span> }.into_any() }
-                     else { view! { <span class="warn">"offline (was online)"</span> }.into_any() }},
-                    s(&t["traffic"]["down_teams_bytes"]).into_any(),
-                    s(&t["traffic"]["up_teams_bytes"]).into_any(),
-                ]).collect();
+                let rows = v["teams"].as_array().cloned().unwrap_or_default().iter().map(|t| {
+                    let id = s(&t["id"]);
+                    let href = format!("/teams/view/{id}");
+                    let online = t["vpn_connected"].as_bool().unwrap_or(false)
+                        || t["vpn2_connected"].as_bool().unwrap_or(false)
+                        || t["wg_vulnbox_connected"].as_bool().unwrap_or(false);
+                    let (vpn_cls, vpn_txt) = if online {
+                        ("ok", "online")
+                    } else if t["vpn_last_connect"].is_null() {
+                        ("err", "offline")
+                    } else {
+                        ("warn", "offline (was online)")
+                    };
+                    view! {
+                        <tr>
+                            <td><a href=href.clone()>{id.clone()}</a></td>
+                            <td>{s(&t["name"])}</td>
+                            <td>{s_opt(&t["affiliation"])}</td>
+                            <td>{s_opt(&t["website"])}</td>
+                            <td class=vpn_cls>{vpn_txt}</td>
+                            <td>{fmt_bytes(t["traffic"]["down_teams_bytes"].as_f64().unwrap_or(0.0))}</td>
+                            <td>{fmt_bytes(t["traffic"]["up_teams_bytes"].as_f64().unwrap_or(0.0))}</td>
+                            <td><a href=href>"inspect →"</a></td>
+                        </tr>
+                    }.into_any()
+                }).collect::<Vec<_>>();
                 view! {
+                    <table>
+                        <thead><tr>
+                            {th("ID", "id")}
+                            {th("Name", "name")}
+                            {th("Affiliation", "affiliation")}
+                            {th("Website", "website")}
+                            {th("VPN", "vpn_connected")}
+                            {th("↓ teams", "traffic.down_teams_bytes")}
+                            {th("↑ teams", "traffic.up_teams_bytes")}
+                            <th></th>
+                        </tr></thead>
+                        <tbody>{rows}</tbody>
+                    </table>
                     {pager("teams", move || page.get(), move || pages, move |d| set_page.set((page.get() as isize + d).max(1) as usize))}
-                    {table(&["ID", "Name", "Affiliation", "Website", "VPN", "Download (teams)", "Upload (teams)"], rows)}
                 }.into_any()
             }
         }}
-        <span hidden>{th("id", "id")}</span>
+    }
+}
+
+// ---- Team detail -------------------------------------------------------------
+
+fn any_online(v: &Value) -> bool {
+    v["vpn_connected"].as_bool().unwrap_or(false)
+        || v["vpn2_connected"].as_bool().unwrap_or(false)
+        || v["wg_vulnbox_connected"].as_bool().unwrap_or(false)
+}
+
+fn vpn_chip(v: &Value) -> impl IntoView {
+    if any_online(v) {
+        let since = if v["vpn_last_connect"].is_null() {
+            String::new()
+        } else {
+            format!(" since {}", short_ts(&v["vpn_last_connect"]))
+        };
+        view! { <span class="ok">{format!("VPN online{since}")}</span> }.into_any()
+    } else {
+        view! { <span class="err">"VPN offline"</span> }.into_any()
+    }
+}
+
+fn graph_chart(v: &Value, title: &'static str, key: &'static str, bytes: bool) -> impl IntoView {
+    let series = v[key].as_array().cloned().unwrap_or_default();
+    let rows: Vec<AnyView> = series.iter().enumerate().map(|(i, srs)| {
+        let data: Vec<f64> = srs["data"].as_array().cloned().unwrap_or_default()
+            .iter().map(|x| x.as_f64().unwrap_or(0.0)).collect();
+        let max = data.iter().cloned().fold(0.0f64, f64::max);
+        let cls = match i { 0 => "b", 1 => "b g", _ => "b r" };
+        let maxlabel = if bytes { fmt_bytes(max) } else { format!("{}", max as i64) };
+        let bars: Vec<AnyView> = data.iter().map(|d| {
+            let h = if max > 0.0 { (d / max * 100.0).max(1.0) } else { 1.0 };
+            view! { <span class=cls style=format!("height:{h:.0}%")></span> }.into_any()
+        }).collect();
+        view! {
+            <div class="row">
+                <span class="lab">{s_opt(&srs["label"])}</span>
+                <div class="bars">{bars}</div>
+                <span class="max">{maxlabel}</span>
+            </div>
+        }.into_any()
+    }).collect();
+    view! { <h2>{title}</h2> <div class="chart">{rows}</div> }
+}
+
+fn recent_results(res: LocalResource<Result<Value, String>>) -> impl IntoView {
+    view! {
+        {move || match res.get() {
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
+            Some(Err(_)) => view! { <p class="dim">"unavailable"</p> }.into_any(),
+            Some(Ok(v)) => {
+                let services = v["services"].as_array().cloned().unwrap_or_default();
+                let rows = v["results"].as_array().cloned().unwrap_or_default().iter().take(6).map(|r| {
+                    let sid = r["service_id"].as_i64().unwrap_or(0);
+                    let name = services.iter()
+                        .find(|svc| svc["id"].as_i64() == Some(sid))
+                        .map(|svc| s(&svc["name"]))
+                        .unwrap_or_else(|| sid.to_string());
+                    let st = s(&r["status"]);
+                    let cls = status_cls(&st);
+                    vec![
+                        s(&r["tick"]).into_any(),
+                        name.into_any(),
+                        view! { <span class=cls>{st}</span> }.into_any(),
+                    ]
+                }).collect::<Vec<_>>();
+                if rows.is_empty() {
+                    view! { <p class="dim">"no checker results for this team"</p> }.into_any()
+                } else {
+                    table(&["Tick", "Service", "Status"], rows).into_any()
+                }
+            }
+        }}
     }
 }
 
@@ -77,25 +200,67 @@ pub fn TeamView() -> impl IntoView {
         let id = id();
         async move { get_json(&format!("/api/teams/view/{id}")).await }
     });
+    let results = LocalResource::new(move || {
+        let id = id();
+        async move {
+            get_json(&format!("/api/checker_results?page=1&filter_team={id}&filter_service=&filter_status=")).await
+        }
+    });
     view! {
-        <h1>"Team " {move || id()}</h1>
-        <p><a href="/teams">"← all teams"</a></p>
+        <h1>
+            {move || match team.get() {
+                Some(Ok(v)) => format!("TEAM {} — {}", s(&v["id"]), s(&v["name"]).to_uppercase()),
+                _ => format!("TEAM {}", id()),
+            }}
+        </h1>
+        <div class="sub">
+            <a href="/teams">"← all teams"</a>
+            {move || match team.get() {
+                Some(Ok(v)) => view! {
+                    " · " {s_opt(&v["ip"])}
+                    " · " {s_opt(&v["affiliation"])}
+                    " · " {s_opt(&v["website"])}
+                    " · " {vpn_chip(&v)}
+                }.into_any(),
+                _ => "".into_any(),
+            }}
+        </div>
         {move || match team.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
-                let graph = |title: &'static str, key: &'static str| {
-                    let rows: Vec<Vec<AnyView>> = v[key].as_array().cloned().unwrap_or_default().iter().map(|series| {
-                        vec![s(&series["label"]).into_any(),
-                             series["data"].as_array().cloned().unwrap_or_default().iter().map(|x| s(x)).collect::<Vec<_>>().join(", ").into_any()]
-                    }).collect();
-                    view! { <h2>{title}</h2> {table(&["Series", "Samples (most recent last)"], rows)} }
-                };
+                let online = any_online(&v);
+                let samples = v["labels"].as_array().map(|a| a.len()).unwrap_or(0);
                 view! {
-                    <p>{s(&v["name"])}" — " {s_opt(&v["affiliation"])}" — " {s_opt(&v["website"])}" — IP " {s_opt(&v["ip"])}</p>
-                    {graph("Download / Upload", "graph1")}
-                    {graph("Bytes: team-to-team vs game", "graph2")}
-                    {graph("SYNs: team-to-team vs game", "graph3")}
+                    <div class="tiles">
+                        <div class="tile"><div class="k">"ip"</div><div class="v">{s_opt(&v["ip"])}</div></div>
+                        <div class="tile"><div class="k">"affiliation"</div><div class="v">{s_opt(&v["affiliation"])}</div></div>
+                        <div class="tile">
+                            <div class="k">"VPN"</div>
+                            <div class="v">{if online {
+                                view! { <span class="ok">"online"</span> }.into_any()
+                            } else {
+                                view! { <span class="err">"offline"</span> }.into_any()
+                            }}</div>
+                        </div>
+                        <div class="tile">
+                            <div class="k">"traffic samples"</div>
+                            <div class="v">{samples.to_string()}</div>
+                        </div>
+                    </div>
+
+                    <div class="two">
+                        <div>
+                            {graph_chart(&v, "Download / Upload — 60 samples", "graph1", true)}
+                            {graph_chart(&v, "Bytes: team-to-team vs game", "graph2", true)}
+                        </div>
+                        <div>
+                            {graph_chart(&v, "SYNs: team-to-team vs game", "graph3", false)}
+                            <h2>"Recent checker results"</h2>
+                            {recent_results(results)}
+                            <p class="empty">{"→ full history under Checker Results, filter team="}{id()}</p>
+                        </div>
+                    </div>
                 }.into_any()
             }
         }}
@@ -120,9 +285,10 @@ pub fn Services() -> impl IntoView {
     let (op_msg, set_op_msg) = signal(String::new());
     view! {
         <h1>"Services"</h1>
+        <div class="sub">"checker enable/disable takes effect next tick"</div>
         {move || if !op_msg.get().is_empty() { view! { <p class="warn">{op_msg.get()}</p> }.into_any() } else { "".into_any() }}
         {move || match services.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
                 let reload = move || services.refetch();
@@ -136,14 +302,18 @@ pub fn Services() -> impl IntoView {
                     let id = s(&svc["id"]);
                     let enabled = svc["checker_enabled"].as_bool().unwrap_or(false);
                     let toggle_id = id.clone();
+                    let toggle = if enabled {
+                        view! { <button type="button" class="danger" on:click=move |_| set_checker(set_op_msg, toggle_id.clone(), false, reload)>"Disable"</button> }.into_any()
+                    } else {
+                        view! { <button type="button" class="primary" on:click=move |_| set_checker(set_op_msg, toggle_id.clone(), true, reload)>"Enable"</button> }.into_any()
+                    };
                     vec![
-                        s(&svc["id"]).into_any(),
+                        id.into_any(),
                         s(&svc["name"]).into_any(),
-                        {if enabled { view! { <span class="ok">"enabled"</span> }.into_any() } else { view! { <span class="err">"disabled"</span> }.into_any() }},
-                        {let rid = toggle_id.clone();
-                         view! { <button type="button" on:click=move |_| set_checker(set_op_msg, rid.clone(), !enabled, reload)>{if enabled { "Disable" } else { "Enable" }}</button> }.into_any()},
-                        s(&svc["checker_runner"]).into_any(),
-                        s_opt(&svc["package"]).into_any(),
+                        view! { <span class=if enabled { "ok" } else { "err" }>{if enabled { "enabled" } else { "disabled" }}</span> }.into_any(),
+                        toggle,
+                        s_opt(&svc["checker_runner"]).into_any(),
+                        view! { <span class="hash">{s_opt(&svc["package"])}</span> }.into_any(),
                         fb_names.into_any(),
                     ]
                 }).collect();
@@ -165,31 +335,53 @@ pub fn CheckerStatus() -> impl IntoView {
     });
     view! {
         <h1>"Checker Status"</h1>
-        <p><a href="/checker_status/overview">"Overview of ticks →"</a></p>
-        <form class="inline">
-            <input placeholder="tick (empty = current)" prop:value=tick on:input=move |e| set_tick.set(event_target_value(&e)) />
-            <button type="button" on:click=move |_| status.refetch()>"Show"</button>
-        </form>
+        <div class="sub">
+            <a href="/checker_status/overview">"overview of ticks →"</a>
+            " · tick "
+            <input placeholder="tick" style="width: 90px" prop:value=tick on:input=move |e| set_tick.set(event_target_value(&e)) />
+            <button type="button" class="primary" on:click=move |_| status.refetch()>"Show"</button>
+        </div>
         {move || match status.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
                 let rows = v["services"].as_array().cloned().unwrap_or_default().iter().map(|svc| {
-                    let statuses = svc["status"].as_object().cloned().unwrap_or_default().iter()
-                        .map(|(k, n)| format!("{k}: {}", s(n))).collect::<Vec<_>>().join("  ");
-                    vec![
-                        s(&svc["name"]).into_any(),
-                        s(&svc["dispatched"]).into_any(),
-                        s(&svc["finished"]).into_any(),
-                        format!("{:.1}s avg", svc["time"].as_f64().unwrap_or(0.0) / svc["time_count"].as_f64().unwrap_or(1.0).max(1.0)).into_any(),
-                        s(&svc["toolate"]).into_any(),
-                        statuses.into_any(),
-                    ]
-                }).collect();
+                    let statuses: Vec<AnyView> = svc["status"].as_object().cloned().unwrap_or_default().iter().map(|(k, n)| {
+                        let cls = status_cls(k);
+                        view! { <span class=cls>{format!("{k}: {n}  ")}</span> }.into_any()
+                    }).collect();
+                    let finished = svc["finished"].as_i64().unwrap_or(0);
+                    let dispatched = svc["dispatched"].as_i64().unwrap_or(0);
+                    let fin_cls = if dispatched > 0 && finished >= dispatched { "ok" } else { "warn" };
+                    let avg = svc["time"].as_f64().unwrap_or(0.0)
+                        / svc["time_count"].as_f64().unwrap_or(1.0).max(1.0);
+                    let late = svc["toolate"].as_i64().unwrap_or(0);
+                    view! {
+                        <tr>
+                            <td>{s(&svc["name"])}</td>
+                            <td>{s(&svc["dispatched"])}</td>
+                            <td class=fin_cls>{s(&svc["finished"])}</td>
+                            <td>{format!("{avg:.2}s")}</td>
+                            <td class=(if late > 0 { "warn" } else { "" })>{s(&svc["toolate"])}</td>
+                            <td>{statuses}</td>
+                        </tr>
+                    }.into_any()
+                }).collect::<Vec<_>>();
                 view! {
-                    <p>"Tick " {s(&v["tick"])} " — " {s(&v["count_finished"])} " finished of " {s(&v["count_dispatched"])}
-                       " dispatched (tick " {ts(&v["tick_start"])} " → " {ts(&v["tick_end"])} ")"</p>
-                    {table(&["Service", "Dispatched", "Finished", "Avg time", "Too late", "Statuses"], rows)}
+                    <table>
+                        <thead><tr>
+                            <th>"Service"</th><th>"Dispatched"</th><th>"Finished"</th>
+                            <th>"Avg time"</th><th>"Too late"</th><th>"Statuses"</th>
+                        </tr></thead>
+                        <tbody>
+                            <tr><td colspan="6" class="dim">
+                                {format!("tick {} — {} finished of {} dispatched · start {} → end {}",
+                                    s(&v["tick"]), s(&v["count_finished"]), s(&v["count_dispatched"]),
+                                    short_ts(&v["tick_start"]), short_ts(&v["tick_end"]))}
+                            </td></tr>
+                            {rows}
+                        </tbody>
+                    </table>
                 }.into_any()
             }
         }}
@@ -201,24 +393,33 @@ pub fn CheckerStatusOverview() -> impl IntoView {
     let data = LocalResource::new(|| async { get_json("/api/checker_status/overview").await });
     view! {
         <h1>"Checker Status — Overview"</h1>
-        <p><a href="/checker_status">"← current tick"</a></p>
+        <div class="sub">
+            <a href="/checker_status">"← current tick"</a>
+            " · last 31 ticks · click a tick to inspect"
+        </div>
         {move || match data.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
-                let rows = v["ticks"].as_array().cloned().unwrap_or_default().iter().map(|t| vec![
-                    view! { <a href={format!("/checker_status?tick={}", s(&t["number"]))}>{s(&t["number"])}</a> }.into_any(),
-                    ts(&t["start"]).into_any(),
-                    s(&t["time"]).into_any(),
-                    s(&t["dispatched"]).into_any(),
-                    {let ok = t["tasks_ok"].as_i64().unwrap_or(0);
-                     view! { <span class={if ok > 0 { "ok" } else { "" }}>{s(&t["tasks_ok"])}</span> }.into_any()},
-                    s(&t["tasks_warn"]).into_any(),
-                    {if t["tasks_error"].as_i64().unwrap_or(0) > 0 { view! { <span class="err">{s(&t["tasks_error"])}</span> }.into_any() } else { s(&t["tasks_error"]).into_any() }},
-                    s(&t["tasks_revoked"]).into_any(),
-                    s(&t["tasks_toolate"]).into_any(),
-                    ts(&t["last_finished"]).into_any(),
-                ]).collect();
+                let rows = v["ticks"].as_array().cloned().unwrap_or_default().iter().map(|t| {
+                    let ok = t["tasks_ok"].as_i64().unwrap_or(0);
+                    let warn = t["tasks_warn"].as_i64().unwrap_or(0);
+                    let err = t["tasks_error"].as_i64().unwrap_or(0);
+                    let revoked = t["tasks_revoked"].as_i64().unwrap_or(0);
+                    let late = t["tasks_toolate"].as_i64().unwrap_or(0);
+                    vec![
+                        view! { <a href={format!("/checker_status?tick={}", s(&t["number"]))}>{s(&t["number"])}</a> }.into_any(),
+                        short_ts(&t["start"]).into_any(),
+                        s(&t["time"]).into_any(),
+                        s(&t["dispatched"]).into_any(),
+                        view! { <span class=(if ok > 0 { "ok" } else { "" })>{s(&t["tasks_ok"])}</span> }.into_any(),
+                        view! { <span class=(if warn > 0 { "warn" } else { "" })>{s(&t["tasks_warn"])}</span> }.into_any(),
+                        view! { <span class=(if err > 0 { "err" } else { "" })>{s(&t["tasks_error"])}</span> }.into_any(),
+                        view! { <span class=(if revoked > 0 { "err" } else { "" })>{s(&t["tasks_revoked"])}</span> }.into_any(),
+                        view! { <span class=(if late > 0 { "warn" } else { "" })>{s(&t["tasks_toolate"])}</span> }.into_any(),
+                        short_ts(&t["last_finished"]).into_any(),
+                    ]
+                }).collect();
                 table(&["Tick", "Start", "Time", "Dispatched", "OK", "Timeout", "Crashed", "Revoked", "Too late", "Last finished"], rows).into_any()
             }
         }}
@@ -241,40 +442,64 @@ pub fn CheckerResults() -> impl IntoView {
     });
     view! {
         <h1>"Checker Results"</h1>
-        <form class="inline">
-            <input placeholder="team id" prop:value=team on:input=move |e| { set_team.set(event_target_value(&e)); set_page.set(1); } />
-            <input placeholder="service id" prop:value=service on:input=move |e| { set_service.set(event_target_value(&e)); set_page.set(1); } />
+        <div class="sub">
+            "filters apply live · status colors: "
+            <span class="ok">"SUCCESS"</span> " "
+            <span class="warn">"TIMEOUT/MUMBLE/OFFLINE"</span> " "
+            <span class="err">"REVOKED/CRASHED"</span>
+        </div>
+        <div class="toolbar">
+            <label>"team"</label>
+            <input style="width: 70px" placeholder="—" prop:value=team on:input=move |e| { set_team.set(event_target_value(&e)); set_page.set(1); } />
+            <label>"service"</label>
+            <input style="width: 70px" placeholder="—" prop:value=service on:input=move |e| { set_service.set(event_target_value(&e)); set_page.set(1); } />
+            <label>"status"</label>
             <select prop:value=status on:change=move |e| { set_status.set(event_target_value(&e)); set_page.set(1); }>
                 <option value="">"any status"</option>
                 {["SUCCESS", "FLAGMISSING", "MUMBLE", "OFFLINE", "RECOVERING", "TIMEOUT", "REVOKED", "CRASHED", "PENDING"].iter()
                     .map(|s| view! { <option value={*s}>{*s}</option> }).collect::<Vec<_>>()}
             </select>
-        </form>
+            <span class="dim">
+                {move || match data.get() {
+                    Some(Ok(v)) => format!("{} results total", s(&v["count"])),
+                    _ => String::new(),
+                }}
+            </span>
+        </div>
         {move || match data.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
             Some(Ok(v)) => {
                 let pages = v["pages"].as_u64().unwrap_or(1) as usize;
+                let teams = v["teams"].as_array().cloned().unwrap_or_default();
+                let svcs = v["services"].as_array().cloned().unwrap_or_default();
+                let team_label = |id: i64| teams.iter()
+                    .find(|t| t["id"].as_i64() == Some(id))
+                    .map(|t| format!("{id} {}", s(&t["name"])))
+                    .unwrap_or_else(|| id.to_string());
+                let svc_label = |id: i64| svcs.iter()
+                    .find(|svc| svc["id"].as_i64() == Some(id))
+                    .map(|svc| s(&svc["name"]))
+                    .unwrap_or_else(|| id.to_string());
                 let rows = v["results"].as_array().cloned().unwrap_or_default().iter().map(|r| {
                     let st = s(&r["status"]);
-                    let cls = match st.as_str() {
-                        "SUCCESS" => "ok", "TIMEOUT" | "MUMBLE" | "FLAGMISSING" | "OFFLINE" | "RECOVERING" => "warn",
-                        "REVOKED" | "CRASHED" => "err", _ => "",
-                    };
+                    let cls = status_cls(&st);
+                    let pill_cls = if cls.is_empty() { "pill".to_string() } else { format!("pill {cls}") };
+                    let status_view = view! { <span class=pill_cls>{st.clone()}</span> }.into_any();
                     vec![
                         view! { <a href={format!("/checker_results/view/{}", s(&r["id"]))}>{s(&r["id"])}</a> }.into_any(),
                         s(&r["tick"]).into_any(),
-                        s(&r["team_id"]).into_any(),
-                        s(&r["service_id"]).into_any(),
-                        view! { <span class={cls}>{st}</span> }.into_any(),
+                        team_label(r["team_id"].as_i64().unwrap_or(0)).into_any(),
+                        svc_label(r["service_id"].as_i64().unwrap_or(0)).into_any(),
+                        status_view,
                         s_opt(&r["message"]).into_any(),
-                        {r["time"].as_f64().map(|t| format!("{t:.2}s")).unwrap_or_default().into_any()},
-                        ts(&r["finished"]).into_any(),
+                        r["time"].as_f64().map(|t| format!("{t:.2}s")).unwrap_or_default().into_any(),
+                        short_ts(&r["finished"]).into_any(),
                     ]
                 }).collect();
                 view! {
-                    {pager("checker_results", move || page.get(), move || pages, move |d| set_page.set((page.get() as isize + d).max(1) as usize))}
                     {table(&["ID", "Tick", "Team", "Service", "Status", "Message", "Time", "Finished"], rows)}
+                    {pager("checker_results", move || page.get(), move || pages, move |d| set_page.set((page.get() as isize + d).max(1) as usize))}
                 }.into_any()
             }
         }}
@@ -294,17 +519,46 @@ pub fn CheckerResultView() -> impl IntoView {
         }
     });
     view! {
-        <h1>"Checker Result " {move || id()}</h1>
-        <p><a href="/checker_results">"← all results"</a></p>
+        <h1>{move || format!("Checker Result {}", id())}</h1>
+        <div class="sub"><a href="/checker_results">"← all results"</a></div>
         {move || match result.get() {
-            None => "Loading…".into_any(),
+            None => view! { <p class="dim">"Loading…"</p> }.into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
-            Some(Ok(v)) => view! {
-                <p>"Tick " {s(&v["tick"])} ", team " {s(&v["team_id"])} ", service " {s(&v["service_id"])} ": " {s(&v["status"])}</p>
-                <pre>{s_opt(&v["output"])}</pre>
-            }.into_any(),
+            Some(Ok(v)) => {
+                let st = s(&v["status"]);
+                let cls = status_cls(&st);
+                let out = v["output"].as_str().unwrap_or("").to_string();
+                let lines: Vec<AnyView> = if out.is_empty() {
+                    vec![view! { <span class="dim">"(no output)"</span> }.into_any()]
+                } else {
+                    out.split_inclusive('\n').enumerate().map(|(i, l)| {
+                        let line_cls = if i == 0 { "cin" } else if is_error_line(l) { "cerr" } else { "cout" };
+                        view! { <span class=line_cls>{l.to_string()}</span> }.into_any()
+                    }).collect()
+                };
+                view! {
+                    <div class="facts">
+                        <div class="tile"><div class="k">"tick"</div><div class="v">{s(&v["tick"])}</div></div>
+                        <div class="tile"><div class="k">"team"</div><div class="v">{s(&v["team_id"])}</div></div>
+                        <div class="tile"><div class="k">"service"</div><div class="v">{s(&v["service_id"])}</div></div>
+                        <div class="tile"><div class="k">"status"</div><div class="v"><span class=cls>{st}</span></div></div>
+                        <div class="tile">
+                            <div class="k">"time"</div>
+                            <div class="v">{v["time"].as_f64().map(|t| format!("{t:.2}s")).unwrap_or_else(|| "—".into())}</div>
+                        </div>
+                    </div>
+                    <h2>"Checker output"</h2>
+                    <pre>{lines}</pre>
+                }.into_any()
+            }
         }}
     }
+}
+
+fn is_error_line(line: &str) -> bool {
+    let low = line.to_lowercase();
+    ["error", "exception", "failed", "not found", "mumble", "crashed", "timeout", "refused", "denied"]
+        .iter().any(|needle| low.contains(needle))
 }
 
 // ---- Flags -------------------------------------------------------------------
@@ -320,47 +574,83 @@ pub fn Flags() -> impl IntoView {
     });
     view! {
         <h1>"Flags"</h1>
-        <form class="inline" on:submit=|e| e.prevent_default()>
-            <input placeholder="SAAR{...}" style="width: 420px" prop:value=flag on:input=move |e| set_flag.set(event_target_value(&e)) />
-            <button type="button" on:click=move |_| set_submitted.set(flag.get())>"Analyze"</button>
+        <div class="sub">"paste a flag to decode it (HMAC + tick/team/service fields)"</div>
+        <form class="row" on:submit=|e| e.prevent_default()>
+            <input class="flag-input" placeholder="FLAG{...}" prop:value=flag on:input=move |e| set_flag.set(event_target_value(&e)) />
+            <button type="button" class="primary" on:click=move |_| set_submitted.set(flag.get())>"Analyze"</button>
         </form>
         {move || match data.get() {
             None => "".into_any(),
             Some(Err(e)) => err_box(&e).into_any(),
-            Some(Ok(v)) => view! {
-                {if v["demo_flags"].is_array() {
+            Some(Ok(v)) => {
+                let analysis = if v["flag"].is_null() {
+                    "".into_any()
+                } else {
+                    let valid = v["valid"].as_bool().unwrap_or(false);
+                    let repaired = v["repaired_flag"].as_str().map(str::to_string);
+                    let has_repaired = repaired.is_some();
+                    view! {
+                        <h2>"Analysis"</h2>
+                        {if let Some(err) = v["err"].as_str() {
+                            view! { <p class="err">{format!("Error: {err}")}</p> }.into_any()
+                        } else { "".into_any() }}
+                        <div class="decode">
+                            <span class="k">"valid"</span>
+                            <span class=if valid { "ok" } else { "err" }>{if valid { "VALID flag (MAC verified)" } else { "INVALID flag" }}</span>
+                            <span class="k">"stored tick"</span><span>{s(&v["stored_tick"])}</span>
+                            <span class="k">"team"</span>
+                            <span>{format!("{} — {}", s(&v["teamid"]), s_opt(&v["team"]["name"]))}</span>
+                            <span class="k">"service"</span>
+                            <span>{format!("{} — {}", s(&v["serviceid"]), s_opt(&v["service"]["name"]))}</span>
+                            <span class="k">"payload"</span><span><code>{s(&v["payload"])}</code></span>
+                            <span class="k">"MAC"</span>
+                            <span class=if valid { "ok" } else { "err" }>{format!("{} (expected {})", s(&v["mac"]), s(&v["real_mac"]))}</span>
+                            <span class="k">"repaired"</span>
+                            <span class=if has_repaired { "warn" } else { "" }>
+                                {repaired.unwrap_or_else(|| "—".into())}
+                            </span>
+                        </div>
+                    }.into_any()
+                };
+                let submissions = if valid_submissions(&v) {
+                    view! {
+                        <h2>"Submissions of this flag"</h2>
+                        {table(&["Submitter", "Tick", "Timestamp"],
+                            v["submissions"].as_array().cloned().unwrap_or_default().iter().map(|f| vec![
+                                format!("team {}", s(&f["submitted_by"])).into_any(),
+                                s(&f["tick_submitted"]).into_any(),
+                                short_ts(&f["ts"]).into_any(),
+                            ]).collect())}
+                    }.into_any()
+                } else { "".into_any() };
+                let demo = if v["demo_flags"].is_array() {
                     view! {
                         <h2>"Demo flags (status checks)"</h2>
                         {table(&["Purpose", "Expected", "Flag"],
-                            v["demo_flags"].as_array().cloned().unwrap_or_default().iter().map(|d| vec![
-                                s(&d["title"]).into_any(), s(&d["expect"]).into_any(),
-                                view! { <code>{s(&d["flag"])}</code> }.into_any(),
-                            ]).collect())}
+                            v["demo_flags"].as_array().cloned().unwrap_or_default().iter().map(|d| {
+                                let expect = s(&d["expect"]);
+                                let low = expect.to_lowercase();
+                                let cls = if low.contains("repair") {
+                                    "warn"
+                                } else if low.contains("invalid") || low.contains("expired") || low.contains("error") {
+                                    "err"
+                                } else {
+                                    "ok"
+                                };
+                                vec![
+                                    s(&d["title"]).into_any(),
+                                    view! { <span class=cls>{expect}</span> }.into_any(),
+                                    view! { <code>{s(&d["flag"])}</code> }.into_any(),
+                                ]
+                            }).collect())}
                     }.into_any()
-                } else { "".into_any() }}
-                {if v["flag"].is_null() { "".into_any() } else {
-                    let valid = v["valid"].as_bool().unwrap_or(false);
-                    view! {
-                        <h2>"Analysis"</h2>
-                        {if let Some(err) = v["err"].as_str() { view! { <p class="err">{"Error: "}{err}</p> }.into_any() } else { "".into_any() }}
-                        <p class={if valid { "ok" } else { "err" }}>{if valid { "VALID flag" } else { "INVALID flag" }}</p>
-                        <p>"Tick " {s(&v["stored_tick"])} ", team " {s(&v["teamid"])} " (" {s_opt(&v["team"]["name"])} "), service " {s(&v["serviceid"])} " ("
-                           {s_opt(&v["service"]["name"])} "), payload " {s(&v["payload"])} ", MAC " {s(&v["mac"])} " (expected " {s(&v["real_mac"])} ")"</p>
-                        {if let Some(repaired) = v["repaired_flag"].as_str() {
-                            view! { <p class="warn">{"Repaired flag: "}<code>{repaired}</code></p> }.into_any()
-                        } else { "".into_any() }}
-                        {if valid && v["submissions"].is_array() {
-                            view! {
-                                <h2>"Submissions"</h2>
-                                {table(&["Submitter", "Tick", "TS"],
-                                    v["submissions"].as_array().cloned().unwrap_or_default().iter().map(|f| vec![
-                                        s(&f["submitted_by"]).into_any(), s(&f["tick_submitted"]).into_any(), s(&f["ts"]).into_any(),
-                                    ]).collect())}
-                            }.into_any()
-                        } else { "".into_any() }}
-                    }.into_any()
-                }}
-            }.into_any(),
+                } else { "".into_any() };
+                view! { {analysis} {submissions} {demo} }.into_any()
+            }
         }}
     }
+}
+
+fn valid_submissions(v: &Value) -> bool {
+    v["valid"].as_bool().unwrap_or(false) && v["submissions"].is_array()
 }

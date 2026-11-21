@@ -4,7 +4,7 @@
 
 use crate::db_filesystem;
 use gamelib_rs::service_config::ServiceConfig;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use sqlx::PgPool;
 use std::path::{Path, PathBuf};
 

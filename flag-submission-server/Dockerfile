@@ -40,6 +40,6 @@ COPY --from=build /build/flag-submission-server /flag-submission-server
 WORKDIR /
 USER nobody
 EXPOSE 31337
-ENV SAARCTF_CONFIG=/config.yaml
+ENV CTF_CONFIG=/config.yaml
 
 CMD ["/flag-submission-server", "31337", "8"]

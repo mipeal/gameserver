@@ -8,7 +8,7 @@ use crate::timer::{redis_set_and_publish, TimingState};
 use rand::seq::SliceRandom;
 use redis::aio::ConnectionManager;
 use redis::AsyncCommands;
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use std::collections::HashSet;

@@ -3,7 +3,7 @@
 
 use crate::logger;
 use crate::models::{LOG_IMPORTANT, LOG_INFO};
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use sqlx::PgPool;
 
 /// `VpnStatus` StrEnum.
@@ -50,7 +50,7 @@ impl VpnControl {
         Ok(VpnControl {
             cfg: cfg.clone(),
             db,
-            redis: saarctf_commons_rs::redis::get_redis_connection(&cfg.redis)
+            redis: ctf_commons_rs::redis::get_redis_connection(&cfg.redis)
                 .await
                 .map_err(|e| e.to_string())?,
         })

@@ -48,15 +48,29 @@ impl ChartHandle {
         let _ = js_sys::Reflect::set(&config, &"data".into(), &data);
         let options = js_sys::Object::new();
         let _ = js_sys::Reflect::set(&options, &"maintainAspectRatio".into(), &false.into());
+        // no draw-in animation: charts are rebuilt on every tick and the
+        // animation would restart from zero each time
+        let _ = js_sys::Reflect::set(&options, &"animation".into(), &false.into());
         let _ = js_sys::Reflect::set(&options, &"responsive".into(), &true.into());
-        // Japandi theme: default text color for ticks + legend labels
-        let _ = js_sys::Reflect::set(&options, &"color".into(), &css_var("--jp-mut", "#9a9184").into());
+        // Ops Console theme: default text color for ticks + legend labels
+        let _ = js_sys::Reflect::set(&options, &"color".into(), &css_var("--dim", "#8b949e").into());
         // chartOptions.interaction, as in the original
         let interaction = js_sys::Object::new();
         let _ = js_sys::Reflect::set(&interaction, &"mode".into(), &"nearest".into());
         let _ = js_sys::Reflect::set(&interaction, &"axis".into(), &"x".into());
         let _ = js_sys::Reflect::set(&interaction, &"intersect".into(), &false.into());
         let _ = js_sys::Reflect::set(&options, &"interaction".into(), &interaction.into());
+        // restrained legend: small swatches, dim labels
+        let legend_labels = js_sys::Object::new();
+        let _ = js_sys::Reflect::set(&legend_labels, &"boxWidth".into(), &8.into());
+        let _ = js_sys::Reflect::set(&legend_labels, &"boxHeight".into(), &8.into());
+        let _ = js_sys::Reflect::set(&legend_labels, &"padding".into(), &10.into());
+        let legend_font = js_sys::Object::new();
+        let _ = js_sys::Reflect::set(&legend_font, &"size".into(), &10.into());
+        let _ = js_sys::Reflect::set(&legend_labels, &"font".into(), &legend_font);
+        let legend = js_sys::Object::new();
+        let _ = js_sys::Reflect::set(&legend, &"labels".into(), &legend_labels);
+        let _ = js_sys::Reflect::set(&options, &"legend".into(), &legend);
         let scales_obj = js_sys::Object::from(scales.clone());
         let _ = js_sys::Reflect::set(&options, &"scales".into(), &scales_obj);
         let _ = js_sys::Reflect::set(&config, &"options".into(), &options);
@@ -191,13 +205,15 @@ pub fn y_scale(stacked: bool, min: Option<f64>) -> JsValue {
     fn themed_axis() -> js_sys::Object {
         let axis = js_sys::Object::new();
         let grid = js_sys::Object::new();
-        let _ = js_sys::Reflect::set(&grid, &"color".into(), &css_var("--jp-line", "#2e2922").into());
+        let _ = js_sys::Reflect::set(&grid, &"color".into(), &css_var("--line", "#2d3644").into());
         let _ = js_sys::Reflect::set(&axis, &"grid".into(), &grid.into());
         let border = js_sys::Object::new();
-        let _ = js_sys::Reflect::set(&border, &"color".into(), &css_var("--jp-line", "#2e2922").into());
+        let _ = js_sys::Reflect::set(&border, &"color".into(), &css_var("--line", "#2d3644").into());
         let _ = js_sys::Reflect::set(&axis, &"border".into(), &border.into());
         let ticks = js_sys::Object::new();
-        let _ = js_sys::Reflect::set(&ticks, &"color".into(), &css_var("--jp-mut", "#9a9184").into());
+        let _ = js_sys::Reflect::set(&ticks, &"color".into(), &css_var("--dim", "#8b949e").into());
+        let _ = js_sys::Reflect::set(&ticks, &"maxTicksLimit".into(), &10.into());
+        let _ = js_sys::Reflect::set(&ticks, &"autoSkip".into(), &true.into());
         let _ = js_sys::Reflect::set(&axis, &"ticks".into(), &ticks.into());
         axis
     }

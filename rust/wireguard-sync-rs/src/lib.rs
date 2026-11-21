@@ -32,12 +32,12 @@ pub fn is_interface_does_not_exist(e: &str) -> bool {
 }
 
 /// `load_default_config()` — CONFIG env var or the default config file.
-pub fn load_config() -> Result<saarctf_commons_rs::config::Config, String> {
+pub fn load_config() -> Result<ctf_commons_rs::config::Config, String> {
     let filename = match std::env::var("CONFIG") {
         Ok(f) => std::path::PathBuf::from(f),
         Err(_) => std::path::PathBuf::from("../config/config.yaml"),
     };
-    saarctf_commons_rs::config::Config::load_from_file(&filename, true)
+    ctf_commons_rs::config::Config::load_from_file(&filename, true)
 }
 
 /// `force_schema`.

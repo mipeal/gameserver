@@ -1,7 +1,7 @@
 version: "2.2"
 
 services:
-  saarctf-gameserver:
+  ctf-gameserver:
     build:
       context: "."
       dockerfile: Dockerfile
@@ -28,9 +28,9 @@ services:
     restart: on-failure
     environment:
       # https://hub.docker.com/_/postgres#how-to-extend-this-image
-      POSTGRES_USER: saarsec
+      POSTGRES_USER: ctf
       POSTGRES_PASSWORD: 123456789
-      POSTGRES_DB: saarctf
+      POSTGRES_DB: ctf
   redis:
     image: redis:5.0-alpine
     restart: on-failure
@@ -40,8 +40,8 @@ services:
     restart: on-failure
     environment:
       # https://hub.docker.com/_/rabbitmq#setting-default-user-and-password
-      RABBITMQ_DEFAULT_USER: saarsec
+      RABBITMQ_DEFAULT_USER: ctf
       RABBITMQ_DEFAULT_PASS: 123456789
       # https://hub.docker.com/_/rabbitmq#memory-limits
       RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 100MiB
-      RABBITMQ_DEFAULT_VHOST: saarctf
+      RABBITMQ_DEFAULT_VHOST: ctf

@@ -74,7 +74,7 @@ static YAML::Node config;
 static const char *postgresConfigString = nullptr;
 static std::unordered_map<std::string, std::string> envConfig;
 unsigned char Config::hmac_secret_key[32];
-std::string Config::flagPrefix = "SAAR";
+std::string Config::flagPrefix = "FLAG";
 int Config::nopTeamId;
 int Config::flagRoundsValid;
 
@@ -94,11 +94,11 @@ static void decodeHexSecret(const std::string &hex, unsigned char *output) {
 }
 
 void Config::load() {
-    auto env = getenv("SAARCTF_CONFIG");
+    auto env = getenv("CTF_CONFIG");
     if (env) {
         Config::load(env);
     } else {
-        env = getenv("SAARCTF_CONFIG_DIR");
+        env = getenv("CTF_CONFIG_DIR");
         if (env) {
             Config::load(std::string(env) + "/config.yaml");
         } else {

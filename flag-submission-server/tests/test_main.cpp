@@ -58,7 +58,7 @@ TEST_CASE("Check Flag Parser") {
 		Config::hmac_secret_key[i] = 'a';
 
 	SECTION("A simple Flag") {
-		const char *flag = "SAAR{OQUHAAwAAAAlt3tF4y_TgZlNX2Yi4hw9}";  // service 12 team 7 tick 1337 payload 0
+		const char *flag = "FLAG{OQUHAAwAAAAlt3tF4y_TgZlNX2Yi4hw9}";  // service 12 team 7 tick 1337 payload 0
 		FlagFormat binary_flag;
 		auto decodeSize = base64_decode((unsigned char *) &flag[5], FLAG_LENGTH_B64, (unsigned char *) &binary_flag);
 		REQUIRE(decodeSize == sizeof binary_flag);
@@ -70,7 +70,7 @@ TEST_CASE("Check Flag Parser") {
 	}
 
 	SECTION("Negative Numbers / Potential Overflows") {
-		const char *flag = "SAAR{x_qtrZWVEQBoxEDkuVt8YreJb7pBW_JH}";  // service 0x9595 team 0xadad tick -1337 payload 17
+		const char *flag = "FLAG{x_qtrZWVEQBoxEDkuVt8YreJb7pBW_JH}";  // service 0x9595 team 0xadad tick -1337 payload 17
 		FlagFormat binary_flag;
 		auto decodeSize = base64_decode((unsigned char *) &flag[5], FLAG_LENGTH_B64, (unsigned char *) &binary_flag);
 		REQUIRE(decodeSize == sizeof binary_flag);
@@ -82,7 +82,7 @@ TEST_CASE("Check Flag Parser") {
 	}
 
 	SECTION("Invalid Flag") {
-		const char *flag = "SAAR{x_qtrZWVEQBoxEDkuVt8YreJb7pBW_XX}";  // service 0x9595 team 0xadad tick -1337 payload 17
+		const char *flag = "FLAG{x_qtrZWVEQBoxEDkuVt8YreJb7pBW_XX}";  // service 0x9595 team 0xadad tick -1337 payload 17
 		FlagFormat binary_flag;
 		auto decodeSize = base64_decode((unsigned char *) &flag[5], FLAG_LENGTH_B64, (unsigned char *) &binary_flag);
 		REQUIRE(decodeSize == sizeof binary_flag);

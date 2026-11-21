@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-saarctf-commons-rs = { path = "../saarctf-commons-rs" }
+ctf-commons-rs = { path = "../ctf-commons-rs" }
 controlserver-rs = { path = "../controlserver-rs" }
-saarctf-scripts-rs = { path = "../saarctf-scripts-rs" }
+ctf-scripts-rs = { path = "../ctf-scripts-rs" }
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "postgres", "chrono", "json", "macros"] }
 redis = { version = "0.32", features = ["connection-manager", "tokio-comp"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "process", "io-util", "sync"] }

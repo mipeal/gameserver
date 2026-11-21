@@ -1,0 +1,1180 @@
+{
+  "suite": "responsiveness",
+  "pass": 82,
+  "total": 82,
+  "checks": [
+    {
+      "name": "R-1920x1080-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1920x1080-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1920,
+        "innerWidth": 1920,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1920x1080-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1897,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 1133,
+          "right": 1224,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1920x1080-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1897,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 1133,
+          "right": 1224,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1920x1080-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 23,
+          "right": 1897,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0"
+      }
+    },
+    {
+      "name": "R-1920x1080-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "none",
+        "containers": [],
+        "tableWidth": 1876,
+        "innerWidth": 1920
+      }
+    },
+    {
+      "name": "R-1920x1080-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1920x1080-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1920,
+        "innerWidth": 1920,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1920x1080-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1920x1080-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1920,
+        "innerWidth": 1920,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1417,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 656,
+          "right": 747,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1417,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 656,
+          "right": 747,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 23,
+          "right": 1417,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0"
+      }
+    },
+    {
+      "name": "R-1440x900-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "none",
+        "containers": [],
+        "tableWidth": 1396,
+        "innerWidth": 1440
+      }
+    },
+    {
+      "name": "R-1440x900-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1440x900-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1440x900-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1440x900-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1280,
+        "innerWidth": 1280,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1257,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 497,
+          "right": 587,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1257,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "score": {
+          "left": 497,
+          "right": 587,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 23,
+          "right": 1257,
+          "top": 324,
+          "bottom": 412,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11125.0"
+      }
+    },
+    {
+      "name": "R-1280x800-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "none",
+        "containers": [],
+        "tableWidth": 1236,
+        "innerWidth": 1280
+      }
+    },
+    {
+      "name": "R-1280x800-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1280x800-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1280,
+        "innerWidth": 1280,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1280x800-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1280x800-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1280,
+        "innerWidth": 1280,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1024,
+        "innerWidth": 1024,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1017,
+          "top": 340,
+          "bottom": 428,
+          "height": 88
+        },
+        "score": {
+          "left": 258,
+          "right": 349,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 23,
+          "right": 1017,
+          "top": 340,
+          "bottom": 428,
+          "height": 88
+        },
+        "score": {
+          "left": 258,
+          "right": 349,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 23,
+          "right": 1017,
+          "top": 340,
+          "bottom": 428,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2"
+      }
+    },
+    {
+      "name": "R-1024x768-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "scrollable-container",
+        "containers": [
+          {
+            "tag": "main",
+            "cls": "app-main",
+            "scrollWidth": 1040,
+            "clientWidth": 1024
+          }
+        ],
+        "tableWidth": 996,
+        "innerWidth": 1024
+      }
+    },
+    {
+      "name": "R-1024x768-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1024x768-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1024,
+        "innerWidth": 1024,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1024x768-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-1024x768-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1024,
+        "innerWidth": 1024,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 356,
+          "bottom": 443,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 356,
+          "bottom": 443,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 356,
+          "bottom": 443,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2"
+      }
+    },
+    {
+      "name": "R-768x1024-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "scrollable-container",
+        "containers": [
+          {
+            "tag": "main",
+            "cls": "app-main",
+            "scrollWidth": 1040,
+            "clientWidth": 768
+          }
+        ],
+        "tableWidth": 996,
+        "innerWidth": 768
+      }
+    },
+    {
+      "name": "R-768x1024-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-768x1024-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-768x1024-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-768x1024-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 768,
+        "innerWidth": 768,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 414,
+        "innerWidth": 414,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 404,
+          "bottom": 492,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 404,
+          "bottom": 492,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 404,
+          "bottom": 492,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2"
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "scrollable-container",
+        "containers": [
+          {
+            "tag": "main",
+            "cls": "app-main",
+            "scrollWidth": 1040,
+            "clientWidth": 414
+          }
+        ],
+        "tableWidth": 996,
+        "innerWidth": 414
+      }
+    },
+    {
+      "name": "R-414x896-scoretable-header-controls-reachable",
+      "ok": true,
+      "detail": {
+        "controls": [
+          {
+            "label": "dark",
+            "left": 22,
+            "right": 72,
+            "top": 73,
+            "bottom": 99,
+            "width": 50,
+            "inViewport": true
+          },
+          {
+            "label": "show history",
+            "left": 78,
+            "right": 183,
+            "top": 73,
+            "bottom": 99,
+            "width": 105,
+            "inViewport": true
+          },
+          {
+            "label": "only sums",
+            "left": 189,
+            "right": 273,
+            "top": 73,
+            "bottom": 99,
+            "width": 84,
+            "inViewport": true
+          },
+          {
+            "label": "settings-button",
+            "left": 284,
+            "right": 314,
+            "top": 110,
+            "bottom": 130,
+            "width": 30,
+            "inViewport": true
+          }
+        ],
+        "unreachable": []
+      }
+    },
+    {
+      "name": "R-414x896-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-414x896-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 414,
+        "innerWidth": 414,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-414x896-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-414x896-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 414,
+        "innerWidth": 414,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11130.2"
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "scrollable-container",
+        "containers": [
+          {
+            "tag": "main",
+            "cls": "app-main",
+            "scrollWidth": 1040,
+            "clientWidth": 375
+          }
+        ],
+        "tableWidth": 996,
+        "innerWidth": 375
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-header-controls-reachable",
+      "ok": true,
+      "detail": {
+        "controls": [
+          {
+            "label": "dark",
+            "left": 22,
+            "right": 72,
+            "top": 73,
+            "bottom": 99,
+            "width": 50,
+            "inViewport": true
+          },
+          {
+            "label": "show history",
+            "left": 78,
+            "right": 183,
+            "top": 73,
+            "bottom": 99,
+            "width": 105,
+            "inViewport": true
+          },
+          {
+            "label": "only sums",
+            "left": 189,
+            "right": 273,
+            "top": 73,
+            "bottom": 99,
+            "width": 84,
+            "inViewport": true
+          },
+          {
+            "label": "settings-button",
+            "left": 284,
+            "right": 314,
+            "top": 110,
+            "bottom": 130,
+            "width": 30,
+            "inViewport": true
+          }
+        ],
+        "unreachable": []
+      }
+    },
+    {
+      "name": "R-375x667-team1-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-375x667-team1-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-375x667-graphs-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-375x667-graphs-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-1440x900-dashboard-no-errors",
+      "ok": true,
+      "detail": {
+        "console": 0,
+        "pageerror": 0,
+        "requestfailed": 0,
+        "http4xx5xx": 0
+      }
+    },
+    {
+      "name": "R-1440x900-dashboard-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-light-mode-active",
+      "ok": true,
+      "detail": {
+        "bodyBg": "rgb(255, 255, 255)"
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-no-errors",
+      "ok": true,
+      "detail": {
+        "console": [],
+        "pageerror": [],
+        "requestfailed": [],
+        "http4xx5xx": []
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-no-horizontal-overflow",
+      "ok": true,
+      "detail": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "overflowPx": 0
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-team1-row-found",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11135.4",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-team1-score-in-viewport-width",
+      "ok": true,
+      "detail": {
+        "found": true,
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "score": {
+          "left": 235,
+          "right": 326,
+          "width": 91
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11135.4",
+        "valueCount": 3,
+        "inViewportWidth": true,
+        "verticallyVisible": true
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-team1-row-visible",
+      "ok": true,
+      "detail": {
+        "row": {
+          "left": 0,
+          "right": 994,
+          "top": 289,
+          "bottom": 377,
+          "height": 88
+        },
+        "scoreText": "Attack 0.0 Defense 0.0 SLA 11135.4"
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-horizontal-behavior-recorded",
+      "ok": true,
+      "detail": {
+        "mode": "scrollable-container",
+        "containers": [
+          {
+            "tag": "main",
+            "cls": "app-main",
+            "scrollWidth": 1040,
+            "clientWidth": 375
+          }
+        ],
+        "tableWidth": 996,
+        "innerWidth": 375
+      }
+    },
+    {
+      "name": "R-375x667-scoretable-light-header-controls-reachable",
+      "ok": true,
+      "detail": {
+        "controls": [
+          {
+            "label": "dark",
+            "left": 22,
+            "right": 72,
+            "top": 73,
+            "bottom": 99,
+            "width": 50,
+            "inViewport": true
+          },
+          {
+            "label": "show history",
+            "left": 78,
+            "right": 183,
+            "top": 73,
+            "bottom": 99,
+            "width": 105,
+            "inViewport": true
+          },
+          {
+            "label": "only sums",
+            "left": 189,
+            "right": 273,
+            "top": 73,
+            "bottom": 99,
+            "width": 84,
+            "inViewport": true
+          },
+          {
+            "label": "settings-button",
+            "left": 284,
+            "right": 314,
+            "top": 110,
+            "bottom": 130,
+            "width": 30,
+            "inViewport": true
+          }
+        ],
+        "unreachable": []
+      }
+    }
+  ]
+}

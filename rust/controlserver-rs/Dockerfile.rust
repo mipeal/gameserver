@@ -10,12 +10,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends python3-dev pkg-config \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
-COPY rust/saarctf-commons-rs ./saarctf-commons-rs
+COPY rust/ctf-commons-rs ./ctf-commons-rs
 COPY rust/gamelib-rs ./gamelib-rs
 COPY rust/controlserver-rs ./controlserver-rs
 WORKDIR /build/controlserver-rs
 RUN cargo build --release --bins
-COPY rust/saarctf-scripts-rs /build/saarctf-scripts-rs
+COPY rust/ctf-scripts-rs /build/ctf-scripts-rs
 COPY rust/vpnboard-rs /build/vpnboard-rs
 WORKDIR /build/vpnboard-rs
 RUN cargo build --release --bins
@@ -93,7 +93,7 @@ COPY --from=checker_build \
     /build/checker-exec/target/release/checker-exec \
     /usr/local/bin/checker-exec
 
-ENV SAARCTF_PYTHON_DIR=/opt
+ENV CTF_PYTHON_DIR=/opt
 # checker-exec embeds CPython; /opt/venv first so the shim's imports (and the
 # demo_checker special) resolve against the venv with deps
 ENV PATH="/opt/venv/bin:${PATH}"

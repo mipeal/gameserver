@@ -187,7 +187,7 @@
           "type": "integer"
         },
         "flag_prefix": {
-          "default": "SAAR",
+          "default": "FLAG",
           "description": "Flag prefix XXXX{...}",
           "maxLength": 4,
           "minLength": 4,
@@ -230,7 +230,7 @@
           "type": "integer"
         },
         "database": {
-          "default": "saarctf_metrics",
+          "default": "ctf_metrics",
           "description": "Metrics postgres database name",
           "title": "Database",
           "type": "string"
@@ -642,7 +642,7 @@
           "type": "integer"
         },
         "database": {
-          "default": "saarctf",
+          "default": "ctf",
           "description": "Postgres database name",
           "title": "Database",
           "type": "string"
@@ -812,7 +812,7 @@
           "type": "number"
         },
         "algorithm": {
-          "default": "saarctf:SaarctfScoreAlgorithm",
+          "default": "ctf:CtfScoreAlgorithm",
           "title": "Algorithm",
           "type": "string"
         },

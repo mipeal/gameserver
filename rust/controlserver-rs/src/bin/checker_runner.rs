@@ -9,7 +9,7 @@ async fn main() {
     controlserver_rs::logger::setup_script_logging(None);
     let db = connect_db(&cfg).await.expect("database");
     sqlx::migrate!().run(&db).await.expect("migrations");
-    let concurrency = std::env::var("SAARCTF_RUNNER_CONCURRENCY")
+    let concurrency = std::env::var("CTF_RUNNER_CONCURRENCY")
         .ok()
         .and_then(|v| v.parse().ok())
         .unwrap_or_else(|| {

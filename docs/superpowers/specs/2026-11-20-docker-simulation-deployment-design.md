@@ -1,11 +1,12 @@
 # Docker simulation deployment — design
 
 Date: 2026-11-20
-Status: draft (awaiting approval)
+Status: implemented — the stack lives in `rust/docker-compose.simulation.yml`
+and `rust/simulation/`; the current guide is [docs/simulation.md](../../simulation.md).
 
 ## Intent and why
 
-Demonstrate the **whole saarCTF gameserver pipeline** — flag submission, checker
+Demonstrate the **whole CTF gameserver pipeline** — flag submission, checker
 workers probing vulnerable services, scoring, scoreboard generation, and the
 Leptos scoreboard SPA — running entirely in Docker, with **containerized
 vulnboxes standing in for real teams**. Purpose: a self-contained demo you can
@@ -27,7 +28,7 @@ deployment.
   config overrides `network.vulnbox_ip` (the demo config's value computes
   `127.0.N.2`, loopback, unusable for containers), so **zero code change** is
   needed for the gameserver to reach them.
-- Gated by an environment variable (`SAARCTF_SIMULATION=1`) so that with it
+- Gated by an environment variable (`CTF_SIMULATION=1`) so that with it
   unset, controlserver-rs behaves **exactly** as it does today (ADR-004
   semantic equivalence; nothing in the real pipeline may change).
 - Configurable scale: `TEAMS` (default 8, the seed fixture) vulnbox containers.
@@ -56,7 +57,7 @@ deployment.
 ## Anti-goals (failure modes)
 
 - Any change to controlserver-rs/checker_runner/scoreboard behavior when
-  `SAARCTF_SIMULATION` is unset — would break the real pipeline.
+  `CTF_SIMULATION` is unset — would break the real pipeline.
 - Printing or persisting `SECRET_FLAG_KEY` in logs, compose output or fixtures
   (demo config's zero placeholder is fine).
 - Simulation logic living in the hot path (timer tick, scoring) beyond a
@@ -79,7 +80,7 @@ deployment.
 1. **Backing stores** — postgres 17 and redis 7.4 (as in the existing compose;
    sim-local volumes so the demo never touches real data).
 2. **controlserver** — the existing `gameserver-rust` image, env
-   `SAARCTF_SIMULATION=1`, seeded from the demo seed (fixture teams/services).
+   `CTF_SIMULATION=1`, seeded from the demo seed (fixture teams/services).
 3. **checker_runner** ×N — same image, spawns the Python checker subprocesses
    each tick, as today.
 4. **submitter** — the existing Python flag-submission-server image (ports
@@ -132,7 +133,7 @@ seed insert — builder's call).
 - **SIM_VPN=0:** no wg anywhere; teams online via seed; everything else
   unchanged.
 - The config for the sim (`config.sim.yaml`) mirrors
-  `/tmp/saarctf-demo/config.yaml` but: points all host names at compose
+  `/tmp/ctf-demo/config.yaml` but: points all host names at compose
   service names, overrides `network.vulnbox_ip` (plus
   gameserver_ip/gateway/testbox for consistency) so
   `team_id_to_vulnbox_ip(N) = 10.32.N.2`, and sets
@@ -140,7 +141,7 @@ seed insert — builder's call).
 
 ### Env-gated code changes (controlserver-rs, minimal)
 
-- `SAARCTF_SIMULATION=1` only: auto-start the game timer on boot when no game
+- `CTF_SIMULATION=1` only: auto-start the game timer on boot when no game
   is running (no manual admin call needed for the demo). Team-online gating
   needs no code — `dispatcher_check_vpn_status: false` already selects all
   teams, and the seed sets `vpn_connected = TRUE` for the cosmetic consumers.
@@ -178,6 +179,6 @@ seed insert — builder's call).
   first-blood event with `SIM_ATTACK_RATE > 0`, scoreboard JSON regenerated
   per tick, SPA renders it; VPN: wg handshakes visible on vpnboard, taking a
   vulnbox tunnel down stops that team's checker results and the board shows
-  it, bringing it back up restores them; and with `SAARCTF_SIMULATION` unset
+  it, bringing it back up restores them; and with `CTF_SIMULATION` unset
   the real compose path is byte-for-byte unaffected (no diff in default
   env/config files, no new default behavior).

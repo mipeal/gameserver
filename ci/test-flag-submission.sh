@@ -8,15 +8,15 @@ set -euxo pipefail
 cp ./ci-config.yaml ./config.yaml
 # schema bootstrap: alembic migrations were replaced by the sqlx baseline (ADR-005)
 export PGPASSWORD=123456789
-psql -h postgres -Usaarsec -d saarctf -f rust/controlserver-rs/migrations/0001_baseline.sql
+psql -h postgres -Uctf -d ctf -f rust/controlserver-rs/migrations/0001_baseline.sql
 
 # Build the Rust gameserver bins (controlserver + checker workers + checker-exec)
 # and the Rust ops scripts (reset-ctf), then run the Rust controlserver
 cargo build --release --quiet \
     -p controlserver-rs --bin controlserver --bin checker_runner \
-    -p checker-exec -p saarctf-scripts-rs
+    -p checker-exec -p ctf-scripts-rs
 export CONFIG="$(pwd)/config.yaml"
-export SAARCTF_PYTHON_DIR="$(pwd)"
+export CTF_PYTHON_DIR="$(pwd)"
 export PATH="$(pwd)/target/release:$PATH"
 ./target/release/controlserver &
 

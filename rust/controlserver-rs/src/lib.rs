@@ -18,7 +18,7 @@ pub mod timer;
 pub mod vpncontrol;
 pub mod worker;
 
-use saarctf_commons_rs::config::Config;
+use ctf_commons_rs::config::Config;
 use std::path::PathBuf;
 
 /// `load_default_config()` as app.py does it: `CONFIG` env var or the default

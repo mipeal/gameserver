@@ -42,7 +42,7 @@ fn play_first_blood(pairs: &[(String, String)]) {
         let Ok(osc) = ctx.create_oscillator() else { return };
         let Ok(gain) = ctx.create_gain() else { return };
         let now = ctx.current_time() + at;
-        let _ = osc.set_type(web_sys::OscillatorType::Sine);
+        osc.set_type(web_sys::OscillatorType::Sine);
         let f = osc.frequency();
         let g = gain.gain();
         let _ = f.set_value_at_time(f0 as f32, now);
@@ -80,10 +80,9 @@ pub fn NotificationOverlay() -> impl IntoView {
         let ev = events[0].clone();
         store.events.update(|e| { e.remove(0); });
         last_shown.set(now);
-        let hide_after;
-        if ev.0 == "final" {
+        let hide_after = if ev.0 == "final" {
             current.set(Some(Current::Final));
-            hide_after = 15_000;
+            15_000
         } else {
             // coalesce every queued consecutive firstblood (same tick, often
             // several services) into ONE overlay with ONE sound
@@ -106,8 +105,8 @@ pub fn NotificationOverlay() -> impl IntoView {
                 };
                 play_first_blood(&pairs_now);
             }
-            hide_after = 10_000;
-        }
+            10_000
+        };
         let hide = current;
         let _ = gloo_timers::callback::Timeout::new(hide_after, move || hide.set(None));
     });
@@ -192,7 +191,7 @@ fn FinalTable(store: Store) -> impl IntoView {
                                 })}
                             </td>
                             <td><strong>{name}</strong></td>
-                            <td><small>{format!("{:.1} points", rank.points)}</small></td>
+                            <td><small>{format!("{} points", crate::pages::float_value(rank.points))}</small></td>
                         </tr>
                     }
                 }).collect::<Vec<_>>()}

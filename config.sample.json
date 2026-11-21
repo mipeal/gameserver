@@ -6,7 +6,7 @@
             "port": 5432,
             "username": "",
             "password": "",
-            "database": "saarctf_2"
+            "database": "ctf_2"
         },
         "redis": {
             "host": "localhost",
@@ -16,11 +16,11 @@
         "rabbitmq": {
             "host": "localhost",
             "port": 5672,
-            "vhost": "saarctf",
-            "username": "saarctf",
+            "vhost": "ctf",
+            "username": "ctf",
             "password": "123456789"
         },
-        "website": "sqlite:///../../saarctf-webpage/db.sqlite3"
+        "website": "sqlite:///../../ctf-webpage/db.sqlite3"
     },
     "website_team_url": "...",
     "scoreboard_path": "/dev/shm/scoreboard",
@@ -58,7 +58,7 @@
         "gameserver_range": "10.32.250.0/24"
     },
     "wireguard_sync": {
-        "api_server": "https://ctf.saarland",
+        "api_server": "https://example.com",
         "api_token": "..."
     }
 }

@@ -36,7 +36,7 @@ fi
 # bytes are smaller; packets/syns are derived from bytes. All 8 fixture teams.
 # Derived from the absolute epoch minute so re-runs only add the new minute
 # instead of duplicating the previous seam value.
-$COMPOSE exec -T postgres psql -U saarctf -d saarctf -v ON_ERROR_STOP=1 <<'SQL'
+$COMPOSE exec -T postgres psql -U ctf -d ctf -v ON_ERROR_STOP=1 <<'SQL'
 WITH base AS (
     SELECT date_trunc('minute', now()) AS now_min
 ), grid AS (
@@ -69,5 +69,5 @@ SELECT ts, team_id,
 FROM samples
 ON CONFLICT ("time", team_id) DO NOTHING;
 SQL
-$COMPOSE exec -T postgres psql -U saarctf -d saarctf -tAc \
+$COMPOSE exec -T postgres psql -U ctf -d ctf -tAc \
     'SELECT format('"'"'traffic: %s rows for %s teams'"'"', count(*), count(DISTINCT team_id)) FROM team_traffic_stats'

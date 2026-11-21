@@ -60,7 +60,7 @@ def create_teams(conn: t.Any) -> None:
     cur.execute("DELETE FROM teams")
     cur.execute(
         "INSERT INTO teams (id, name, vpn_connected, vpn_last_connect) VALUES (%s, %s, %s, %s), (%s, %s, %s, %s)",
-        (1, "NOP", False, None, 2, "🏁test🏁", True, "1970-01-01"),
+        (1, "Team 1", False, None, 2, "🏁test🏁", True, "1970-01-01"),
     )
     conn.commit()
 
@@ -97,7 +97,7 @@ def spawn_gamseserver_components() -> t.List[process]:
     env = dict(
         os.environ,
         CONFIG=os.path.abspath("./config.yaml"),
-        SAARCTF_PYTHON_DIR=os.getcwd(),
+        CTF_PYTHON_DIR=os.getcwd(),
         PATH=os.getcwd() + "/target/release:" + os.environ.get("PATH", ""),
     )
 
@@ -176,7 +176,7 @@ def main() -> None:
     # reset everything
     logging.info('Apply sqlx baseline schema (alembic removed, ADR-005) ...')
     env = dict(os.environ, PGPASSWORD='123456789')
-    subprocess.run(["psql", "-h", "postgres", "-Usaarsec", "-d", "saarctf",
+    subprocess.run(["psql", "-h", "postgres", "-Uctf", "-d", "ctf",
                     "-f", "rust/controlserver-rs/migrations/0001_baseline.sql"],
                    check=True, timeout=20, env=env)
     logging.info('Run reset-ctf (rust bin) ...')

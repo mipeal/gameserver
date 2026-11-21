@@ -1,0 +1,458 @@
+/*
+ * Ops Console theme — replaces the Japandi layer. Loaded after scoreboard.css
+ * (the live platform's compiled Bootstrap build) and components.css. Pure
+ * restyle: no route, control, toggle or data field is removed. Tokens are
+ * shared verbatim with the admin GUI so both apps read as one system.
+ */
+
+:root {
+	--bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2d3644;
+	--fg:#e6edf3; --dim:#8b949e; --ok:#3fb950; --warn:#d29922;
+	--err:#f85149; --acc:#58a6ff; --mono:'SF Mono',ui-monospace,Menlo,monospace;
+	/* top-3 row tints (blend of --panel and --acc) */
+	--row1:#1b2531; --row2:#191f2c; --row3:#181e28;
+	--hover:#202836;
+	--field:#0d1117;
+	color-scheme: dark;
+}
+/* the Ops Console is dark-first; the theme toggle still yields a usable
+   light variant of the same system */
+html:not(.dark) {
+	--bg:#ffffff; --panel:#f6f8fa; --panel2:#eef1f4; --line:#d0d7de;
+	--fg:#1f2328; --dim:#57606a; --ok:#1a7f37; --warn:#9a6700;
+	--err:#cf222e; --acc:#0969da;
+	--row1:#dfeafb; --row2:#ebf2fc; --row3:#f4f8fd;
+	--hover:#eaeef2;
+	--field:#ffffff;
+	color-scheme: light;
+}
+
+/* ===== base ===== */
+html, body { background-color: var(--bg); }
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+	color: var(--fg);
+	font-variant-numeric: tabular-nums;
+	margin: 0;
+}
+a { color: var(--acc); }
+a:hover, a:focus { color: var(--fg); }
+.small, small, .text-muted { color: var(--dim); }
+h1, h2, h3, h4, h5, h6 { margin: 0; text-transform: none; }
+h1 { font-size: 15px; letter-spacing: 2px; }
+h2 { font-size: 11px; color: var(--dim); text-transform: uppercase;
+     letter-spacing: 1.5px; margin: 20px 0 8px; }
+h3 { font-size: 11px; color: var(--dim); text-transform: uppercase;
+     letter-spacing: 1.5px; }
+.sub { color: var(--dim); font-size: 11.5px; margin: 4px 0 14px; }
+.skip-link {
+	position: absolute; left: -9999px; top: 0; z-index: 2000;
+	background: var(--panel); color: var(--fg);
+	padding: 8px 16px; border: 1px solid var(--acc); border-radius: 0 0 6px 0;
+}
+.skip-link:focus { left: 0; }
+#main-content { outline: none; }
+
+/* ===== app header (role mocks: logo · nav · clock · settings) ===== */
+.app-header {
+	display: flex; align-items: center; gap: 18px;
+	padding: 12px 22px; background: var(--panel);
+	border-bottom: 1px solid var(--line);
+	/* keep the band (and its dropdown) above the team chart canvas */
+	z-index: 100; position: relative;
+}
+.app-header .logo {
+	font-family: var(--mono); font-weight: 700; letter-spacing: 1px;
+	font-size: 16px; color: var(--fg); text-decoration: none; white-space: nowrap;
+}
+.app-header .logo span { color: var(--acc); }
+.app-header .logo:hover { color: var(--fg); }
+.mainnav {
+	display: flex; gap: 4px; font-family: var(--mono); font-size: 12.5px;
+	margin-left: 6px;
+}
+/* icon-only nav: accessible name is .sr-only, label is the title tooltip */
+.mainnav a {
+	display: inline-flex; align-items: center; justify-content: center;
+	padding: 4px 7px; border-radius: 4px;
+	color: var(--dim); text-decoration: none; white-space: nowrap;
+}
+.mainnav a .fas { font-size: 15px; line-height: 1; }
+.mainnav a:hover, .mainnav a:focus { color: var(--fg); text-decoration: none; }
+.mainnav a[aria-current="page"] {
+	color: var(--acc); box-shadow: inset 0 -2px 0 var(--acc);
+}
+.backlink {
+	font-family: var(--mono); font-size: 12px;
+	color: var(--dim); text-decoration: none; white-space: nowrap;
+}
+.backlink:hover, .backlink:focus { color: var(--fg); text-decoration: none; }
+.backlink.hidden, .backlink[hidden] { display: none; }
+.tickclock {
+	margin-left: auto; /* tick + round clock + gear form the right-aligned group */
+	display: flex; align-items: baseline; gap: 10px;
+	font-family: var(--mono); font-size: 12.5px; color: var(--dim);
+	white-space: nowrap;
+}
+.tickclock b { color: var(--acc); font-size: 15px; font-weight: 700; }
+.tickclock .time { color: var(--fg); }
+.tickclock p { margin: 0; }
+.tickclock .state { display: inline-flex; gap: 6px; }
+.settings { position: relative; }
+.gear {
+	background: transparent; border: 1px solid var(--line); border-radius: 4px;
+	color: var(--dim); padding: 3px 8px; font: 12px var(--mono); cursor: pointer;
+	display: inline-flex; align-items: center; gap: 4px;
+}
+.gear:hover, .gear:focus { color: var(--fg); border-color: var(--acc); }
+.dropdown-menu {
+	background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+	min-width: 250px; padding: 4px 0; margin: 6px 0 0; list-style: none;
+	position: absolute; right: 0; left: auto; z-index: 1050;
+}
+.dropdown-menu > li > a, .dropdown-item {
+	display: block; padding: 6px 14px; font: 12px var(--mono);
+	color: var(--fg); text-decoration: none; cursor: pointer;
+	/* buttons would otherwise paint the UA dark buttonface */
+	width: 100%; background: transparent; border: 0; text-align: left;
+}
+.dropdown-menu > li > a:hover, .dropdown-item:hover,
+.dropdown-menu > li > a:focus, .dropdown-item:focus {
+	background: var(--panel2); color: var(--acc); text-decoration: none;
+}
+
+/* ===== page frame ===== */
+.app-main {
+	padding: 18px 22px 40px;
+	font-family: var(--mono); font-size: 12.5px;
+	overflow-x: auto;
+}
+.loading, .fa-spinner { color: var(--dim); }
+.alert-danger {
+	background: transparent; border: 1px solid var(--err); color: var(--err);
+	border-radius: 6px; padding: 10px 14px;
+}
+
+/* ===== tables ===== */
+.table { width: 100%; border-collapse: separate; border-spacing: 0;
+         background: var(--panel); border: 1px solid var(--line);
+         border-radius: 6px; margin-bottom: 14px; }
+.table-bordered, .table-bordered td, .table-bordered th { border-color: var(--line); }
+.table > thead > tr > th, .table > thead > tr > td,
+.table > tbody > tr > th, .table > tbody > tr > td,
+.table > tfoot > tr > th, .table > tfoot > tr > td { border-top: 0; }
+.table > tbody > tr > td { padding: 8px 10px; border-bottom: 1px solid #212936; }
+.table > tbody > tr:last-child > td { border-bottom: 0; }
+.table > thead > tr > th,
+.table > thead > tr > td {
+	text-align: left; font-size: 10.5px; font-weight: 600; color: var(--dim);
+	text-transform: uppercase; letter-spacing: 0.5px;
+	padding: 8px 10px; border-bottom: 1px solid var(--line);
+	background: var(--panel); white-space: nowrap;
+}
+.table > tbody > tr:hover > td { background: var(--hover); }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+table.table-stickyhead thead { position: sticky; top: 0; z-index: 20; box-shadow: none; }
+table.table-stickyhead thead tr { background: var(--panel); }
+table.table-bordered.table-stickyhead thead th,
+table.table-bordered.table-stickyhead thead td { background: var(--panel); border-bottom: 1px solid var(--line); }
+table.table-stickyhead .headercell {
+	font-size: 11px; color: var(--dim); text-transform: none; letter-spacing: 0;
+}
+table.table-stickyhead .headercell h4 {
+	font-family: var(--mono); font-size: 11.5px; font-weight: 400;
+	color: var(--dim); margin: 0; display: flex; align-items: center; gap: 6px;
+}
+table.table-stickyhead .headercell .btn-link { color: var(--dim); padding: 0 3px; }
+table.table-stickyhead .headercell .btn-link:hover,
+table.table-stickyhead .headercell .btn-link:focus { color: var(--acc); }
+.servicecell { text-align: right; vertical-align: top; }
+.table > thead > tr > .servicecell {
+	text-align: right; white-space: normal; min-width: 150px; max-width: 240px;
+}
+.servicecell strong { color: var(--fg); text-transform: none; font-weight: 600; font-size: 11.5px; }
+.servicecell p { margin: 3px 0; }
+.servicecell .av-line {
+	color: var(--dim); font-size: 10.5px; text-transform: none; letter-spacing: 0;
+	/* one line per meta row; the full first-blood list lives in the title */
+	display: inline-block; max-width: 100%; vertical-align: bottom;
+	white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rankcell, .teamcell { vertical-align: middle !important; }
+.rankcell { width: 1%; min-width: 40px; }
+.rankcell h4 { color: var(--dim); font-size: 14px; margin: 0; font-weight: 400; }
+.teamcell { min-width: 180px; }
+.team-name { margin: 0; display: flex; align-items: baseline; gap: 6px; max-width: 240px; }
+.team-name a { color: var(--fg); flex: 1 1 auto; overflow: hidden; white-space: nowrap;
+               text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
+.team-name a:hover { color: var(--acc); text-decoration: none; }
+.team-name.blocked a { color: var(--err); text-decoration: line-through; }
+.team-vulnbox { color: var(--dim); font-size: 10.5px; }
+.teamcell .fb-count { color: var(--dim); font-size: 10.5px; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px; }
+.teamcell .fb-count .drop { width: 8px; height: 10px; fill: var(--err); }
+.team-total-points { color: var(--fg); font-size: 13px; }
+.fa-chart-line, .fa-crosshairs, .fa-shield-alt, .fa-tachometer-alt,
+.fa-flag, .fa-flag-checkered, .fa-tint { color: var(--dim); }
+.att { color: var(--err); } .def { color: var(--ok); } .sla { color: var(--acc); }
+.delta small { color: var(--dim); font-size: 10.5px; }
+
+/* top-3 rows (role mock: accent tint on the leaders); the sticky cells set
+   their own background, hence the higher specificity */
+table.table-stickyhead tbody tr.top1 > td,
+table.table-stickyhead tbody tr.top1 .rankcell,
+table.table-stickyhead tbody tr.top1 .teamcell { background: var(--row1); }
+table.table-stickyhead tbody tr.top2 > td,
+table.table-stickyhead tbody tr.top2 .rankcell,
+table.table-stickyhead tbody tr.top2 .teamcell { background: var(--row2); }
+table.table-stickyhead tbody tr.top3 > td,
+table.table-stickyhead tbody tr.top3 .rankcell,
+table.table-stickyhead tbody tr.top3 .teamcell { background: var(--row3); }
+
+/* frozen rank + team columns (the original scoped these to the Angular host) */
+table.table-stickyhead .rankcell, table.table-stickyhead .teamcell {
+	position: sticky; z-index: 10;
+	background-color: var(--panel); background-clip: padding-box;
+}
+table.table-stickyhead .rankcell { left: 0; border-right: 0 !important; }
+table.table-stickyhead .teamcell {
+	left: 40px; border-left: 0 !important;
+	clip-path: inset(0px -4px -1px 0px);
+	box-shadow: 1px 0 0 var(--line);
+}
+table.table-stickyhead thead .rankcell, table.table-stickyhead thead .teamcell {
+	background-color: var(--panel);
+}
+.team-logo-media { padding-right: 10px; }
+.team-logo-media > img, .team-logo-media > a > img { width: 40px; max-width: 40px; max-height: 40px; }
+.team-logo-media > a { border-radius: 50%; display: inline-block; }
+
+/* per-service detail cell (unchanged mechanics, Ops Console palette) */
+.result-container > i.fas, .result-container > .points { color: var(--fg); }
+.result-container > i.fas { color: var(--dim); }
+.firstblood { color: var(--warn); }
+.firstblood.unconfirmed { color: var(--dim); }
+.servicecell .fa-tint { color: var(--warn); }
+.servicecell .fa-tint.text-muted { color: var(--line); }
+.frozen { color: var(--acc); }
+
+/* ===== status labels / pills ===== */
+.label-success, .label-warning, .label-danger, .label-info, .label-default,
+.label-primary { --st: var(--dim); }
+.label-success { --st: var(--ok); }
+.label-warning { --st: var(--warn); }
+.label-danger { --st: var(--err); }
+.label-info { --st: var(--acc); }
+.label {
+	display: inline-block; color: var(--st); background: transparent !important;
+	border: 1px solid var(--st); border-radius: 3px; padding: 0 6px;
+	font-size: 10.5px; line-height: 1.6; font-family: var(--mono);
+	vertical-align: middle; font-weight: 400;
+}
+/* history = past ticks: dots sized by age, colour only (like upstream) */
+.result-container .history-1, .result-container .history-2,
+.result-container .history-3 {
+	/* .label sets `background: transparent !important`; dots carry no text */
+	color: transparent !important; background: var(--st) !important;
+	border: 0; opacity: 1; padding: 0; border-radius: 50%;
+	font-size: 0; line-height: 0; vertical-align: middle;
+}
+.result-container .history-3 { width: 8px; height: 8px; }
+.result-container .history-2 { width: 10px; height: 10px; }
+.result-container .history-1 { width: 12px; height: 12px; margin-right: 0; }
+/* separates past-tick badges from the current tick's pill */
+.result-container > .sla-col > .sep {
+	display: inline-block; width: 1px; height: 12px;
+	background: var(--line); margin: 0 1px; flex: none;
+}
+.result-container > .sla-col {
+	grid-column: 1 / -1;
+	display: flex; align-items: center; justify-content: flex-end;
+	gap: 3px; white-space: nowrap; margin-top: 2px;
+}
+/* merged score cell: attack / defense / SLA / total, value + dim paren */
+thead th.num.score, td.num.score { text-align: right; }
+.score-line {
+	display: flex; align-items: baseline; justify-content: flex-end;
+	gap: 6px; line-height: 1.35; font-variant-numeric: tabular-nums;
+}
+.score-line > i.fas {
+	width: 11px; text-align: center; font-size: 10px;
+	color: var(--dim); margin-right: auto;
+}
+.score-line .v { font-weight: 400; }
+.score-line.total .v, .score-line.total b { color: var(--fg); font-weight: 600; }
+.score-line .delta { color: var(--dim); }
+/* service cell detail: points left, flags right */
+.result-container > .svc-grid {
+	grid-column: 1 / -1;
+	display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px;
+	font-size: 11px; line-height: 1.45;
+}
+.svc-row {
+	display: flex; align-items: baseline; gap: 4px;
+	white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.svc-row > i.fas { width: 11px; text-align: center; font-size: 10px; color: var(--dim); }
+.svc-row .points { color: var(--fg); }
+.svc-row .delta small { font-size: 10px; }
+.result-container > .sla-col > .status.label {
+	display: inline-flex; align-items: center; justify-content: center;
+	font-size: 10px; padding: 2px 5px; border-radius: 3.5px; line-height: 1;
+}
+/* accent text on light row tints lands at 4.0-4.4:1; 86% ink clears 4.5:1 */
+html:not(.dark) .result-container > .sla-col > .status.label {
+	color: color-mix(in srgb, var(--st) 86%, #000);
+}
+.team-status-row .label {
+	display: inline-flex; align-items: center; justify-content: center;
+	width: 20px; height: 16px; padding: 0; margin-right: 4px; font-size: 8px;
+}
+.team-status-row .label.fresh { box-shadow: 0 0 0 1px var(--ok); }
+
+/* ===== popovers (focus-triggered, as upstream) ===== */
+.popover {
+	background: var(--panel2); border: 1px solid var(--line); border-radius: 6px;
+	color: var(--fg); font-family: var(--mono); font-size: 11px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+.popover > .arrow { display: none; }
+.popover-title {
+	background: transparent; border-bottom: 1px solid var(--line);
+	color: var(--acc); font-family: var(--mono); font-size: 11px; margin: 0;
+	padding: 6px 10px;
+}
+.popover-content { color: var(--dim); padding: 6px 10px; }
+.pop-host > .info-link { color: var(--dim); padding: 1px 3px; line-height: 1; }
+.pop-host > .info-link:hover, .pop-host > .info-link:focus { color: var(--acc); }
+
+/* ===== dashboard (team-only view) ===== */
+.page-dashboard .loading { color: var(--dim); margin-bottom: 10px; }
+.page-dashboard .dash-toolbar {
+	display: flex; align-items: center; gap: 10px; margin: 0 0 12px;
+	color: var(--dim);
+}
+.page-dashboard .dash-toolbar label {
+	font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px;
+}
+.page-dashboard .dash-toolbar select {
+	background: var(--field); color: var(--fg); border: 1px solid var(--line);
+	border-radius: 4px; padding: 4px 8px; font: 12px var(--mono);
+	min-width: 220px;
+}
+.page-dashboard .dash-toolbar select:focus { border-color: var(--acc); outline: none; }
+/* four tiles instead of the team page's five */
+.page-dashboard .facts { grid-template-columns: repeat(4, 1fr); margin: 0 0 6px; }
+.page-dashboard .ok { color: var(--ok); }
+.page-dashboard .err { color: var(--err); }
+.page-dashboard .cols {
+	display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start;
+}
+.page-dashboard .dash-table > tbody > tr > td { border-bottom-color: var(--line); }
+/* status pills would otherwise inflate the checks rows ~4px above the
+   text-only flags rows; a uniform minimum height aligns both tables */
+.page-dashboard .dash-table > tbody > tr > td { height: 40px; }
+.page-dashboard .status-pill {
+	border-radius: 10px; padding: 1px 9px; font-size: 11px;
+	text-transform: none; letter-spacing: 0;
+}
+@media (max-width: 900px) {
+	.page-dashboard .cols { grid-template-columns: 1fr; }
+	.page-dashboard .facts { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===== team page ===== */
+.facts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0 6px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+        padding: 10px 14px; }
+.tile .k { color: var(--dim); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; }
+.tile .v { font-size: 17px; margin-top: 3px; }
+.page-team h1 { letter-spacing: 2px; }
+.page-team .team-head { display: flex; align-items: center; gap: 12px; }
+.page-team .team-head .sub { margin: 0; }
+.page-team .chart-container { position: relative; height: 280px; width: 100%;
+	background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+	padding: 14px; }
+.page-team .chart-container canvas { max-height: 100%; }
+.bar { background: var(--panel2); border-radius: 3px; height: 8px; width: 140px;
+       display: inline-block; vertical-align: middle; position: relative; overflow: hidden; }
+.bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--acc); }
+.bar + .num { margin-left: 8px; }
+.fb-list { color: var(--dim); }
+.fb-list b { color: var(--warn); }
+
+/* ===== graphs page ===== */
+.page-graphs .chart-group { margin: 0 0 22px; }
+.page-graphs .chart-group h2 { margin-top: 0; }
+.page-graphs .card {
+	background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+	padding: 14px;
+}
+.page-graphs .legend {
+	display: flex; flex-wrap: wrap; gap: 16px;
+	font-size: 11px; color: var(--dim); margin: 0 0 10px;
+}
+.page-graphs .legend .dot {
+	display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+	margin-right: 5px; vertical-align: baseline;
+}
+.page-graphs .chart-box { position: relative; height: 280px; width: 100%; }
+
+/* ===== notification overlay (always-dark veil) ===== */
+.backdrop { background-color: rgba(4, 8, 14, 0.78); }
+.msgcontainer, .pyrocontainer .message-what { color: #e6edf3; }
+.message-what .bigicon { color: #f85149; }
+.message-service, .message-team { color: #8b949e; }
+.message-service strong, .message-team strong { color: #e6edf3; }
+.msgcontainer small { color: #f85149; }
+
+/* ===== focus, scrollbars, motion ===== */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+	outline: 2px solid var(--acc); outline-offset: 2px; border-radius: 3px;
+}
+html { scrollbar-color: var(--line) var(--bg); scrollbar-width: thin; }
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ===== override scoreboard.css's compiled html.dark rules =====
+   (blue header, solid labels, #121212 body) at equal specificity. */
+html.dark body { color: var(--fg); background-color: var(--bg); }
+html.dark .bg-primary-theme { background: var(--panel); border-bottom: 1px solid var(--line); }
+html.dark .btn-link { color: var(--dim); }
+html.dark .btn-link:hover, html.dark .btn-link:focus { color: var(--acc); }
+html.dark .label { color: var(--st); background: transparent !important; border: 1px solid var(--st); }
+/* dots stay solid in dark mode: beat html.dark .label's transparent !important */
+html.dark .result-container .history-1,
+html.dark .result-container .history-2,
+html.dark .result-container .history-3 {
+	color: transparent !important; background: var(--st) !important; border: 0;
+}
+html.dark .popover { background: var(--panel2); border-color: var(--line); color: var(--fg); }
+html.dark .popover-title { background: transparent; border-bottom-color: var(--line); }
+html.dark .dropdown-menu { background: var(--panel); border-color: var(--line); }
+html.dark .dropdown-menu > li > a { color: var(--fg); }
+html.dark .dropdown-menu > li > a:hover, html.dark .dropdown-menu > li > a:focus {
+	color: var(--acc); background: var(--panel2); background-image: none;
+}
+html.dark .table-bordered, html.dark .table-bordered > tbody > tr > td,
+html.dark .table-bordered > thead > tr > th,
+html.dark .table-bordered > thead > tr > td { border-color: var(--line); }
+html.dark table.table-bordered.table-stickyhead thead { box-shadow: none; }
+html.dark table.table-bordered.table-stickyhead thead tr { background-color: var(--panel); }
+html.dark table.table-bordered.table-stickyhead thead th,
+html.dark table.table-bordered.table-stickyhead thead td {
+	background-color: var(--panel); background-image: none;
+	border-bottom: 1px solid var(--line); color: var(--dim);
+}
+html.dark .team-name a { color: var(--fg); }
+html.dark .team-name.blocked a { color: var(--err); }
+html.dark .sum-container > i.fas, html.dark .result-container > i.fas { color: var(--dim) !important; }
+
+/* ===== responsive (role mocks are desktop-first) ===== */
+@media (max-width: 1100px) {
+	.facts { grid-template-columns: repeat(2, 1fr); }
+	.app-header { flex-wrap: wrap; gap: 10px; }
+	.backlink { margin-left: 0; }
+}

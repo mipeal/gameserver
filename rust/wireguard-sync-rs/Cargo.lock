@@ -224,6 +224,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctf-commons-rs"
+version = "0.1.0"
+dependencies = [
+ "redis",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sqlx",
+ "tokio",
+]
+
+[[package]]
 name = "curve25519-dalek"
 version = "4.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1257,18 +1269,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f"
 
 [[package]]
-name = "saarctf-commons-rs"
-version = "0.1.0"
-dependencies = [
- "redis",
- "serde",
- "serde_json",
- "serde_yaml",
- "sqlx",
- "tokio",
-]
-
-[[package]]
 name = "scopeguard"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2226,10 +2226,10 @@ name = "wireguard-sync-rs"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
+ "ctf-commons-rs",
  "futures-util",
  "rand_core 0.6.4",
  "reqwest",
- "saarctf-commons-rs",
  "serde",
  "serde_json",
  "tokio",

@@ -25,10 +25,10 @@ x-gameserver-common-env: &gameserver-common-env
   SECRET_FLAG_KEY: ${SECRET_FLAG_KEY}
   CONFIG_FILE: ${CONFIG_FILE}
   CONFIG: ${CONFIG_FILE}  # rust binaries read CONFIG
-  SAARCTF_CONFIG: ${CONFIG_FILE}  # python checker subprocesses (saarctf_commons)
+  CTF_CONFIG: ${CONFIG_FILE}  # python checker subprocesses (saarctf_commons)
   SCOREBOARD_PATH: ${PUBLIC_SCOREBOARD_PATH}
   SCOREBOARD_PATH_INTERNAL: ${INTERNAL_SCOREBOARD_PATH}
-  SAARCTF_PYTHON_DIR: /opt
+  CTF_PYTHON_DIR: /opt
 
 x-rust-image: &rust-image
   image: "${IMAGE_REGISTRY}/gameserver-rust"
@@ -80,7 +80,7 @@ services:
 
   submitter:
     image: "${IMAGE_REGISTRY}/gameserver/submitter"
-    build: flag-submission-server
+    build: ../flag-submission-server
     environment:
       POSTGRES_SERVER: ${POSTGRES_SERVER}
       POSTGRES_PORT: ${POSTGRES_PORT}

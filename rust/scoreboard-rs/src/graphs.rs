@@ -8,6 +8,7 @@ use crate::ui::Ui;
 use leptos::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;
 
 /// One chart: title + datasets + labels.
@@ -16,6 +17,37 @@ struct Group {
     title: String,
     datasets: Vec<JsValue>,
     n_ticks: usize,
+    /// (series label, line colour) for the page's dot legend.
+    legend: Vec<(String, String)>,
+}
+
+/// Hide the canvas-drawn Chart.js legend; the card renders its own dot
+/// legend from the same datasets/palette.
+fn hide_chart_legend(canvas: &web_sys::HtmlCanvasElement) {
+    let global = js_sys::global();
+    let Ok(chart) = js_sys::Reflect::get(&global, &JsValue::from_str("Chart")) else { return };
+    let Ok(get_chart) = js_sys::Reflect::get(&chart, &JsValue::from_str("getChart")) else { return };
+    let Ok(get_chart) = get_chart.dyn_into::<js_sys::Function>() else { return };
+    let Ok(instance) = get_chart.call1(&JsValue::UNDEFINED, canvas) else { return };
+    if !instance.is_object() {
+        return;
+    }
+    let Ok(options) = js_sys::Reflect::get(&instance, &JsValue::from_str("options")) else { return };
+    let plugins = match js_sys::Reflect::get(&options, &JsValue::from_str("plugins")) {
+        Ok(p) if p.is_object() => p,
+        _ => {
+            let p: JsValue = js_sys::Object::new().into();
+            let _ = js_sys::Reflect::set(&options, &JsValue::from_str("plugins"), &p);
+            p
+        }
+    };
+    let legend: JsValue = js_sys::Object::new().into();
+    let _ = js_sys::Reflect::set(&legend, &JsValue::from_str("display"), &JsValue::FALSE);
+    let _ = js_sys::Reflect::set(&plugins, &JsValue::from_str("legend"), &legend);
+    let Ok(update) = js_sys::Reflect::get(&instance, &JsValue::from_str("update")) else { return };
+    if let Ok(update) = update.dyn_into::<js_sys::Function>() {
+        let _ = update.call0(&instance);
+    }
 }
 
 pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
@@ -48,7 +80,9 @@ pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
         if let Some(teams) = top_teams.get() {
             let n_ticks = teams.first().and_then(|(_, p)| p.first()).map(|p| p.len()).unwrap_or(0);
             if n_ticks > 0 {
+                let color_of = |team_id: i64| colors[(team_id % (colors.len() as i64 - 2) + 2) as usize];
                 // "Points (overall)": per-tick sum over the team's services
+                let mut legend = Vec::new();
                 let sets: Vec<JsValue> = teams.iter().map(|(team, points)| {
                     let mut total = vec![0.0; n_ticks];
                     for series in points {
@@ -56,23 +90,31 @@ pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
                             if let Some(t) = total.get_mut(i) { *t += p; }
                         }
                     }
-                    let color = colors[(team.id % (colors.len() as i64 - 2) + 2) as usize];
+                    let color = color_of(team.id);
+                    legend.push((team.name.clone(), color.to_string()));
                     dataset(&team.name, &total, color, false, None, None)
                 }).collect();
-                out.push(Group { title: "Points (overall)".into(), datasets: sets, n_ticks });
+                out.push(Group { title: "Points (overall)".into(), datasets: sets, n_ticks, legend });
                 // "Points (service X)"
                 let svc_names: Vec<String> = current_round
                     .get_untracked()
                     .map(|ri| ri.services.iter().map(|s| s.name.clone()).collect())
                     .unwrap_or_default();
                 for si in 0..teams.iter().map(|(_, p)| p.len()).max().unwrap_or(0) {
+                    let mut legend = Vec::new();
                     let sets: Vec<JsValue> = teams.iter().map(|(team, points)| {
-                        let color = colors[(team.id % (colors.len() as i64 - 2) + 2) as usize];
+                        let color = color_of(team.id);
+                        legend.push((team.name.clone(), color.to_string()));
                         let data: Vec<f64> = points.get(si).cloned().unwrap_or_default();
                         dataset(&team.name, &data, color, false, None, None)
                     }).collect();
                     let name = svc_names.get(si).cloned().unwrap_or_else(|| format!("service {si}"));
-                    out.push(Group { title: format!("Points (service {name})"), datasets: sets, n_ticks });
+                    out.push(Group {
+                        title: format!("Points (service {name})"),
+                        datasets: sets,
+                        n_ticks,
+                        legend,
+                    });
                 }
             }
         }
@@ -81,8 +123,10 @@ pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
             let n_ticks = stats_info.stats.first().map(|s| s.len()).unwrap_or(0);
             if n_ticks > 0 {
                 for (title, key) in [("No. of Attackers", 0), ("No. of Victims", 1)] {
+                    let mut legend = Vec::new();
                     let sets: Vec<JsValue> = stats_info.services.iter().enumerate().map(|(si, name)| {
                         let color = colors[(si % (colors.len() - 2)) + 2];
+                        legend.push((name.clone(), color.to_string()));
                         let data: Vec<f64> = stats_info
                             .stats
                             .get(si)
@@ -97,7 +141,7 @@ pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
                             .unwrap_or_default();
                         dataset(name, &data, color, false, None, None)
                     }).collect();
-                    out.push(Group { title: title.into(), datasets: sets, n_ticks });
+                    out.push(Group { title: title.into(), datasets: sets, n_ticks, legend });
                 }
             }
         }
@@ -129,23 +173,37 @@ pub fn graphs_page(store: Store, ui: Ui) -> impl IntoView {
             // drop (destroy) the previous chart before reusing the canvas
             live.borrow_mut().take();
             *live.borrow_mut() = Some(ChartHandle::line(&canvas, &labels, &ds, &scales));
+            hide_chart_legend(&canvas);
         }
     });
 
     view! {
         <div class="page-graphs">
+            <h1>"GRAPHS"</h1>
+            <div class="sub">"points and attacker / victim counts per tick · all teams"</div>
             {move || if current_round.get().is_none() {
-                view! { <p class="lead"><span class="fas fa-spinner fa-spin"></span></p> }.into_any()
+                view! { <p class="lead loading"><span class="fas fa-spinner fa-spin"></span></p> }.into_any()
             } else { ().into_any() }}
             {move || {
                 let groups = groups.get();
                 if groups.is_empty() { return ().into_any(); }
                 groups.iter().enumerate().map(|(gi, group)| {
+                    let legend = group.legend.iter().map(|(label, color)| {
+                        view! {
+                            <span>
+                                <i class="dot" style=format!("background:{color}") aria-hidden="true"></i>
+                                {label.clone()}
+                            </span>
+                        }
+                    }).collect_view();
                     view! {
                         <div class="chart-group">
-                            <h3>{group.title.clone()}</h3>
-                            <div class="chart-container">
-                                <canvas node_ref=view_canvases[gi] />
+                            <h2>{group.title.clone()}</h2>
+                            <div class="card">
+                                <div class="legend">{legend}</div>
+                                <div class="chart-box">
+                                    <canvas node_ref=view_canvases[gi] />
+                                </div>
                             </div>
                         </div>
                     }

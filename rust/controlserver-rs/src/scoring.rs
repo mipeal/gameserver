@@ -5,11 +5,11 @@
 
 use crate::logger;
 use crate::models::{SubmittedFlag, TeamPointsLite};
-use saarctf_commons_rs::config::ScoringConfig;
+use ctf_commons_rs::config::ScoringConfig;
 use sqlx::PgPool;
 use std::collections::{HashMap, HashSet};
 
-pub const DEFAULT_ALGORITHM: &str = "saarctf:SaarctfScoreAlgorithm";
+pub const DEFAULT_ALGORITHM: &str = "ctf:CtfScoreAlgorithm";
 
 /// `StolenFlag` (algorithm.py): a flag submitted this tick plus how often that
 /// flag (same victim/service/tick/payload) was already submitted before.
@@ -39,8 +39,8 @@ impl FlagSet {
 /// `ScoreTickAlgorithm` variants: scoring algorithm + happy-hour flag.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Algo {
-    Saarctf,
-    SaarctfHappyHour,
+    Ctf,
+    CtfHappyHour,
     Playground,
     PlaygroundHappyHour,
 }
@@ -48,8 +48,8 @@ pub enum Algo {
 impl Algo {
     pub fn from_config(name: &str) -> Result<Algo, String> {
         match name {
-            "saarctf:SaarctfScoreAlgorithm" => Ok(Algo::Saarctf),
-            "saarctf:SaarctfScoreAlgorithmWithHappyHour" => Ok(Algo::SaarctfHappyHour),
+            "ctf:CtfScoreAlgorithm" => Ok(Algo::Ctf),
+            "ctf:CtfScoreAlgorithmWithHappyHour" => Ok(Algo::CtfHappyHour),
             "playground:PlaygroundScoreAlgorithm" => Ok(Algo::Playground),
             "playground:PlaygroundScoreAlgorithmWithHappyHour" => Ok(Algo::PlaygroundHappyHour),
             other => Err(format!("ValueError: unknown scoring algorithm {other:?}")),
@@ -89,7 +89,7 @@ fn flag_points_happy_hour(cfg: &ScoringConfig, tick_issued: i32) -> f64 {
     }
 }
 
-/// `FlagPointsSaarCtfDefault` / `FlagPointsFixedWeightDefault`.
+/// `FlagPointsCtfDefault` / `FlagPointsFixedWeightDefault`.
 fn off_points(
     algo: Algo,
     cfg: &ScoringConfig,
@@ -98,7 +98,7 @@ fn off_points(
     victim_rank: i64,
 ) -> f64 {
     let base = match algo {
-        Algo::Saarctf | Algo::SaarctfHappyHour => {
+        Algo::Ctf | Algo::CtfHappyHour => {
             // OFF = 1 + sqrt(1 / num_submissions) + sqrt(1 / victim_rank)
             1.0 + ((flag.num_previous_submissions + flag.num_submissions) as f64)
                 .recip()
@@ -115,7 +115,7 @@ fn off_points(
         }
     };
     match algo {
-        Algo::SaarctfHappyHour | Algo::PlaygroundHappyHour => {
+        Algo::CtfHappyHour | Algo::PlaygroundHappyHour => {
             base * flag_points_happy_hour(cfg, i32::from(flag.flag.tick_issued))
         }
         _ => base,
@@ -130,11 +130,11 @@ fn off_points_previous(
     victim_rank: i64,
 ) -> Option<f64> {
     match algo {
-        Algo::Saarctf => Some(
+        Algo::Ctf => Some(
             1.0 + (flag.num_previous_submissions as f64).recip().sqrt()
                 + (victim_rank as f64).recip().sqrt(),
         ),
-        Algo::SaarctfHappyHour => Some(
+        Algo::CtfHappyHour => Some(
             (1.0 + (flag.num_previous_submissions as f64).recip().sqrt()
                 + (victim_rank as f64).recip().sqrt())
                 * flag_points_happy_hour(cfg, i32::from(flag.flag.tick_issued)),
@@ -143,12 +143,12 @@ fn off_points_previous(
     }
 }
 
-/// `DefensiveSaarCtfDefault`: DEF = (submissions / num_active_teams)^0.3 * SLA.
+/// `DefensiveCtfDefault`: DEF = (submissions / num_active_teams)^0.3 * SLA.
 fn def_points(num_submissions: i64, num_active_teams: i64, victim_sla_when_issued: f64) -> f64 {
     (num_submissions as f64 / num_active_teams as f64).powf(0.3) * victim_sla_when_issued
 }
 
-/// `SlaSaarCtfDefault.sla_points`.
+/// `SlaCtfDefault.sla_points`.
 fn sla_points(status: &str) -> f64 {
     match status {
         "SUCCESS" => 1.0,
@@ -1346,12 +1346,12 @@ mod tests {
     #[test]
     fn algorithm_config_strings_map() {
         assert_eq!(
-            Algo::from_config("saarctf:SaarctfScoreAlgorithm"),
-            Ok(Algo::Saarctf)
+            Algo::from_config("ctf:CtfScoreAlgorithm"),
+            Ok(Algo::Ctf)
         );
         assert_eq!(
-            Algo::from_config("saarctf:SaarctfScoreAlgorithmWithHappyHour"),
-            Ok(Algo::SaarctfHappyHour)
+            Algo::from_config("ctf:CtfScoreAlgorithmWithHappyHour"),
+            Ok(Algo::CtfHappyHour)
         );
         assert_eq!(
             Algo::from_config("playground:PlaygroundScoreAlgorithm"),
